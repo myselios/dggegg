@@ -2,6 +2,8 @@
 
 import { createClient } from '@/lib/supabase/server'
 import { revalidatePath } from 'next/cache'
+import { requireAuth } from '@/lib/auth'
+import { studentInsertSchema, studentUpdateSchema } from '@/lib/validations'
 import type { StudentInsert, StudentUpdate } from '@/lib/types/database'
 
 export async function getStudents() {
@@ -28,10 +30,12 @@ export async function getStudent(id: string) {
 }
 
 export async function createStudent(input: StudentInsert) {
+  await requireAuth()
+  const validated = studentInsertSchema.parse(input)
   const supabase = await createClient()
   const { data, error } = await supabase
     .from('students')
-    .insert(input)
+    .insert(validated)
     .select()
     .single()
 
@@ -41,10 +45,12 @@ export async function createStudent(input: StudentInsert) {
 }
 
 export async function updateStudent(id: string, input: StudentUpdate) {
+  await requireAuth()
+  const validated = studentUpdateSchema.parse(input)
   const supabase = await createClient()
   const { data, error } = await supabase
     .from('students')
-    .update(input)
+    .update(validated)
     .eq('id', id)
     .select()
     .single()
@@ -56,6 +62,7 @@ export async function updateStudent(id: string, input: StudentUpdate) {
 }
 
 export async function deleteStudent(id: string) {
+  await requireAuth()
   const supabase = await createClient()
   const { error } = await supabase
     .from('students')

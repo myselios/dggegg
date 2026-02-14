@@ -12,7 +12,7 @@
 
 ---
 
-## Task 1: shadcn/ui 초기화 + 핵심 의존성 설치
+## Task 1: shadcn/ui 초기화 + 핵심 의존성 설치 ✅
 
 **Files:**
 - Modify: `package.json`
@@ -56,7 +56,7 @@ git commit -m "[chore] shadcn/ui 초기화 및 핵심 의존성 설치"
 
 ---
 
-## Task 2: Supabase 연동 + 환경변수 설정
+## Task 2: Supabase 연동 + 환경변수 설정 ✅
 
 **Files:**
 - Create: `lib/supabase/client.ts`
@@ -129,7 +129,7 @@ git commit -m "[chore] Supabase 클라이언트 설정 및 환경변수 템플�
 
 ---
 
-## Task 3: DB 스키마 + Supabase 마이그레이션
+## Task 3: DB 스키마 + Supabase 마이그레이션 ✅
 
 **Files:**
 - Create: `supabase/migrations/001_initial_schema.sql`
@@ -408,7 +408,7 @@ git commit -m "[chore] DB 스키마 마이그레이션 및 TypeScript 타입 정
 
 ---
 
-## Task 4: 패스워드 게이트 인증
+## Task 4: 패스워드 게이트 인증 ✅
 
 **Files:**
 - Create: `app/login/page.tsx`
@@ -540,7 +540,7 @@ git commit -m "[feat] 심플 패스워드 게이트 인증 구현"
 
 ---
 
-## Task 5: 앱 레이아웃 + 네비게이션
+## Task 5: 앱 레이아웃 + 네비게이션 ✅
 
 **Files:**
 - Create: `app/(authenticated)/layout.tsx`
@@ -752,7 +752,7 @@ git commit -m "[feat] 앱 레이아웃, 사이드바, 네비게이션 구성"
 
 ---
 
-## Task 6: 학생 CRUD Server Actions + SWR 훅
+## Task 6: 학생 CRUD Server Actions + SWR 훅 ✅
 
 **Files:**
 - Create: `app/actions/students.ts`
@@ -882,7 +882,7 @@ git commit -m "[feat] 학생 CRUD Server Actions 및 SWR 훅"
 
 ---
 
-## Task 7: 학생 카드 보드 (Kanban 뷰)
+## Task 7: 학생 카드 보드 (Kanban 뷰) ✅
 
 **Files:**
 - Modify: `app/(authenticated)/students/page.tsx`
@@ -1124,7 +1124,7 @@ git commit -m "[feat] 학생 카드 보드 (Kanban 뷰) 및 학생 등록 다이
 
 ---
 
-## Task 8: 학생 상세 페이지 (프로필 + 탭)
+## Task 8: 학생 상세 페이지 (프로필 + 탭) ✅
 
 **Files:**
 - Create: `app/(authenticated)/students/[id]/page.tsx`
@@ -1373,7 +1373,7 @@ git commit -m "[feat] 학생 상세 페이지 (프로필 탭 + 편집/삭제)"
 
 ---
 
-## Task 9: 스케줄 CRUD Server Actions + SWR 훅
+## Task 9: 스케줄 CRUD Server Actions + SWR 훅 ✅
 
 **Files:**
 - Create: `app/actions/schedule.ts`
@@ -1567,7 +1567,7 @@ git commit -m "[feat] 스케줄 CRUD Server Actions, SWR 훅, 날짜 유틸리�
 
 ---
 
-## Task 10: 3주 슬라이딩 캘린더 UI
+## Task 10: 3주 슬라이딩 캘린더 UI ✅
 
 **Files:**
 - Modify: `app/(authenticated)/schedule/page.tsx`
@@ -1920,7 +1920,7 @@ git commit -m "[feat] 3주 슬라이딩 캘린더 UI + 수업 이벤트 생성"
 
 ---
 
-## Task 11: 수업 기록 슬라이드 패널
+## Task 11: 수업 기록 슬라이드 패널 ✅
 
 **Files:**
 - Create: `components/schedule/lesson-note-panel.tsx`
@@ -2222,7 +2222,7 @@ git commit -m "[feat] 수업 기록 슬라이드 패널 + 성적 기록 인라�
 
 ---
 
-## Task 12: 상담 로그 CRUD
+## Task 12: 상담 로그 CRUD ✅
 
 **Files:**
 - Create: `app/actions/consultations.ts`
@@ -2465,7 +2465,7 @@ git commit -m "[feat] 상담 로그 CRUD + 검색 + 태그"
 
 ---
 
-## Task 13: 학생 상세 - 수업기록/성적 탭 채우기
+## Task 13: 학생 상세 - 수업기록/성적 탭 채우기 ✅
 
 **Files:**
 - Create: `components/students/lesson-history-tab.tsx`
@@ -2611,7 +2611,7 @@ git commit -m "[feat] 학생 상세 수업기록/성적 탭 구현"
 
 ---
 
-## Task 14: Dashboard 구현
+## Task 14: Dashboard 구현 ✅
 
 **Files:**
 - Modify: `app/(authenticated)/page.tsx`
@@ -2839,7 +2839,7 @@ git commit -m "[feat] Dashboard (오늘 수업, 최근 상담, 미완료 수업)
 
 ---
 
-## Task 15: 최종 검증 + 정리
+## Task 15: 최종 검증 + 정리 ✅
 
 **Step 1: 빌드 + 린트 확인**
 

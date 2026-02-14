@@ -2,13 +2,17 @@
 
 import { createClient } from '@/lib/supabase/server'
 import { revalidatePath } from 'next/cache'
+import { requireAuth } from '@/lib/auth'
+import { scoreRecordInsertSchema } from '@/lib/validations'
 import type { ScoreRecordInsert } from '@/lib/types/database'
 
 export async function createScoreRecord(input: ScoreRecordInsert) {
+  await requireAuth()
+  const validated = scoreRecordInsertSchema.parse(input)
   const supabase = await createClient()
   const { data, error } = await supabase
     .from('score_records')
-    .insert(input)
+    .insert(validated)
     .select()
     .single()
 

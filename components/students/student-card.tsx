@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import { useDraggable } from '@dnd-kit/core'
 import { CalendarClock, GraduationCap } from 'lucide-react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -58,71 +59,119 @@ function formatNextLesson(dateStr: string): string {
 }
 
 export function StudentCard({ student }: { readonly student: Student }) {
+  const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
+    id: student.id,
+    data: { student },
+  })
+
   const avatarColor = getAvatarColor(student.name_ko)
   const initials = getInitials(student.name_ko)
   const course = student.ib_course ? courseConfig[student.ib_course] : null
 
   return (
-    <Link href={`/students/${student.id}`}>
-      <Card
-        className={cn(
-          'cursor-pointer border-border/60 py-0 transition-all duration-200',
-          'hover:-translate-y-0.5 hover:shadow-md hover:border-border',
-        )}
-      >
-        <CardContent className="flex items-start gap-3 p-3.5">
-          <Avatar className="mt-0.5 shrink-0">
-            <AvatarFallback className={cn(avatarColor, 'text-white text-xs font-semibold')}>
-              {initials}
-            </AvatarFallback>
-          </Avatar>
+    <div
+      ref={setNodeRef}
+      {...listeners}
+      {...attributes}
+      className={cn(isDragging && 'opacity-30')}
+    >
+      <Link href={`/students/${student.id}`} draggable={false}>
+        <Card
+          className={cn(
+            'cursor-grab active:cursor-grabbing border-border/60 py-0 transition-all duration-200',
+            'hover:-translate-y-0.5 hover:shadow-md hover:border-border',
+          )}
+        >
+          <CardContent className="flex items-start gap-3 p-3.5">
+            <Avatar className="mt-0.5 shrink-0">
+              <AvatarFallback className={cn(avatarColor, 'text-white text-xs font-semibold')}>
+                {initials}
+              </AvatarFallback>
+            </Avatar>
 
-          <div className="flex min-w-0 flex-1 flex-col gap-1.5">
-            <div className="flex items-center justify-between gap-2">
-              <span className="truncate font-semibold text-sm">{student.name_ko}</span>
-              {course && (
-                <Badge
-                  variant="outline"
-                  className={cn(
-                    'shrink-0 border px-2 py-0 text-[10px] font-semibold tracking-wide',
-                    course.className,
-                  )}
-                >
-                  {course.label}
-                </Badge>
-              )}
-            </div>
-
-            <div className="flex items-center gap-1.5">
-              <GraduationCap className="size-3 shrink-0 text-muted-foreground" />
-              <span className="truncate text-xs text-muted-foreground">{student.school}</span>
-              {student.grade && (
-                <span className="shrink-0 text-xs text-muted-foreground">
-                  ({student.grade})
-                </span>
-              )}
-            </div>
-
-            {student.name_en && (
-              <span className="truncate text-xs text-muted-foreground/70">
-                {student.name_en}
-              </span>
-            )}
-
-            {student.exam_date && (
-              <div className="mt-0.5 flex items-center gap-1.5 rounded-md bg-muted/50 px-2 py-1">
-                <CalendarClock className="size-3 shrink-0 text-muted-foreground" />
-                <span className="text-[11px] text-muted-foreground">
-                  시험 {formatNextLesson(student.exam_date)}
-                </span>
-                <span className="ml-auto text-[10px] text-muted-foreground/60">
-                  {student.exam_date}
-                </span>
+            <div className="flex min-w-0 flex-1 flex-col gap-1.5">
+              <div className="flex items-center justify-between gap-2">
+                <span className="truncate font-semibold text-sm">{student.name_ko}</span>
+                {course && (
+                  <Badge
+                    variant="outline"
+                    className={cn(
+                      'shrink-0 border px-2 py-0 text-[10px] font-semibold tracking-wide',
+                      course.className,
+                    )}
+                  >
+                    {course.label}
+                  </Badge>
+                )}
               </div>
+
+              <div className="flex items-center gap-1.5">
+                <GraduationCap className="size-3 shrink-0 text-muted-foreground" />
+                <span className="truncate text-xs text-muted-foreground">{student.school}</span>
+                {student.grade && (
+                  <span className="shrink-0 text-xs text-muted-foreground">
+                    ({student.grade})
+                  </span>
+                )}
+              </div>
+
+              {student.name_en && (
+                <span className="truncate text-xs text-muted-foreground/70">
+                  {student.name_en}
+                </span>
+              )}
+
+              {student.exam_date && (
+                <div className="mt-0.5 flex items-center gap-1.5 rounded-md bg-muted/50 px-2 py-1">
+                  <CalendarClock className="size-3 shrink-0 text-muted-foreground" />
+                  <span className="text-[11px] text-muted-foreground">
+                    시험 {formatNextLesson(student.exam_date)}
+                  </span>
+                  <span className="ml-auto text-[10px] text-muted-foreground/60">
+                    {student.exam_date}
+                  </span>
+                </div>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+      </Link>
+    </div>
+  )
+}
+
+/** Overlay version for DragOverlay (no hooks) */
+export function StudentCardOverlay({ student }: { readonly student: Student }) {
+  const avatarColor = getAvatarColor(student.name_ko)
+  const initials = getInitials(student.name_ko)
+  const course = student.ib_course ? courseConfig[student.ib_course] : null
+
+  return (
+    <Card className="w-72 rotate-2 border-border py-0 shadow-lg">
+      <CardContent className="flex items-start gap-3 p-3.5">
+        <Avatar className="mt-0.5 shrink-0">
+          <AvatarFallback className={cn(avatarColor, 'text-white text-xs font-semibold')}>
+            {initials}
+          </AvatarFallback>
+        </Avatar>
+        <div className="flex min-w-0 flex-1 flex-col gap-1.5">
+          <div className="flex items-center justify-between gap-2">
+            <span className="truncate font-semibold text-sm">{student.name_ko}</span>
+            {course && (
+              <Badge
+                variant="outline"
+                className={cn(
+                  'shrink-0 border px-2 py-0 text-[10px] font-semibold tracking-wide',
+                  course.className,
+                )}
+              >
+                {course.label}
+              </Badge>
             )}
           </div>
-        </CardContent>
-      </Card>
-    </Link>
+          <span className="truncate text-xs text-muted-foreground">{student.school}</span>
+        </div>
+      </CardContent>
+    </Card>
   )
 }

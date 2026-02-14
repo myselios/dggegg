@@ -2,6 +2,8 @@
 
 import { createClient } from '@/lib/supabase/server'
 import { revalidatePath } from 'next/cache'
+import { requireAuth } from '@/lib/auth'
+import { lessonNoteInsertSchema } from '@/lib/validations'
 import type { LessonNoteInsert } from '@/lib/types/database'
 
 export async function getLessonNote(eventId: string) {
@@ -15,10 +17,12 @@ export async function getLessonNote(eventId: string) {
 }
 
 export async function upsertLessonNote(input: LessonNoteInsert) {
+  await requireAuth()
+  const validated = lessonNoteInsertSchema.parse(input)
   const supabase = await createClient()
   const { data, error } = await supabase
     .from('lesson_notes')
-    .upsert(input, { onConflict: 'event_id' })
+    .upsert(validated, { onConflict: 'event_id' })
     .select()
     .single()
 

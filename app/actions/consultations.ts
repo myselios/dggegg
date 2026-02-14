@@ -2,6 +2,8 @@
 
 import { createClient } from '@/lib/supabase/server'
 import { revalidatePath } from 'next/cache'
+import { requireAuth } from '@/lib/auth'
+import { consultationLogInsertSchema } from '@/lib/validations'
 import type { ConsultationLogInsert } from '@/lib/types/database'
 
 export async function getConsultationLogs(studentId: string) {
@@ -17,10 +19,12 @@ export async function getConsultationLogs(studentId: string) {
 }
 
 export async function createConsultationLog(input: ConsultationLogInsert) {
+  await requireAuth()
+  const validated = consultationLogInsertSchema.parse(input)
   const supabase = await createClient()
   const { data, error } = await supabase
     .from('consultation_logs')
-    .insert(input)
+    .insert(validated)
     .select()
     .single()
 
@@ -30,6 +34,7 @@ export async function createConsultationLog(input: ConsultationLogInsert) {
 }
 
 export async function deleteConsultationLog(id: string) {
+  await requireAuth()
   const supabase = await createClient()
   const { error } = await supabase
     .from('consultation_logs')
