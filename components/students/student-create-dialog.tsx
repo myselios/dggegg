@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useSWRConfig } from 'swr'
-import { Plus, User, GraduationCap, Phone } from 'lucide-react'
+import { Plus, User, GraduationCap, Phone, MapPin, MessageCircle, Video } from 'lucide-react'
 import { createStudent } from '@/app/actions/students'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from '@/components/ui/dialog'
@@ -40,6 +40,9 @@ export function StudentCreateDialog() {
       name_en: (formData.get('name_en') as string) || null,
       grade: (formData.get('grade') as string) || null,
       school: formData.get('school') as string,
+      residence: (formData.get('residence') as string) || null,
+      kakao_id: (formData.get('kakao_id') as string) || null,
+      zoom_url: (formData.get('zoom_url') as string) || null,
       ib_course: (formData.get('ib_course') as 'Ab initio' | 'SL' | 'HL') || null,
       exam_date: (formData.get('exam_date') as string) || null,
       target_score: null,
@@ -107,9 +110,9 @@ export function StudentCreateDialog() {
 
           <Separator />
 
-          {/* 학교/과정 섹션 */}
+          {/* 학교/거주지 섹션 */}
           <div className="flex flex-col gap-3">
-            <SectionHeader icon={GraduationCap} title="학교 및 과정" />
+            <SectionHeader icon={GraduationCap} title="학교 및 거주지" />
             <div className="grid grid-cols-2 gap-4">
               <div className="flex flex-col gap-1.5">
                 <Label htmlFor="school" className="text-xs font-medium">
@@ -135,33 +138,16 @@ export function StudentCreateDialog() {
                 />
               </div>
             </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="flex flex-col gap-1.5">
-                <Label htmlFor="ib_course" className="text-xs font-medium">
-                  IB 과정
-                </Label>
-                <Select name="ib_course">
-                  <SelectTrigger className="h-9">
-                    <SelectValue placeholder="과정 선택" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Ab initio">Ab initio</SelectItem>
-                    <SelectItem value="SL">SL (Standard Level)</SelectItem>
-                    <SelectItem value="HL">HL (Higher Level)</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="flex flex-col gap-1.5">
-                <Label htmlFor="exam_date" className="text-xs font-medium">
-                  시험 예정일
-                </Label>
-                <Input
-                  id="exam_date"
-                  name="exam_date"
-                  type="date"
-                  className="h-9"
-                />
-              </div>
+            <div className="flex flex-col gap-1.5">
+              <Label htmlFor="residence" className="text-xs font-medium">
+                거주지
+              </Label>
+              <Input
+                id="residence"
+                name="residence"
+                placeholder="예: 서울 강남구"
+                className="h-9"
+              />
             </div>
           </div>
 
@@ -190,6 +176,65 @@ export function StudentCreateDialog() {
                   id="contact_parent"
                   name="contact_parent"
                   placeholder="010-0000-0000"
+                  className="h-9"
+                />
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="flex flex-col gap-1.5">
+                <Label htmlFor="kakao_id" className="text-xs font-medium">
+                  카카오톡 ID
+                </Label>
+                <Input
+                  id="kakao_id"
+                  name="kakao_id"
+                  placeholder="카카오톡 ID"
+                  className="h-9"
+                />
+              </div>
+              <div className="flex flex-col gap-1.5">
+                <Label htmlFor="zoom_url" className="text-xs font-medium">
+                  Zoom URL
+                </Label>
+                <Input
+                  id="zoom_url"
+                  name="zoom_url"
+                  placeholder="https://zoom.us/j/..."
+                  className="h-9"
+                />
+              </div>
+            </div>
+          </div>
+
+          <Separator />
+
+          {/* IB 과정 섹션 */}
+          <div className="flex flex-col gap-3">
+            <SectionHeader icon={GraduationCap} title="IB 과정" />
+            <div className="grid grid-cols-2 gap-4">
+              <div className="flex flex-col gap-1.5">
+                <Label htmlFor="ib_course" className="text-xs font-medium">
+                  IB 과정
+                </Label>
+                <Select name="ib_course">
+                  <SelectTrigger className="h-9">
+                    <SelectValue placeholder="과정 선택" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Ab initio">Ab initio</SelectItem>
+                    <SelectItem value="SL">SL (Standard Level)</SelectItem>
+                    <SelectItem value="HL">HL (Higher Level)</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="flex flex-col gap-1.5">
+                <Label htmlFor="exam_date" className="text-xs font-medium">
+                  시험 예정일
+                </Label>
+                <Input
+                  id="exam_date"
+                  name="exam_date"
+                  type="date"
                   className="h-9"
                 />
               </div>

@@ -21,6 +21,9 @@ export function StudentProfile({ student }: { readonly student: Student }) {
       name_en: (formData.get('name_en') as string) || null,
       grade: (formData.get('grade') as string) || null,
       school: formData.get('school') as string,
+      residence: (formData.get('residence') as string) || null,
+      kakao_id: (formData.get('kakao_id') as string) || null,
+      zoom_url: (formData.get('zoom_url') as string) || null,
       ib_course: (formData.get('ib_course') as Student['ib_course']) || null,
       exam_date: (formData.get('exam_date') as string) || null,
       target_score: Number(formData.get('target_score')) || null,
@@ -64,6 +67,7 @@ export function StudentProfile({ student }: { readonly student: Student }) {
             <InfoRow label="이름 (영문)" value={student.name_en} />
             <InfoRow label="학교" value={student.school} />
             <InfoRow label="학년" value={student.grade} />
+            <InfoRow label="거주지" value={student.residence} />
             <InfoRow label="IB 과정" value={student.ib_course} />
             <InfoRow label="시험 예정일" value={student.exam_date} />
           </CardContent>
@@ -77,6 +81,8 @@ export function StudentProfile({ student }: { readonly student: Student }) {
             <InfoRow label="현재 점수" value={student.current_score?.toString()} />
             <InfoRow label="학생 연락처" value={student.contact_student} />
             <InfoRow label="학부모 연락처" value={student.contact_parent} />
+            <InfoRow label="카카오톡 ID" value={student.kakao_id} />
+            <InfoRow label="Zoom URL" value={student.zoom_url} />
             {student.memo && <InfoRow label="메모" value={student.memo} />}
           </CardContent>
         </Card>
@@ -103,6 +109,11 @@ export function StudentProfile({ student }: { readonly student: Student }) {
           <Field label="이름 (영문)" name="name_en" defaultValue={student.name_en ?? ''} />
           <Field label="학교" name="school" defaultValue={student.school} required />
           <Field label="학년" name="grade" defaultValue={student.grade ?? ''} />
+          <Field label="거주지" name="residence" defaultValue={student.residence ?? ''} />
+          <Field label="카카오톡 ID" name="kakao_id" defaultValue={student.kakao_id ?? ''} />
+          <Field label="Zoom URL" name="zoom_url" defaultValue={student.zoom_url ?? ''} />
+          <Field label="학생 연락처" name="contact_student" defaultValue={student.contact_student ?? ''} />
+          <Field label="학부모 연락처" name="contact_parent" defaultValue={student.contact_parent ?? ''} />
           <div className="flex flex-col gap-2">
             <Label>IB 과정</Label>
             <Select name="ib_course" defaultValue={student.ib_course ?? undefined}>
@@ -117,8 +128,6 @@ export function StudentProfile({ student }: { readonly student: Student }) {
           <Field label="시험 예정일" name="exam_date" type="date" defaultValue={student.exam_date ?? ''} />
           <Field label="목표 점수" name="target_score" type="number" defaultValue={student.target_score?.toString() ?? ''} />
           <Field label="현재 점수" name="current_score" type="number" defaultValue={student.current_score?.toString() ?? ''} />
-          <Field label="학생 연락처" name="contact_student" defaultValue={student.contact_student ?? ''} />
-          <Field label="학부모 연락처" name="contact_parent" defaultValue={student.contact_parent ?? ''} />
           <div className="flex flex-col gap-2 md:col-span-2">
             <Label>메모</Label>
             <Textarea name="memo" defaultValue={student.memo ?? ''} />

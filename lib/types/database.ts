@@ -9,6 +9,9 @@ export type Student = {
   readonly target_score: number | null
   readonly current_score: number | null
   readonly weakness_areas: string[] | null
+  readonly residence: string | null
+  readonly kakao_id: string | null
+  readonly zoom_url: string | null
   readonly contact_student: string | null
   readonly contact_parent: string | null
   readonly status: 'active' | 'paused' | 'ended'
