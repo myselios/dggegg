@@ -1,8 +1,18 @@
+import { TodayLessons } from '@/components/dashboard/today-lessons'
+import { RecentConsultations } from '@/components/dashboard/recent-consultations'
+import { IncompleteLessons } from '@/components/dashboard/incomplete-lessons'
+
+export const dynamic = 'force-dynamic'
+
 export default function DashboardPage() {
   return (
-    <div>
+    <div className="flex flex-col gap-6">
       <h2 className="text-2xl font-bold">Dashboard</h2>
-      <p className="mt-2 text-muted-foreground">오늘의 수업과 최근 활동을 확인하세요.</p>
+      <IncompleteLessons />
+      <div className="grid gap-6 md:grid-cols-2">
+        <TodayLessons />
+        <RecentConsultations />
+      </div>
     </div>
   )
 }

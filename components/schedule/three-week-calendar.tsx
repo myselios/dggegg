@@ -8,6 +8,7 @@ import { useScheduleEvents } from '@/lib/hooks/use-schedule'
 import { getThreeWeekRange, getWeeksInRange } from '@/lib/utils/date'
 import { CalendarEventBlock } from './calendar-event-block'
 import { EventCreateDialog } from './event-create-dialog'
+import { LessonNotePanel } from './lesson-note-panel'
 import { Button } from '@/components/ui/button'
 import type { ScheduleEventWithStudent } from '@/lib/types/database'
 
@@ -16,7 +17,7 @@ const HOURS = Array.from({ length: 15 }, (_, i) => i + 8) // 08:00 ~ 22:00
 export function ThreeWeekCalendar() {
   const [baseDate, setBaseDate] = useState(new Date())
   const [selectedSlot, setSelectedSlot] = useState<{ date: Date; hour: number } | null>(null)
-  const [, setSelectedEvent] = useState<ScheduleEventWithStudent | null>(null)
+  const [selectedEvent, setSelectedEvent] = useState<ScheduleEventWithStudent | null>(null)
 
   const { start, end } = useMemo(() => getThreeWeekRange(baseDate), [baseDate])
   const weeks = useMemo(() => getWeeksInRange(start, end), [start, end])
@@ -132,6 +133,18 @@ export function ThreeWeekCalendar() {
           onClose={() => setSelectedSlot(null)}
           onCreated={() => {
             setSelectedSlot(null)
+            mutate()
+          }}
+        />
+      )}
+
+      {/* 수업 기록 패널 */}
+      {selectedEvent && (
+        <LessonNotePanel
+          event={selectedEvent}
+          onClose={() => setSelectedEvent(null)}
+          onUpdated={() => {
+            setSelectedEvent(null)
             mutate()
           }}
         />

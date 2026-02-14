@@ -3,6 +3,9 @@
 import Link from 'next/link'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { StudentProfile } from './student-profile'
+import { ConsultationLogTab } from './consultation-log-tab'
+import { LessonHistoryTab } from './lesson-history-tab'
+import { ScoreTab } from './score-tab'
 import type { Student } from '@/lib/types/database'
 
 export function StudentTabs({ student }: { readonly student: Student }) {
@@ -28,13 +31,13 @@ export function StudentTabs({ student }: { readonly student: Student }) {
           <StudentProfile student={student} />
         </TabsContent>
         <TabsContent value="lessons">
-          <p className="text-muted-foreground">수업 기록이 여기에 표시됩니다.</p>
+          <LessonHistoryTab studentId={student.id} />
         </TabsContent>
         <TabsContent value="scores">
-          <p className="text-muted-foreground">성적 추이가 여기에 표시됩니다.</p>
+          <ScoreTab studentId={student.id} />
         </TabsContent>
         <TabsContent value="consultations">
-          <p className="text-muted-foreground">상담 로그가 여기에 표시됩니다.</p>
+          <ConsultationLogTab studentId={student.id} />
         </TabsContent>
         <TabsContent value="materials">
           <p className="text-muted-foreground">자료가 여기에 표시됩니다.</p>
