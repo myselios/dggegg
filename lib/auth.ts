@@ -2,7 +2,7 @@
 
 import { timingSafeEqual } from 'crypto'
 import { cookies } from 'next/headers'
-import { env } from '@/lib/env'
+import { serverEnv } from '@/lib/env'
 
 function safeCompare(a: string, b: string): boolean {
   const bufA = Buffer.from(a)
@@ -19,7 +19,7 @@ export async function requireAuth(): Promise<void> {
   const cookieStore = await cookies()
   const token = cookieStore.get('auth-token')?.value
 
-  if (!token || !safeCompare(token, env.AUTH_SECRET)) {
+  if (!token || !safeCompare(token, serverEnv.AUTH_SECRET)) {
     throw new Error('인증이 필요합니다')
   }
 }

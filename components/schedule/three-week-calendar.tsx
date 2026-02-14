@@ -68,8 +68,18 @@ function findConflictingIds(
   return ids
 }
 
-export function ThreeWeekCalendar() {
-  const [baseDate, setBaseDate] = useState(new Date())
+function parseInitialDate(dateStr?: string): Date {
+  if (!dateStr) return new Date()
+  const parsed = new Date(dateStr)
+  return isNaN(parsed.getTime()) ? new Date() : parsed
+}
+
+export function ThreeWeekCalendar({
+  initialDate,
+}: {
+  readonly initialDate?: string
+}) {
+  const [baseDate, setBaseDate] = useState(() => parseInitialDate(initialDate))
   const [selectedSlot, setSelectedSlot] = useState<{ date: Date; hour: number } | null>(null)
   const [selectedEvent, setSelectedEvent] = useState<ScheduleEventWithStudent | null>(null)
   const [activeEvent, setActiveEvent] = useState<ScheduleEventWithStudent | null>(null)
@@ -314,6 +324,7 @@ export function ThreeWeekCalendar() {
         <EventCreateDialog
           date={selectedSlot.date}
           hour={selectedSlot.hour}
+          existingEvents={events ?? []}
           onClose={() => setSelectedSlot(null)}
           onCreated={() => {
             setSelectedSlot(null)

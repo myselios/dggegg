@@ -3,7 +3,7 @@
 import { timingSafeEqual } from 'crypto'
 import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
-import { env } from '@/lib/env'
+import { serverEnv } from '@/lib/env'
 
 type AuthState = { error: string } | null
 
@@ -21,7 +21,7 @@ function safeCompare(a: string, b: string): boolean {
 export async function login(_prevState: AuthState, formData: FormData): Promise<AuthState> {
   const password = formData.get('password') as string
 
-  const expected = env.AUTH_PASSWORD
+  const expected = serverEnv.AUTH_PASSWORD
   const isValid = safeCompare(password, expected)
 
   if (!isValid) {
@@ -29,7 +29,7 @@ export async function login(_prevState: AuthState, formData: FormData): Promise<
   }
 
   const cookieStore = await cookies()
-  cookieStore.set('auth-token', env.AUTH_SECRET, {
+  cookieStore.set('auth-token', serverEnv.AUTH_SECRET, {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
     sameSite: 'lax',
