@@ -3,9 +3,12 @@
 import { useEffect, useState } from 'react'
 import { format, subDays } from 'date-fns'
 import { ko } from 'date-fns/locale'
+import { AlertTriangle, ChevronRight, Clock } from 'lucide-react'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
+import { cn } from '@/lib/utils'
 
 type IncompleteEvent = {
   readonly id: string
@@ -33,18 +36,50 @@ export function IncompleteLessons() {
   if (events.length === 0) return null
 
   return (
-    <Card className="border-yellow-300">
+    <Card className={cn(
+      'border-amber-200 bg-amber-50/50 shadow-sm',
+      'dark:border-amber-800 dark:bg-amber-950/20'
+    )}>
       <CardHeader>
-        <CardTitle className="text-yellow-700">미완료 수업 ({events.length}건)</CardTitle>
+        <CardTitle className="flex items-center gap-2 text-amber-700 dark:text-amber-400">
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-amber-100 dark:bg-amber-900">
+            <AlertTriangle className="h-4 w-4" />
+          </div>
+          미완료 수업
+          <Badge
+            variant="outline"
+            className="ml-auto border-amber-300 bg-amber-100 text-amber-700 dark:border-amber-700 dark:bg-amber-900 dark:text-amber-300"
+          >
+            {events.length}건
+          </Badge>
+        </CardTitle>
       </CardHeader>
       <CardContent>
         <div className="flex flex-col gap-2">
           {events.map((event) => (
-            <Link key={event.id} href="/schedule" className="flex items-center justify-between rounded-md border p-3 hover:bg-muted">
-              <span className="text-sm font-medium">{event.students.name_ko}</span>
-              <span className="text-xs text-muted-foreground">
-                {format(new Date(event.start_at), 'M/d HH:mm', { locale: ko })}
-              </span>
+            <Link
+              key={event.id}
+              href="/schedule"
+              className={cn(
+                'group flex items-center justify-between rounded-lg border border-amber-200 bg-white p-3',
+                'transition-all hover:border-amber-300 hover:shadow-sm',
+                'dark:border-amber-800 dark:bg-amber-950/30 dark:hover:border-amber-700'
+              )}
+            >
+              <div className="flex items-center gap-3">
+                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-amber-100 dark:bg-amber-900">
+                  <Clock className="h-4 w-4 text-amber-600 dark:text-amber-400" />
+                </div>
+                <div>
+                  <span className="text-sm font-medium">
+                    {event.students.name_ko}
+                  </span>
+                  <p className="text-xs text-muted-foreground tabular-nums">
+                    {format(new Date(event.start_at), 'M/d (EEE) HH:mm', { locale: ko })}
+                  </p>
+                </div>
+              </div>
+              <ChevronRight className="h-4 w-4 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
             </Link>
           ))}
         </div>

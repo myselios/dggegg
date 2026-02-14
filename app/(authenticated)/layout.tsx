@@ -11,7 +11,7 @@ export default function AuthenticatedLayout({
       <Sidebar />
       <div className="flex flex-1 flex-col overflow-hidden">
         <Header />
-        <main className="flex-1 overflow-y-auto p-6">
+        <main className="flex-1 overflow-y-auto p-6 transition-all duration-300 ease-in-out">
           {children}
         </main>
       </div>

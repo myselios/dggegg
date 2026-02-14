@@ -1,33 +1,126 @@
 'use client'
 
 import Link from 'next/link'
+import { CalendarClock, GraduationCap } from 'lucide-react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
+import { Avatar, AvatarFallback } from '@/components/ui/avatar'
+import { cn } from '@/lib/utils'
 import type { Student } from '@/lib/types/database'
 
-const courseColors: Record<string, string> = {
-  'Ab initio': 'bg-green-100 text-green-800',
-  'SL': 'bg-blue-100 text-blue-800',
-  'HL': 'bg-purple-100 text-purple-800',
+const AVATAR_COLORS = [
+  'bg-rose-500',
+  'bg-amber-500',
+  'bg-emerald-500',
+  'bg-sky-500',
+  'bg-violet-500',
+  'bg-pink-500',
+  'bg-teal-500',
+  'bg-indigo-500',
+  'bg-orange-500',
+  'bg-cyan-500',
+] as const
+
+const courseConfig: Record<string, { readonly label: string; readonly className: string }> = {
+  'Ab initio': {
+    label: 'Ab initio',
+    className: 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950 dark:text-emerald-300 dark:border-emerald-800',
+  },
+  SL: {
+    label: 'SL',
+    className: 'bg-sky-50 text-sky-700 border-sky-200 dark:bg-sky-950 dark:text-sky-300 dark:border-sky-800',
+  },
+  HL: {
+    label: 'HL',
+    className: 'bg-violet-50 text-violet-700 border-violet-200 dark:bg-violet-950 dark:text-violet-300 dark:border-violet-800',
+  },
+}
+
+function getAvatarColor(name: string): string {
+  const charSum = [...name].reduce((sum, char) => sum + char.charCodeAt(0), 0)
+  return AVATAR_COLORS[charSum % AVATAR_COLORS.length]
+}
+
+function getInitials(name: string): string {
+  return name.slice(0, 1)
+}
+
+function formatNextLesson(dateStr: string): string {
+  const date = new Date(dateStr)
+  const now = new Date()
+  const diffMs = date.getTime() - now.getTime()
+  const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24))
+
+  if (diffDays < 0) return '지난 수업'
+  if (diffDays === 0) return '오늘'
+  if (diffDays === 1) return '내일'
+  return `${diffDays}일 후`
 }
 
 export function StudentCard({ student }: { readonly student: Student }) {
+  const avatarColor = getAvatarColor(student.name_ko)
+  const initials = getInitials(student.name_ko)
+  const course = student.ib_course ? courseConfig[student.ib_course] : null
+
   return (
     <Link href={`/students/${student.id}`}>
-      <Card className="cursor-pointer transition-shadow hover:shadow-md">
-        <CardContent className="flex flex-col gap-2 p-4">
-          <div className="flex items-center justify-between">
-            <span className="font-semibold">{student.name_ko}</span>
-            {student.ib_course && (
-              <Badge variant="secondary" className={courseColors[student.ib_course] ?? ''}>
-                {student.ib_course}
-              </Badge>
+      <Card
+        className={cn(
+          'cursor-pointer border-border/60 py-0 transition-all duration-200',
+          'hover:-translate-y-0.5 hover:shadow-md hover:border-border',
+        )}
+      >
+        <CardContent className="flex items-start gap-3 p-3.5">
+          <Avatar className="mt-0.5 shrink-0">
+            <AvatarFallback className={cn(avatarColor, 'text-white text-xs font-semibold')}>
+              {initials}
+            </AvatarFallback>
+          </Avatar>
+
+          <div className="flex min-w-0 flex-1 flex-col gap-1.5">
+            <div className="flex items-center justify-between gap-2">
+              <span className="truncate font-semibold text-sm">{student.name_ko}</span>
+              {course && (
+                <Badge
+                  variant="outline"
+                  className={cn(
+                    'shrink-0 border px-2 py-0 text-[10px] font-semibold tracking-wide',
+                    course.className,
+                  )}
+                >
+                  {course.label}
+                </Badge>
+              )}
+            </div>
+
+            <div className="flex items-center gap-1.5">
+              <GraduationCap className="size-3 shrink-0 text-muted-foreground" />
+              <span className="truncate text-xs text-muted-foreground">{student.school}</span>
+              {student.grade && (
+                <span className="shrink-0 text-xs text-muted-foreground">
+                  ({student.grade})
+                </span>
+              )}
+            </div>
+
+            {student.name_en && (
+              <span className="truncate text-xs text-muted-foreground/70">
+                {student.name_en}
+              </span>
+            )}
+
+            {student.exam_date && (
+              <div className="mt-0.5 flex items-center gap-1.5 rounded-md bg-muted/50 px-2 py-1">
+                <CalendarClock className="size-3 shrink-0 text-muted-foreground" />
+                <span className="text-[11px] text-muted-foreground">
+                  시험 {formatNextLesson(student.exam_date)}
+                </span>
+                <span className="ml-auto text-[10px] text-muted-foreground/60">
+                  {student.exam_date}
+                </span>
+              </div>
             )}
           </div>
-          <span className="text-sm text-muted-foreground">{student.school}</span>
-          {student.name_en && (
-            <span className="text-xs text-muted-foreground">{student.name_en}</span>
-          )}
         </CardContent>
       </Card>
     </Link>
