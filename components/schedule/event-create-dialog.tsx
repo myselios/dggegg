@@ -50,9 +50,17 @@ export function EventCreateDialog({
     }
 
     if (repeatWeeks > 1) {
-      await createRecurringEvents(baseEvent, repeatWeeks)
+      const result = await createRecurringEvents(baseEvent, repeatWeeks)
+      if (!result.success) {
+        alert(result.error)
+        return
+      }
     } else {
-      await createScheduleEvent(baseEvent)
+      const result = await createScheduleEvent(baseEvent)
+      if (!result.success) {
+        alert(result.error)
+        return
+      }
     }
     onCreated()
   }

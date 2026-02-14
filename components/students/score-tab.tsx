@@ -5,6 +5,7 @@ import { format } from 'date-fns'
 import { getStudentScores } from '@/app/actions/scores'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
+import { ScoreChart } from './score-chart'
 import type { ScoreRecord } from '@/lib/types/database'
 
 export function ScoreTab({ studentId }: { readonly studentId: string }) {
@@ -19,21 +20,27 @@ export function ScoreTab({ studentId }: { readonly studentId: string }) {
   }
 
   return (
-    <div className="flex flex-col gap-3">
-      {scores.map((score) => (
-        <Card key={score.id}>
-          <CardContent className="flex items-center justify-between p-4">
-            <div className="flex items-center gap-3">
-              <span className="text-sm text-muted-foreground">{format(new Date(score.date), 'M/d')}</span>
-              <Badge variant="outline">{score.assessment_type}</Badge>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="text-lg font-bold">{score.score}</span>
-              <span className="text-sm text-muted-foreground">/ {score.max_score}</span>
-            </div>
-          </CardContent>
-        </Card>
-      ))}
+    <div className="flex flex-col gap-6">
+      {/* Chart */}
+      <ScoreChart scores={scores} />
+
+      {/* Score list */}
+      <div className="flex flex-col gap-3">
+        {scores.map((score) => (
+          <Card key={score.id}>
+            <CardContent className="flex items-center justify-between p-4">
+              <div className="flex items-center gap-3">
+                <span className="text-sm text-muted-foreground">{format(new Date(score.date), 'M/d')}</span>
+                <Badge variant="outline">{score.assessment_type}</Badge>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-lg font-bold">{score.score}</span>
+                <span className="text-sm text-muted-foreground">/ {score.max_score}</span>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
     </div>
   )
 }

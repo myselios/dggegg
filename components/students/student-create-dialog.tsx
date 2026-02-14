@@ -35,7 +35,7 @@ export function StudentCreateDialog() {
   const { mutate } = useSWRConfig()
 
   async function handleSubmit(formData: FormData) {
-    await createStudent({
+    const result = await createStudent({
       name_ko: formData.get('name_ko') as string,
       name_en: (formData.get('name_en') as string) || null,
       grade: (formData.get('grade') as string) || null,
@@ -50,6 +50,10 @@ export function StudentCreateDialog() {
       color: null,
       memo: null,
     })
+    if (!result.success) {
+      alert(result.error)
+      return
+    }
     await mutate('students')
     setOpen(false)
   }

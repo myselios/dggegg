@@ -36,7 +36,7 @@ export function ConsultationLogTab({ studentId }: { readonly studentId: string }
 
   async function handleSubmit(formData: FormData) {
     const tagsRaw = formData.get('tags') as string
-    await createConsultationLog({
+    const result = await createConsultationLog({
       student_id: studentId,
       event_id: null,
       type: formData.get('type') as ConsultationLog['type'],
@@ -44,6 +44,10 @@ export function ConsultationLogTab({ studentId }: { readonly studentId: string }
       tags: tagsRaw ? tagsRaw.split(',').map((t) => t.trim()) : null,
       date: new Date().toISOString(),
     })
+    if (!result.success) {
+      alert(result.error)
+      return
+    }
     const updated = await getConsultationLogs(studentId)
     setLogs(updated)
     setShowForm(false)
@@ -51,7 +55,11 @@ export function ConsultationLogTab({ studentId }: { readonly studentId: string }
 
   async function handleDelete(id: string) {
     if (!confirm('삭제하시겠습니까?')) return
-    await deleteConsultationLog(id)
+    const result = await deleteConsultationLog(id)
+    if (!result.success) {
+      alert(result.error)
+      return
+    }
     setLogs(logs.filter((l) => l.id !== id))
   }
 

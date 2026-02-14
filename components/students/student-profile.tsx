@@ -16,7 +16,7 @@ export function StudentProfile({ student }: { readonly student: Student }) {
   const [isEditing, setIsEditing] = useState(false)
 
   async function handleUpdate(formData: FormData) {
-    await updateStudent(student.id, {
+    const result = await updateStudent(student.id, {
       name_ko: formData.get('name_ko') as string,
       name_en: (formData.get('name_en') as string) || null,
       grade: (formData.get('grade') as string) || null,
@@ -29,13 +29,21 @@ export function StudentProfile({ student }: { readonly student: Student }) {
       contact_parent: (formData.get('contact_parent') as string) || null,
       memo: (formData.get('memo') as string) || null,
     })
+    if (!result.success) {
+      alert(result.error)
+      return
+    }
     setIsEditing(false)
     router.refresh()
   }
 
   async function handleDelete() {
     if (!confirm('정말 삭제하시겠습니까?')) return
-    await deleteStudent(student.id)
+    const result = await deleteStudent(student.id)
+    if (!result.success) {
+      alert(result.error)
+      return
+    }
     router.push('/students')
   }
 

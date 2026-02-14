@@ -39,21 +39,29 @@ export function LessonNotePanel({
   }, [event.id, event.student_id, event.start_at])
 
   async function handleSave(formData: FormData) {
-    await upsertLessonNote({
+    const noteResult = await upsertLessonNote({
       event_id: event.id,
       student_id: event.student_id,
       content: formData.get('content') as string,
       homework: (formData.get('homework') as string) || null,
       next_goal: (formData.get('next_goal') as string) || null,
     })
+    if (!noteResult.success) {
+      alert(noteResult.error)
+      return
+    }
 
-    await updateScheduleEvent(event.id, { status: 'completed' })
+    const statusResult = await updateScheduleEvent(event.id, { status: 'completed' })
+    if (!statusResult.success) {
+      alert(statusResult.error)
+      return
+    }
 
     if (showScore) {
       const assessmentType = formData.get('assessment_type') as string
       const score = Number(formData.get('score'))
       if (assessmentType && score) {
-        await createScoreRecord({
+        const scoreResult = await createScoreRecord({
           student_id: event.student_id,
           event_id: event.id,
           assessment_type: assessmentType,
@@ -62,6 +70,10 @@ export function LessonNotePanel({
           comment: (formData.get('score_comment') as string) || null,
           date: format(new Date(event.start_at), 'yyyy-MM-dd'),
         })
+        if (!scoreResult.success) {
+          alert(scoreResult.error)
+          return
+        }
       }
     }
 
@@ -69,7 +81,11 @@ export function LessonNotePanel({
   }
 
   async function handleCancel() {
-    await updateScheduleEvent(event.id, { status: 'cancelled' })
+    const result = await updateScheduleEvent(event.id, { status: 'cancelled' })
+    if (!result.success) {
+      alert(result.error)
+      return
+    }
     onUpdated()
   }
 

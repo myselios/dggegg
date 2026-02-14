@@ -9,6 +9,7 @@ import {
   useSensors,
   type DragStartEvent,
   type DragEndEvent,
+  type DragOverEvent,
 } from '@dnd-kit/core'
 import { addWeeks, subWeeks, isSameDay, isToday, format } from 'date-fns'
 import { ko } from 'date-fns/locale'
@@ -38,11 +39,41 @@ function parseCellId(id: string): { dayIdx: number; hour: number } | null {
   return { dayIdx: Number(match[1]), hour: Number(match[2]) }
 }
 
+/** Check if two time ranges overlap: A.start < B.end && B.start < A.end */
+function hasTimeOverlap(
+  aStart: string, aEnd: string,
+  bStart: string, bEnd: string
+): boolean {
+  return new Date(aStart) < new Date(bEnd) && new Date(bStart) < new Date(aEnd)
+}
+
+/** Build a set of event IDs that have conflicts with at least one other event */
+function findConflictingIds(
+  events: readonly ScheduleEventWithStudent[]
+): ReadonlySet<string> {
+  const ids = new Set<string>()
+  for (let i = 0; i < events.length; i++) {
+    for (let j = i + 1; j < events.length; j++) {
+      const a = events[i]
+      const b = events[j]
+      if (
+        a.status !== 'cancelled' && b.status !== 'cancelled' &&
+        hasTimeOverlap(a.start_at, a.end_at, b.start_at, b.end_at)
+      ) {
+        ids.add(a.id)
+        ids.add(b.id)
+      }
+    }
+  }
+  return ids
+}
+
 export function ThreeWeekCalendar() {
   const [baseDate, setBaseDate] = useState(new Date())
   const [selectedSlot, setSelectedSlot] = useState<{ date: Date; hour: number } | null>(null)
   const [selectedEvent, setSelectedEvent] = useState<ScheduleEventWithStudent | null>(null)
   const [activeEvent, setActiveEvent] = useState<ScheduleEventWithStudent | null>(null)
+  const [overCellId, setOverCellId] = useState<string | null>(null)
 
   const { start, end } = useMemo(() => getThreeWeekRange(baseDate), [baseDate])
   const weeks = useMemo(() => getWeeksInRange(start, end), [start, end])
@@ -52,6 +83,44 @@ export function ThreeWeekCalendar() {
     start.toISOString(),
     end.toISOString()
   )
+
+  // Conflict detection: find all events that overlap with at least one other
+  const conflictingIds = useMemo(
+    () => findConflictingIds(events ?? []),
+    [events]
+  )
+
+  // Check if dragging event to a given cell would cause a conflict
+  const dragConflictCellId = useMemo(() => {
+    if (!activeEvent || !overCellId || !events) return null
+    const target = parseCellId(overCellId)
+    if (!target) return null
+
+    const targetDay = allDays[target.dayIdx]
+    if (!targetDay) return null
+
+    const oldStart = new Date(activeEvent.start_at)
+    const oldEnd = new Date(activeEvent.end_at)
+    const durationMs = oldEnd.getTime() - oldStart.getTime()
+
+    const newStart = new Date(targetDay)
+    newStart.setHours(target.hour, 0, 0, 0)
+    const newEnd = new Date(newStart.getTime() + durationMs)
+
+    const wouldConflict = events.some(
+      (e) =>
+        e.id !== activeEvent.id &&
+        e.status !== 'cancelled' &&
+        hasTimeOverlap(
+          newStart.toISOString(),
+          newEnd.toISOString(),
+          e.start_at,
+          e.end_at
+        )
+    )
+
+    return wouldConflict ? overCellId : null
+  }, [activeEvent, overCellId, events, allDays])
 
   // Require 8px of movement before starting drag so clicks still work
   const sensors = useSensors(
@@ -73,8 +142,13 @@ export function ThreeWeekCalendar() {
     }
   }, [])
 
+  const handleDragOver = useCallback((event: DragOverEvent) => {
+    setOverCellId(event.over ? String(event.over.id) : null)
+  }, [])
+
   const handleDragEnd = useCallback(async (event: DragEndEvent) => {
     setActiveEvent(null)
+    setOverCellId(null)
 
     const { active, over } = event
     if (!over) return
@@ -109,22 +183,27 @@ export function ThreeWeekCalendar() {
     try {
       await mutate(
         async () => {
-          await updateScheduleEvent(droppedEvent.id, {
+          const result = await updateScheduleEvent(droppedEvent.id, {
             start_at: newStart.toISOString(),
             end_at: newEnd.toISOString(),
           })
+          if (!result.success) {
+            throw new Error(result.error)
+          }
           return optimisticEvents ?? []
         },
         { optimisticData: optimisticEvents, rollbackOnError: true }
       )
       toast.success('수업 일정이 변경되었습니다')
-    } catch {
-      toast.error('일정 변경에 실패했습니다')
+    } catch (error) {
+      const message = error instanceof Error ? error.message : '일정 변경에 실패했습니다'
+      toast.error(message)
     }
   }, [allDays, events, mutate])
 
   const handleDragCancel = useCallback(() => {
     setActiveEvent(null)
+    setOverCellId(null)
   }, [])
 
   return (
@@ -158,6 +237,7 @@ export function ThreeWeekCalendar() {
       <DndContext
         sensors={sensors}
         onDragStart={handleDragStart}
+        onDragOver={handleDragOver}
         onDragEnd={handleDragEnd}
         onDragCancel={handleDragCancel}
       >
@@ -194,18 +274,21 @@ export function ThreeWeekCalendar() {
                 </div>
                 {allDays.map((day, dayIdx) => {
                   const cellEvents = getEventsForDayHour(day, hour)
+                  const currentCellId = cellId(dayIdx, hour)
                   return (
                     <DroppableCell
                       key={dayIdx}
-                      id={cellId(dayIdx, hour)}
+                      id={currentCellId}
                       isToday={isToday(day)}
                       isWeekBoundary={dayIdx % 7 === 0 && dayIdx > 0}
+                      hasConflictPreview={dragConflictCellId === currentCellId}
                       onClick={() => setSelectedSlot({ date: day, hour })}
                     >
                       {cellEvents.map((event) => (
                         <CalendarEventBlock
                           key={event.id}
                           event={event}
+                          hasConflict={conflictingIds.has(event.id)}
                           onClick={() => {
                             setSelectedEvent(event)
                             setSelectedSlot(null)

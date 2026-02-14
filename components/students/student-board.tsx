@@ -201,7 +201,10 @@ export function StudentBoard() {
     try {
       await mutate(
         async () => {
-          await updateStudent(draggedStudent.id, { status: targetStatus })
+          const result = await updateStudent(draggedStudent.id, { status: targetStatus })
+          if (!result.success) {
+            throw new Error(result.error)
+          }
           return optimisticStudents ?? []
         },
         { optimisticData: optimisticStudents, rollbackOnError: true }
@@ -212,8 +215,9 @@ export function StudentBoard() {
         ended: '종료',
       }
       toast.success(`${draggedStudent.name_ko} → ${statusLabels[targetStatus]}`)
-    } catch {
-      toast.error('상태 변경에 실패했습니다')
+    } catch (error) {
+      const message = error instanceof Error ? error.message : '상태 변경에 실패했습니다'
+      toast.error(message)
     }
   }, [students, mutate])
 

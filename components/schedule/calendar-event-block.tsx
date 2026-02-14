@@ -1,6 +1,7 @@
 'use client'
 
 import { useDraggable } from '@dnd-kit/core'
+import { AlertTriangle } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { formatTime } from '@/lib/utils/date'
 import type { ScheduleEventWithStudent } from '@/lib/types/database'
@@ -20,9 +21,11 @@ const statusStyles: Record<string, string> = {
 export function CalendarEventBlock({
   event,
   onClick,
+  hasConflict = false,
 }: {
   readonly event: ScheduleEventWithStudent
   readonly onClick: () => void
+  readonly hasConflict?: boolean
 }) {
   const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
     id: event.id,
@@ -45,12 +48,18 @@ export function CalendarEventBlock({
         'w-full rounded border-l-4 px-2 py-1 text-left text-xs transition-shadow hover:shadow-md cursor-grab active:cursor-grabbing',
         colorClass,
         statusClass,
-        isDragging && 'opacity-30'
+        isDragging && 'opacity-30',
+        hasConflict && 'ring-2 ring-red-500 dark:ring-red-400'
       )}
       {...listeners}
       {...attributes}
     >
-      <div className="font-semibold truncate">{event.students?.name_ko}</div>
+      <div className="flex items-center gap-1">
+        {hasConflict && (
+          <AlertTriangle className="h-3 w-3 shrink-0 text-red-600 dark:text-red-400" />
+        )}
+        <span className="font-semibold truncate">{event.students?.name_ko}</span>
+      </div>
       <div className="text-[10px] opacity-75">
         {formatTime(event.start_at)} - {formatTime(event.end_at)}
       </div>
