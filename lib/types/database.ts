@@ -1,18 +1,12 @@
 export type Student = {
   readonly id: string
   readonly name_ko: string
-  readonly name_en: string | null
   readonly grade: string | null
   readonly school: string
   readonly ib_course: 'Ab initio' | 'SL' | 'HL' | null
-  readonly exam_date: string | null
-  readonly target_score: number | null
   readonly current_score: number | null
   readonly weakness_areas: string[] | null
   readonly residence: string | null
-  readonly kakao_id: string | null
-  readonly zoom_url: string | null
-  readonly contact_student: string | null
   readonly contact_parent: string | null
   readonly status: 'active' | 'paused' | 'ended'
   readonly color: string | null
@@ -102,7 +96,7 @@ export type ConsultationLogInsert = Omit<ConsultationLog, 'id' | 'created_at'>
 
 // 조인 타입
 export type ScheduleEventWithStudent = ScheduleEvent & {
-  readonly students: Pick<Student, 'id' | 'name_ko' | 'name_en' | 'school' | 'ib_course'>
+  readonly students: Pick<Student, 'id' | 'name_ko' | 'school' | 'ib_course'>
 }
 
 export type LessonNoteWithEvent = LessonNote & {

@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { useDraggable } from '@dnd-kit/core'
-import { CalendarClock, GraduationCap, Trash2 } from 'lucide-react'
+import { GraduationCap, Trash2 } from 'lucide-react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
@@ -45,18 +45,6 @@ function getAvatarColor(name: string): string {
 
 function getInitials(name: string): string {
   return name.slice(0, 1)
-}
-
-function formatNextLesson(dateStr: string): string {
-  const date = new Date(dateStr)
-  const now = new Date()
-  const diffMs = date.getTime() - now.getTime()
-  const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24))
-
-  if (diffDays < 0) return '지난 수업'
-  if (diffDays === 0) return '오늘'
-  if (diffDays === 1) return '내일'
-  return `${diffDays}일 후`
 }
 
 export function StudentCard({ student }: { readonly student: Student }) {
@@ -116,23 +104,6 @@ export function StudentCard({ student }: { readonly student: Student }) {
                 )}
               </div>
 
-              {student.name_en && (
-                <span className="truncate text-xs text-muted-foreground/70">
-                  {student.name_en}
-                </span>
-              )}
-
-              {student.exam_date && (
-                <div className="mt-0.5 flex items-center gap-1.5 rounded-md bg-muted/50 px-2 py-1">
-                  <CalendarClock className="size-3 shrink-0 text-muted-foreground" />
-                  <span className="text-[11px] text-muted-foreground">
-                    시험 {formatNextLesson(student.exam_date)}
-                  </span>
-                  <span className="ml-auto text-[10px] text-muted-foreground/60">
-                    {student.exam_date}
-                  </span>
-                </div>
-              )}
             </div>
           </CardContent>
         </Card>
