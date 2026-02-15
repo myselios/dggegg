@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useSWRConfig } from 'swr'
-import { Plus, User, GraduationCap, Phone, MapPin, MessageCircle, Video } from 'lucide-react'
+import { Plus, User, GraduationCap, Phone } from 'lucide-react'
 import { createStudent } from '@/app/actions/students'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from '@/components/ui/dialog'
