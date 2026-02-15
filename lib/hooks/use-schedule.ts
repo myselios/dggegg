@@ -11,7 +11,7 @@ function getSupabase() {
 async function fetchEvents([, start, end]: [string, string, string]): Promise<ScheduleEventWithStudent[]> {
   const { data, error } = await getSupabase()
     .from('schedule_events')
-    .select('*, students(id, name_ko, name_en, school, ib_course)')
+    .select('*, students(id, name_ko, school, ib_course)')
     .gte('start_at', start)
     .lte('start_at', end)
     .order('start_at')

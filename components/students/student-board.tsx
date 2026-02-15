@@ -125,11 +125,9 @@ function filterStudents(
   const query = searchQuery.toLowerCase().trim()
 
   return students.filter((s) => {
-    // Search: match name_ko or name_en
+    // Search: match name_ko
     if (query) {
-      const matchKo = s.name_ko.toLowerCase().includes(query)
-      const matchEn = s.name_en?.toLowerCase().includes(query) ?? false
-      if (!matchKo && !matchEn) return false
+      if (!s.name_ko.toLowerCase().includes(query)) return false
     }
 
     // Filter: school

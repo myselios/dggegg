@@ -12,7 +12,7 @@ export async function getScheduleEvents(startDate: string, endDate: string) {
   const supabase = await createClient()
   const { data, error } = await supabase
     .from('schedule_events')
-    .select('*, students(id, name_ko, name_en, school, ib_course)')
+    .select('*, students(id, name_ko, school, ib_course)')
     .gte('start_at', startDate)
     .lte('start_at', endDate)
     .order('start_at')
@@ -29,7 +29,7 @@ export async function createScheduleEvent(input: ScheduleEventInsert): Promise<A
     const { data, error } = await supabase
       .from('schedule_events')
       .insert(validated)
-      .select('*, students(id, name_ko, name_en, school, ib_course)')
+      .select('*, students(id, name_ko, school, ib_course)')
       .single()
 
     if (error) {
@@ -55,7 +55,7 @@ export async function updateScheduleEvent(id: string, input: ScheduleEventUpdate
       .from('schedule_events')
       .update(validated)
       .eq('id', id)
-      .select('*, students(id, name_ko, name_en, school, ib_course)')
+      .select('*, students(id, name_ko, school, ib_course)')
       .single()
 
     if (error) {

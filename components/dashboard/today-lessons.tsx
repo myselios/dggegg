@@ -72,7 +72,7 @@ export function TodayLessons() {
     const today = new Date()
     supabase
       .from('schedule_events')
-      .select('*, students(id, name_ko, name_en, school, ib_course)')
+      .select('*, students(id, name_ko, school, ib_course)')
       .gte('start_at', startOfDay(today).toISOString())
       .lte('start_at', endOfDay(today).toISOString())
       .order('start_at')
