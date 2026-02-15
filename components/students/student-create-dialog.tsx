@@ -32,9 +32,14 @@ function SectionHeader({
 
 export function StudentCreateDialog() {
   const [open, setOpen] = useState(false)
+  const [submitting, setSubmitting] = useState(false)
   const { mutate } = useSWRConfig()
 
   async function handleSubmit(formData: FormData) {
+    if (submitting) return
+    setSubmitting(true)
+
+    try {
     const result = await createStudent({
       name_ko: formData.get('name_ko') as string,
       grade: (formData.get('grade') as string) || null,
@@ -53,6 +58,9 @@ export function StudentCreateDialog() {
     }
     await mutate('students')
     setOpen(false)
+    } finally {
+      setSubmitting(false)
+    }
   }
 
   return (
@@ -177,8 +185,8 @@ export function StudentCreateDialog() {
 
           <Separator />
 
-          <Button type="submit" className="w-full">
-            등록하기
+          <Button type="submit" className="w-full" disabled={submitting}>
+            {submitting ? '등록 중...' : '등록하기'}
           </Button>
         </form>
       </DialogContent>
