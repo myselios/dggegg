@@ -59,6 +59,7 @@ export function EventCreateDialog({
   const [startHour, setStartHour] = useState(hour)
   const [startMinute, setStartMinute] = useState(minute)
   const [duration, setDuration] = useState(60)
+  const [submitting, setSubmitting] = useState(false)
 
   const conflicts = useMemo(
     () => findConflicts(date, { hour: startHour, minute: startMinute }, duration, existingEvents),
@@ -66,40 +67,47 @@ export function EventCreateDialog({
   )
 
   async function handleSubmit(formData: FormData) {
-    const studentId = formData.get('student_id') as string
-    const templateType = formData.get('template_type') as string
-    const repeatWeeks = Number(formData.get('repeat_weeks')) || 0
+    if (submitting) return
+    setSubmitting(true)
 
-    const startAt = new Date(date)
-    startAt.setHours(startHour, startMinute, 0, 0)
-    const endAt = new Date(startAt)
-    endAt.setMinutes(endAt.getMinutes() + duration)
+    try {
+      const studentId = formData.get('student_id') as string
+      const templateType = formData.get('template_type') as string
+      const repeatWeeks = Number(formData.get('repeat_weeks')) || 0
 
-    const baseEvent = {
-      student_id: studentId,
-      start_at: startAt.toISOString(),
-      end_at: endAt.toISOString(),
-      status: 'scheduled' as const,
-      template_type: templateType || null,
-      recurrence_rule: null,
-      recurrence_group_id: null,
-      color: null,
-    }
+      const startAt = new Date(date)
+      startAt.setHours(startHour, startMinute, 0, 0)
+      const endAt = new Date(startAt)
+      endAt.setMinutes(endAt.getMinutes() + duration)
 
-    if (repeatWeeks > 1) {
-      const result = await createRecurringEvents(baseEvent, repeatWeeks)
-      if (!result.success) {
-        alert(result.error)
-        return
+      const baseEvent = {
+        student_id: studentId,
+        start_at: startAt.toISOString(),
+        end_at: endAt.toISOString(),
+        status: 'scheduled' as const,
+        template_type: templateType || null,
+        recurrence_rule: null,
+        recurrence_group_id: null,
+        color: null,
       }
-    } else {
-      const result = await createScheduleEvent(baseEvent)
-      if (!result.success) {
-        alert(result.error)
-        return
+
+      if (repeatWeeks > 1) {
+        const result = await createRecurringEvents(baseEvent, repeatWeeks)
+        if (!result.success) {
+          alert(result.error)
+          return
+        }
+      } else {
+        const result = await createScheduleEvent(baseEvent)
+        if (!result.success) {
+          alert(result.error)
+          return
+        }
       }
+      onCreated()
+    } finally {
+      setSubmitting(false)
     }
-    onCreated()
   }
 
   return (
@@ -209,7 +217,9 @@ export function EventCreateDialog({
             <Label>반복 (주)</Label>
             <Input name="repeat_weeks" type="number" min={0} max={52} defaultValue={0} placeholder="0 = 반복 없음" />
           </div>
-          <Button type="submit" className="w-full">수업 추가</Button>
+          <Button type="submit" className="w-full" disabled={submitting}>
+            {submitting ? '추가 중...' : '수업 추가'}
+          </Button>
         </form>
       </DialogContent>
     </Dialog>
