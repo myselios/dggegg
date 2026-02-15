@@ -1,7 +1,8 @@
 'use client'
 
+import { useState } from 'react'
 import { useDraggable } from '@dnd-kit/core'
-import { AlertTriangle } from 'lucide-react'
+import { AlertTriangle, Plus } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { formatTime } from '@/lib/utils/date'
 import type { ScheduleEventWithStudent } from '@/lib/types/database'
@@ -21,12 +22,15 @@ const statusStyles: Record<string, string> = {
 export function CalendarEventBlock({
   event,
   onClick,
+  onAddMakeup,
   hasConflict = false,
 }: {
   readonly event: ScheduleEventWithStudent
   readonly onClick: () => void
+  readonly onAddMakeup?: (event: ScheduleEventWithStudent) => void
   readonly hasConflict?: boolean
 }) {
+  const [isHovered, setIsHovered] = useState(false)
   const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
     id: event.id,
     data: { event },
@@ -35,17 +39,21 @@ export function CalendarEventBlock({
   const course = event.students?.ib_course ?? ''
   const colorClass = courseColors[course] ?? 'bg-gray-200 border-gray-400 text-gray-900'
   const statusClass = statusStyles[event.status] ?? ''
+  const isCancelled = event.status === 'cancelled'
+  const showAddOverlay = isCancelled && onAddMakeup && isHovered
 
   return (
     <button
       ref={setNodeRef}
       type="button"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
       onClick={(e) => {
         e.stopPropagation()
         onClick()
       }}
       className={cn(
-        'w-full rounded border-l-4 px-2 py-1 text-left text-xs transition-shadow hover:shadow-md cursor-grab active:cursor-grabbing',
+        'relative w-full rounded border-l-4 px-2 py-1 text-left text-xs transition-shadow hover:shadow-md cursor-grab active:cursor-grabbing',
         colorClass,
         statusClass,
         isDragging && 'opacity-30',
@@ -65,6 +73,19 @@ export function CalendarEventBlock({
       </div>
       {event.template_type && (
         <div className="text-[10px] opacity-60">{event.template_type}</div>
+      )}
+
+      {/* Add makeup overlay for cancelled events */}
+      {showAddOverlay && (
+        <div
+          className="absolute inset-0 flex items-center justify-center bg-black/20 rounded cursor-pointer hover:bg-black/30 transition-colors"
+          onClick={(e) => {
+            e.stopPropagation()
+            onAddMakeup(event)
+          }}
+        >
+          <Plus className="h-6 w-6 text-white drop-shadow-md" />
+        </div>
       )}
     </button>
   )

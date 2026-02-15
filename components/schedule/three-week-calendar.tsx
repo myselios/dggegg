@@ -85,6 +85,7 @@ export function ThreeWeekCalendar({
   const [selectedEvent, setSelectedEvent] = useState<ScheduleEventWithStudent | null>(null)
   const [activeEvent, setActiveEvent] = useState<ScheduleEventWithStudent | null>(null)
   const [overCellId, setOverCellId] = useState<string | null>(null)
+  const [isCompact, setIsCompact] = useState(true)
 
   const { start, end } = useMemo(() => getThreeWeekRange(baseDate), [baseDate])
   const weeks = useMemo(() => getWeeksInRange(start, end), [start, end])
@@ -232,6 +233,9 @@ export function ThreeWeekCalendar({
           <Button variant="outline" size="sm" onClick={() => setBaseDate(addWeeks(baseDate, 1))}>
             다음 주 &rarr;
           </Button>
+          <Button variant="outline" size="sm" onClick={() => setIsCompact(!isCompact)}>
+            {isCompact ? '확대' : '축소'}
+          </Button>
         </div>
       </div>
 
@@ -280,23 +284,34 @@ export function ThreeWeekCalendar({
             {/* Hour rows with 10-min subdivisions */}
             {HOURS.map((hour) => (
               <div key={hour} className="grid grid-cols-[64px_repeat(21,1fr)]">
-                {/* Time labels - sticky left, 6 sub-rows */}
+                {/* Time labels - sticky left, compact mode shows only :00 and :30 */}
                 <div className="sticky left-0 z-20 flex flex-col border-r bg-background">
-                  {MINUTES_10.map((min) => (
-                    <div
-                      key={min}
-                      className={cn(
-                        'flex h-5 items-center justify-end pr-2 text-right tabular-nums',
-                        min === 0
-                          ? 'text-xs font-medium text-foreground border-t'
-                          : min === 30
-                            ? 'text-[10px] text-muted-foreground border-t border-dashed'
-                            : 'text-[9px] text-muted-foreground/40'
-                      )}
-                    >
-                      {min === 0 ? `${hour}:00` : `:${String(min).padStart(2, '0')}`}
-                    </div>
-                  ))}
+                  {isCompact ? (
+                    <>
+                      <div className="flex h-6 items-center justify-end pr-2 text-right tabular-nums text-xs font-medium text-foreground border-t">
+                        {hour}:00
+                      </div>
+                      <div className="flex h-6 items-center justify-end pr-2 text-right tabular-nums text-[10px] text-muted-foreground border-t border-dashed">
+                        :30
+                      </div>
+                    </>
+                  ) : (
+                    MINUTES_10.map((min) => (
+                      <div
+                        key={min}
+                        className={cn(
+                          'flex h-5 items-center justify-end pr-2 text-right tabular-nums',
+                          min === 0
+                            ? 'text-xs font-medium text-foreground border-t'
+                            : min === 30
+                              ? 'text-[10px] text-muted-foreground border-t border-dashed'
+                              : 'text-[9px] text-muted-foreground/40'
+                        )}
+                      >
+                        {min === 0 ? `${hour}:00` : `:${String(min).padStart(2, '0')}`}
+                      </div>
+                    ))
+                  )}
                 </div>
 
                 {/* Day cells - one per day, full hour height */}
@@ -310,6 +325,7 @@ export function ThreeWeekCalendar({
                       isToday={isToday(day)}
                       isWeekBoundary={dayIdx % 7 === 0 && dayIdx > 0}
                       conflictHalfId={dragConflictCellId}
+                      compact={isCompact}
                       onClick={(e) => {
                         const rect = e.currentTarget.getBoundingClientRect()
                         const yOffset = e.clientY - rect.top
@@ -326,6 +342,14 @@ export function ThreeWeekCalendar({
                           onClick={() => {
                             setSelectedEvent(event)
                             setSelectedSlot(null)
+                          }}
+                          onAddMakeup={(cancelledEvent) => {
+                            const cancelledStart = new Date(cancelledEvent.start_at)
+                            setSelectedSlot({
+                              date: cancelledStart,
+                              hour: cancelledStart.getHours(),
+                              minute: cancelledStart.getMinutes(),
+                            })
                           }}
                         />
                       ))}
