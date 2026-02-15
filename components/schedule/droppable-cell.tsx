@@ -16,7 +16,7 @@ export function DroppableCell({
   readonly isWeekBoundary: boolean
   readonly hasConflictPreview?: boolean
   readonly children: React.ReactNode
-  readonly onClick: () => void
+  readonly onClick: (e: React.MouseEvent<HTMLDivElement>) => void
 }) {
   const { setNodeRef, isOver } = useDroppable({ id })
 

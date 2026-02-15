@@ -81,7 +81,7 @@ export function ThreeWeekCalendar({
   readonly initialDate?: string
 }) {
   const [baseDate, setBaseDate] = useState(() => parseInitialDate(initialDate))
-  const [selectedSlot, setSelectedSlot] = useState<{ date: Date; hour: number } | null>(null)
+  const [selectedSlot, setSelectedSlot] = useState<{ date: Date; hour: number; minute: number } | null>(null)
   const [selectedEvent, setSelectedEvent] = useState<ScheduleEventWithStudent | null>(null)
   const [activeEvent, setActiveEvent] = useState<ScheduleEventWithStudent | null>(null)
   const [overCellId, setOverCellId] = useState<string | null>(null)
@@ -310,7 +310,13 @@ export function ThreeWeekCalendar({
                       isToday={isToday(day)}
                       isWeekBoundary={dayIdx % 7 === 0 && dayIdx > 0}
                       hasConflictPreview={dragConflictCellId === currentCellId}
-                      onClick={() => setSelectedSlot({ date: day, hour })}
+                      onClick={(e) => {
+                        const rect = e.currentTarget.getBoundingClientRect()
+                        const yOffset = e.clientY - rect.top
+                        const minuteRaw = Math.floor((yOffset / rect.height) * 60)
+                        const minute = Math.max(0, Math.min(50, Math.floor(minuteRaw / 10) * 10))
+                        setSelectedSlot({ date: day, hour, minute })
+                      }}
                     >
                       {cellEvents.map((event) => (
                         <CalendarEventBlock
@@ -342,6 +348,7 @@ export function ThreeWeekCalendar({
         <EventCreateDialog
           date={selectedSlot.date}
           hour={selectedSlot.hour}
+          minute={selectedSlot.minute}
           existingEvents={events ?? []}
           onClose={() => setSelectedSlot(null)}
           onCreated={() => {

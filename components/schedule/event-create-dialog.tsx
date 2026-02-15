@@ -15,15 +15,18 @@ import { formatTime } from '@/lib/utils/date'
 import type { ScheduleEventWithStudent } from '@/lib/types/database'
 
 const TEMPLATE_TYPES = ['IO', 'Writing', 'Reading', 'Listening', 'Speaking'] as const
+const HOURS = Array.from({ length: 14 }, (_, i) => i + 8) // 8 ~ 21
+const MINUTES_10 = [0, 10, 20, 30, 40, 50] as const
+const DURATION_OPTIONS = [30, 40, 50, 60, 90, 120] as const
 
 function findConflicts(
   date: Date,
-  startHour: number,
+  startTime: { readonly hour: number; readonly minute: number },
   durationMinutes: number,
   existingEvents: readonly ScheduleEventWithStudent[]
 ): readonly ScheduleEventWithStudent[] {
   const newStart = new Date(date)
-  newStart.setHours(startHour, 0, 0, 0)
+  newStart.setHours(startTime.hour, startTime.minute, 0, 0)
   const newEnd = new Date(newStart)
   newEnd.setMinutes(newEnd.getMinutes() + durationMinutes)
 
@@ -38,12 +41,14 @@ function findConflicts(
 export function EventCreateDialog({
   date,
   hour,
+  minute = 0,
   existingEvents,
   onClose,
   onCreated,
 }: {
   readonly date: Date
   readonly hour: number
+  readonly minute?: number
   readonly existingEvents: readonly ScheduleEventWithStudent[]
   readonly onClose: () => void
   readonly onCreated: () => void
@@ -52,11 +57,12 @@ export function EventCreateDialog({
   const activeStudents = students?.filter((s) => s.status === 'active') ?? []
 
   const [startHour, setStartHour] = useState(hour)
+  const [startMinute, setStartMinute] = useState(minute)
   const [duration, setDuration] = useState(60)
 
   const conflicts = useMemo(
-    () => findConflicts(date, startHour, duration, existingEvents),
-    [date, startHour, duration, existingEvents]
+    () => findConflicts(date, { hour: startHour, minute: startMinute }, duration, existingEvents),
+    [date, startHour, startMinute, duration, existingEvents]
   )
 
   async function handleSubmit(formData: FormData) {
@@ -65,7 +71,7 @@ export function EventCreateDialog({
     const repeatWeeks = Number(formData.get('repeat_weeks')) || 0
 
     const startAt = new Date(date)
-    startAt.setHours(startHour, 0, 0, 0)
+    startAt.setHours(startHour, startMinute, 0, 0)
     const endAt = new Date(startAt)
     endAt.setMinutes(endAt.getMinutes() + duration)
 
@@ -118,28 +124,56 @@ export function EventCreateDialog({
               </SelectContent>
             </Select>
           </div>
-          <div className="grid grid-cols-2 gap-4">
+
+          {/* Time selection: hour + minute + duration */}
+          <div className="grid grid-cols-3 gap-3">
             <div className="flex flex-col gap-2">
-              <Label>시작 시간</Label>
-              <Input
-                name="start_hour"
-                type="number"
-                min={8}
-                max={22}
-                value={startHour}
-                onChange={(e) => setStartHour(Number(e.target.value))}
-              />
+              <Label>시간</Label>
+              <Select
+                value={String(startHour)}
+                onValueChange={(v) => setStartHour(Number(v))}
+              >
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  {HOURS.map((h) => (
+                    <SelectItem key={h} value={String(h)}>
+                      {String(h).padStart(2, '0')}시
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
             <div className="flex flex-col gap-2">
-              <Label>수업 시간 (분)</Label>
-              <Input
-                name="duration"
-                type="number"
-                min={30}
-                step={30}
-                value={duration}
-                onChange={(e) => setDuration(Number(e.target.value))}
-              />
+              <Label>분</Label>
+              <Select
+                value={String(startMinute)}
+                onValueChange={(v) => setStartMinute(Number(v))}
+              >
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  {MINUTES_10.map((m) => (
+                    <SelectItem key={m} value={String(m)}>
+                      {String(m).padStart(2, '0')}분
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="flex flex-col gap-2">
+              <Label>수업 시간</Label>
+              <Select
+                value={String(duration)}
+                onValueChange={(v) => setDuration(Number(v))}
+              >
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  {DURATION_OPTIONS.map((d) => (
+                    <SelectItem key={d} value={String(d)}>
+                      {d}분
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
           </div>
 
