@@ -33,11 +33,11 @@ function cellId(dayIdx: number, hour: number): string {
   return `cell-${dayIdx}-${hour}`
 }
 
-/** Decode a droppable id back to day index and hour */
-function parseCellId(id: string): { dayIdx: number; hour: number } | null {
-  const match = id.match(/^cell-(\d+)-(\d+)$/)
+/** Decode a droppable id back to day index, hour and minute */
+function parseCellId(id: string): { dayIdx: number; hour: number; minute: number } | null {
+  const match = id.match(/^cell-(\d+)-(\d+)-(\d+)$/)
   if (!match) return null
-  return { dayIdx: Number(match[1]), hour: Number(match[2]) }
+  return { dayIdx: Number(match[1]), hour: Number(match[2]), minute: Number(match[3]) }
 }
 
 /** Check if two time ranges overlap: A.start < B.end && B.start < A.end */
@@ -115,7 +115,7 @@ export function ThreeWeekCalendar({
     const durationMs = oldEnd.getTime() - oldStart.getTime()
 
     const newStart = new Date(targetDay)
-    newStart.setHours(target.hour, 0, 0, 0)
+    newStart.setHours(target.hour, target.minute, 0, 0)
     const newEnd = new Date(newStart.getTime() + durationMs)
 
     const wouldConflict = events.some(
@@ -178,7 +178,7 @@ export function ThreeWeekCalendar({
     const durationMs = oldEnd.getTime() - oldStart.getTime()
 
     const newStart = new Date(targetDay)
-    newStart.setHours(target.hour, 0, 0, 0)
+    newStart.setHours(target.hour, target.minute, 0, 0)
     const newEnd = new Date(newStart.getTime() + durationMs)
 
     // No change — skip
@@ -309,7 +309,7 @@ export function ThreeWeekCalendar({
                       id={currentCellId}
                       isToday={isToday(day)}
                       isWeekBoundary={dayIdx % 7 === 0 && dayIdx > 0}
-                      hasConflictPreview={dragConflictCellId === currentCellId}
+                      conflictHalfId={dragConflictCellId}
                       onClick={(e) => {
                         const rect = e.currentTarget.getBoundingClientRect()
                         const yOffset = e.clientY - rect.top
