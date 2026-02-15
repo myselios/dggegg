@@ -9,6 +9,7 @@ import {
   BookOpen,
 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
+import { autoCompletePastEvents } from '@/app/actions/schedule'
 import { Card, CardContent } from '@/components/ui/card'
 import { cn } from '@/lib/utils'
 import { TodayLessons } from '@/components/dashboard/today-lessons'
@@ -64,36 +65,38 @@ export default function DashboardPage() {
   })
 
   useEffect(() => {
-    const supabase = createClient()
-    const today = new Date()
+    async function init() {
+      await autoCompletePastEvents()
 
-    const fetchTodayStats = supabase
-      .from('schedule_events')
-      .select('status')
-      .gte('start_at', startOfDay(today).toISOString())
-      .lte('start_at', endOfDay(today).toISOString())
+      const supabase = createClient()
+      const today = new Date()
 
-    const fetchIncompleteStats = supabase
-      .from('schedule_events')
-      .select('id', { count: 'exact', head: true })
-      .eq('status', 'scheduled')
-      .lt('start_at', today.toISOString())
-      .gte('start_at', subDays(today, 7).toISOString())
+      const [todayResult, incompleteResult] = await Promise.all([
+        supabase
+          .from('schedule_events')
+          .select('status')
+          .gte('start_at', startOfDay(today).toISOString())
+          .lte('start_at', endOfDay(today).toISOString()),
+        supabase
+          .from('schedule_events')
+          .select('id', { count: 'exact', head: true })
+          .eq('status', 'scheduled')
+          .lt('start_at', today.toISOString())
+          .gte('start_at', subDays(today, 7).toISOString()),
+      ])
 
-    Promise.all([fetchTodayStats, fetchIncompleteStats]).then(
-      ([todayResult, incompleteResult]) => {
-        const events = todayResult.data ?? []
-        const completedCount = events.filter(
-          (e) => e.status === 'completed'
-        ).length
+      const events = todayResult.data ?? []
+      const completedCount = events.filter(
+        (e) => e.status === 'completed'
+      ).length
 
-        setStats({
-          total: events.length,
-          completed: completedCount,
-          incomplete: incompleteResult.count ?? 0,
-        })
-      }
-    )
+      setStats({
+        total: events.length,
+        completed: completedCount,
+        incomplete: incompleteResult.count ?? 0,
+      })
+    }
+    init()
   }, [])
 
   return (

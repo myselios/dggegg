@@ -92,6 +92,32 @@ export async function deleteScheduleEvent(id: string): Promise<ActionResult<null
   }
 }
 
+export async function autoCompletePastEvents(): Promise<ActionResult<number>> {
+  try {
+    await requireAuth()
+    const supabase = await createClient()
+    const { data, error } = await supabase
+      .from('schedule_events')
+      .update({ status: 'completed' })
+      .eq('status', 'scheduled')
+      .lt('end_at', new Date().toISOString())
+      .select('id')
+
+    if (error) {
+      return { success: false, error: '자동 완료 처리에 실패했습니다' }
+    }
+
+    if (data.length > 0) {
+      revalidatePath('/schedule')
+      revalidatePath('/')
+    }
+
+    return { success: true, data: data.length }
+  } catch {
+    return { success: false, error: '자동 완료 처리 중 오류가 발생했습니다' }
+  }
+}
+
 export async function createRecurringEvents(
   baseEvent: Omit<ScheduleEventInsert, 'recurrence_group_id'>,
   repeatCount: number
