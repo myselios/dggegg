@@ -2,13 +2,14 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { updateStudent, deleteStudent } from '@/app/actions/students'
+import { updateStudent } from '@/app/actions/students'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { StudentDeleteDialog } from './student-delete-dialog'
 import type { Student } from '@/lib/types/database'
 
 export function StudentProfile({ student }: { readonly student: Student }) {
@@ -40,28 +41,19 @@ export function StudentProfile({ student }: { readonly student: Student }) {
     router.refresh()
   }
 
-  async function handleDelete() {
-    if (!confirm('정말 삭제하시겠습니까?')) return
-    const result = await deleteStudent(student.id)
-    if (!result.success) {
-      alert(result.error)
-      return
-    }
-    router.push('/students')
-  }
-
   if (!isEditing) {
     return (
-      <div className="grid gap-6 md:grid-cols-2">
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center justify-between">
-              기본 정보
-              <Button variant="outline" size="sm" onClick={() => setIsEditing(true)}>
-                수정
-              </Button>
-            </CardTitle>
-          </CardHeader>
+      <div className="flex flex-col gap-6">
+        <div className="grid gap-6 md:grid-cols-2">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center justify-between">
+                기본 정보
+                <Button variant="outline" size="sm" onClick={() => setIsEditing(true)}>
+                  수정
+                </Button>
+              </CardTitle>
+            </CardHeader>
           <CardContent className="grid gap-3">
             <InfoRow label="이름 (한글)" value={student.name_ko} />
             <InfoRow label="이름 (영문)" value={student.name_en} />
@@ -86,6 +78,14 @@ export function StudentProfile({ student }: { readonly student: Student }) {
             {student.memo && <InfoRow label="메모" value={student.memo} />}
           </CardContent>
         </Card>
+        </div>
+        <div className="flex justify-end">
+          <StudentDeleteDialog
+            studentId={student.id}
+            studentName={student.name_ko}
+            redirectAfterDelete
+          />
+        </div>
       </div>
     )
   }
@@ -134,11 +134,6 @@ export function StudentProfile({ student }: { readonly student: Student }) {
           </div>
         </CardContent>
       </Card>
-      <div className="mt-4 flex justify-end">
-        <Button variant="destructive" size="sm" type="button" onClick={handleDelete}>
-          학생 삭제
-        </Button>
-      </div>
     </form>
   )
 }
