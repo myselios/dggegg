@@ -26,6 +26,7 @@ import { Button } from '@/components/ui/button'
 import type { ScheduleEventWithStudent } from '@/lib/types/database'
 
 const HOURS = Array.from({ length: 15 }, (_, i) => i + 8) // 08:00 ~ 22:00
+const MINUTES_10 = [0, 10, 20, 30, 40, 50] as const
 
 /** Encode a cell position into a droppable id */
 function cellId(dayIdx: number, hour: number): string {
@@ -251,11 +252,11 @@ export function ThreeWeekCalendar({
         onDragEnd={handleDragEnd}
         onDragCancel={handleDragCancel}
       >
-        <div className="overflow-x-auto">
+        <div className="relative overflow-auto max-h-[calc(100vh-220px)] rounded-lg border">
           <div className="min-w-[1200px]">
-            {/* Day headers */}
-            <div className="grid grid-cols-[60px_repeat(21,1fr)] border-b">
-              <div />
+            {/* Day headers - sticky top */}
+            <div className="sticky top-0 z-30 grid grid-cols-[64px_repeat(21,1fr)] border-b bg-background">
+              <div className="sticky left-0 z-40 bg-background" />
               {allDays.map((day, i) => (
                 <div
                   key={i}
@@ -276,12 +277,29 @@ export function ThreeWeekCalendar({
               ))}
             </div>
 
-            {/* Hour rows */}
+            {/* Hour rows with 10-min subdivisions */}
             {HOURS.map((hour) => (
-              <div key={hour} className="grid grid-cols-[60px_repeat(21,1fr)] border-b">
-                <div className="flex items-start justify-end pr-2 pt-1 text-xs text-muted-foreground">
-                  {`${hour}:00`}
+              <div key={hour} className="grid grid-cols-[64px_repeat(21,1fr)]">
+                {/* Time labels - sticky left, 6 sub-rows */}
+                <div className="sticky left-0 z-20 flex flex-col border-r bg-background">
+                  {MINUTES_10.map((min) => (
+                    <div
+                      key={min}
+                      className={cn(
+                        'flex h-5 items-center justify-end pr-2 text-right tabular-nums',
+                        min === 0
+                          ? 'text-xs font-medium text-foreground border-t'
+                          : min === 30
+                            ? 'text-[10px] text-muted-foreground border-t border-dashed'
+                            : 'text-[9px] text-muted-foreground/40'
+                      )}
+                    >
+                      {min === 0 ? `${hour}:00` : `:${String(min).padStart(2, '0')}`}
+                    </div>
+                  ))}
                 </div>
+
+                {/* Day cells - one per day, full hour height */}
                 {allDays.map((day, dayIdx) => {
                   const cellEvents = getEventsForDayHour(day, hour)
                   const currentCellId = cellId(dayIdx, hour)

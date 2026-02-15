@@ -24,7 +24,7 @@ export function DroppableCell({
     <div
       ref={setNodeRef}
       className={cn(
-        'min-h-[48px] border-l p-0.5 cursor-pointer hover:bg-muted/50 transition-colors',
+        'relative h-[120px] border-l cursor-pointer hover:bg-muted/50 transition-colors',
         isToday && 'bg-primary/5',
         isWeekBoundary && 'border-l-2 border-l-primary/30',
         isOver && !hasConflictPreview && 'bg-primary/20 ring-2 ring-primary/40 ring-inset',
@@ -32,7 +32,19 @@ export function DroppableCell({
       )}
       onClick={onClick}
     >
-      {children}
+      {/* 10-min gridlines */}
+      <div className="pointer-events-none absolute inset-0 flex flex-col">
+        <div className="h-5 border-t" />
+        <div className="h-5 border-t border-border/20" />
+        <div className="h-5 border-t border-border/20" />
+        <div className="h-5 border-t border-dashed border-border/40" />
+        <div className="h-5 border-t border-border/20" />
+        <div className="h-5 border-t border-border/20" />
+      </div>
+      {/* Events */}
+      <div className="relative z-10 p-0.5">
+        {children}
+      </div>
     </div>
   )
 }

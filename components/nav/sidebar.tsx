@@ -33,10 +33,10 @@ export function Sidebar() {
   return (
     <aside className="flex h-screen w-60 flex-col border-r bg-muted/30">
       {/* Logo */}
-      <div className="flex h-14 items-center gap-2 border-b px-4">
+      <Link href="/" className="flex h-14 items-center gap-2 border-b px-4 transition-opacity hover:opacity-80">
         <Rocket className="h-5 w-5 text-primary" />
         <h1 className="text-lg font-semibold tracking-tight">Rocket Tutor</h1>
-      </div>
+      </Link>
 
       {/* Navigation */}
       <nav className="flex flex-1 flex-col gap-1 p-3">
