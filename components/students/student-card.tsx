@@ -2,11 +2,12 @@
 
 import Link from 'next/link'
 import { useDraggable } from '@dnd-kit/core'
-import { CalendarClock, GraduationCap } from 'lucide-react'
+import { CalendarClock, GraduationCap, Trash2 } from 'lucide-react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { cn } from '@/lib/utils'
+import { StudentDeleteDialog } from './student-delete-dialog'
 import type { Student } from '@/lib/types/database'
 
 const AVATAR_COLORS = [
@@ -73,7 +74,7 @@ export function StudentCard({ student }: { readonly student: Student }) {
       ref={setNodeRef}
       {...listeners}
       {...attributes}
-      className={cn(isDragging && 'opacity-30')}
+      className={cn('group/card relative', isDragging && 'opacity-30')}
     >
       <Link href={`/students/${student.id}`} draggable={false}>
         <Card
@@ -136,6 +137,25 @@ export function StudentCard({ student }: { readonly student: Student }) {
           </CardContent>
         </Card>
       </Link>
+
+      <div
+        className="absolute top-2 right-2 z-10 opacity-0 transition-opacity group-hover/card:opacity-100"
+        onPointerDown={(e) => e.stopPropagation()}
+      >
+        <StudentDeleteDialog
+          studentId={student.id}
+          studentName={student.name_ko}
+          trigger={
+            <button
+              type="button"
+              className="flex size-7 items-center justify-center rounded-md bg-background/80 text-muted-foreground shadow-sm backdrop-blur-sm transition-colors hover:bg-destructive hover:text-destructive-foreground"
+              onClick={(e) => e.preventDefault()}
+            >
+              <Trash2 className="size-3.5" />
+            </button>
+          }
+        />
+      </div>
     </div>
   )
 }
