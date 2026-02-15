@@ -15,7 +15,7 @@ import { cn } from '@/lib/utils'
 import { TodayLessons } from '@/components/dashboard/today-lessons'
 import { RecentConsultations } from '@/components/dashboard/recent-consultations'
 import { IncompleteLessons } from '@/components/dashboard/incomplete-lessons'
-import { MiniCalendar } from '@/components/dashboard/mini-calendar'
+import { WeeklySchedule } from '@/components/dashboard/weekly-schedule'
 
 type DashboardStats = {
   readonly total: number
@@ -157,8 +157,8 @@ export default function DashboardPage() {
       {/* Incomplete Lessons Alert */}
       <IncompleteLessons />
 
-      {/* Mini Calendar */}
-      <MiniCalendar />
+      {/* Weekly Schedule */}
+      <WeeklySchedule />
 
       {/* Main Content Grid */}
       <div className="grid gap-6 lg:grid-cols-2">
