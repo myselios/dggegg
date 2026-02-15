@@ -3,7 +3,7 @@ export type Student = {
   readonly name_ko: string
   readonly grade: string | null
   readonly school: string
-  readonly ib_course: 'Ab initio' | 'SL' | 'HL' | null
+  readonly ib_course: 'Ab initio' | 'SL' | 'HL' | 'IGCSE' | 'MYP' | '기타' | null
   readonly current_score: number | null
   readonly weakness_areas: string[] | null
   readonly residence: string | null

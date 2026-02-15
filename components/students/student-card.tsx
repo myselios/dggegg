@@ -36,6 +36,18 @@ const courseConfig: Record<string, { readonly label: string; readonly className:
     label: 'HL',
     className: 'bg-violet-50 text-violet-700 border-violet-200 dark:bg-violet-950 dark:text-violet-300 dark:border-violet-800',
   },
+  IGCSE: {
+    label: 'IGCSE',
+    className: 'bg-orange-50 text-orange-700 border-orange-200 dark:bg-orange-950 dark:text-orange-300 dark:border-orange-800',
+  },
+  MYP: {
+    label: 'MYP',
+    className: 'bg-teal-50 text-teal-700 border-teal-200 dark:bg-teal-950 dark:text-teal-300 dark:border-teal-800',
+  },
+  '기타': {
+    label: '기타',
+    className: 'bg-gray-50 text-gray-700 border-gray-200 dark:bg-gray-900 dark:text-gray-300 dark:border-gray-700',
+  },
 }
 
 function getAvatarColor(name: string): string {

@@ -106,6 +106,9 @@ export function StudentProfile({ student }: { readonly student: Student }) {
                 <SelectItem value="Ab initio">Ab initio</SelectItem>
                 <SelectItem value="SL">SL</SelectItem>
                 <SelectItem value="HL">HL</SelectItem>
+                <SelectItem value="IGCSE">IGCSE</SelectItem>
+                <SelectItem value="MYP">MYP</SelectItem>
+                <SelectItem value="기타">기타</SelectItem>
               </SelectContent>
             </Select>
           </div>

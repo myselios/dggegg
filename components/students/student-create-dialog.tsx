@@ -167,6 +167,9 @@ export function StudentCreateDialog() {
                   <SelectItem value="Ab initio">Ab initio</SelectItem>
                   <SelectItem value="SL">SL (Standard Level)</SelectItem>
                   <SelectItem value="HL">HL (Higher Level)</SelectItem>
+                  <SelectItem value="IGCSE">IGCSE</SelectItem>
+                  <SelectItem value="MYP">MYP</SelectItem>
+                  <SelectItem value="기타">기타</SelectItem>
                 </SelectContent>
               </Select>
             </div>

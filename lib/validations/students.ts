@@ -1,6 +1,6 @@
 import { z } from 'zod'
 
-const ibCourseSchema = z.enum(['Ab initio', 'SL', 'HL'])
+const ibCourseSchema = z.enum(['Ab initio', 'SL', 'HL', 'IGCSE', 'MYP', '기타'])
 const studentStatusSchema = z.enum(['active', 'paused', 'ended'])
 
 export const studentInsertSchema = z.object({

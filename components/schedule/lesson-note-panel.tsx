@@ -13,7 +13,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Separator } from '@/components/ui/separator'
 import { getLessonNote, upsertLessonNote, getPreviousLessonNote } from '@/app/actions/lesson-notes'
 import { createScoreRecord } from '@/app/actions/scores'
-import { updateScheduleEvent } from '@/app/actions/schedule'
+import { updateScheduleEvent, deleteScheduleEvent } from '@/app/actions/schedule'
 import type { ScheduleEventWithStudent, LessonNote } from '@/lib/types/database'
 
 const ASSESSMENT_TYPES = ['IO mock', 'Writing', 'Listening', 'Reading', 'Quiz', 'Exam'] as const
@@ -81,7 +81,7 @@ export function LessonNotePanel({
   }
 
   async function handleCancel() {
-    const result = await updateScheduleEvent(event.id, { status: 'cancelled' })
+    const result = await deleteScheduleEvent(event.id)
     if (!result.success) {
       alert(result.error)
       return
