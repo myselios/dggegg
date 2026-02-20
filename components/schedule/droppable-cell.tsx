@@ -37,6 +37,7 @@ export function DroppableCell({
         isToday && 'bg-primary/5',
         isWeekBoundary && 'border-l-2 border-l-primary/30',
       )}
+      data-testid="droppable-cell"
       onClick={onClick}
     >
       {/* Droppable halves for 30-min DnD precision */}

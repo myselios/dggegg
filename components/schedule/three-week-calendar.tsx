@@ -256,7 +256,7 @@ export function ThreeWeekCalendar({
         onDragEnd={handleDragEnd}
         onDragCancel={handleDragCancel}
       >
-        <div className="relative overflow-auto max-h-[calc(100vh-220px)] rounded-lg border">
+        <div className="relative overflow-auto max-h-[calc(100vh-220px)] rounded-lg border" data-testid="calendar-grid">
           <div className="min-w-[1200px]">
             {/* Day headers - sticky top */}
             <div className="sticky top-0 z-30 grid grid-cols-[64px_repeat(21,1fr)] border-b bg-background">
@@ -363,7 +363,7 @@ export function ThreeWeekCalendar({
 
         {/* Drag overlay — follows the pointer */}
         <DragOverlay dropAnimation={null}>
-          {activeEvent ? <CalendarEventBlockOverlay event={activeEvent} /> : null}
+          {activeEvent ? <div data-testid="drag-overlay"><CalendarEventBlockOverlay event={activeEvent} /></div> : null}
         </DragOverlay>
       </DndContext>
 
