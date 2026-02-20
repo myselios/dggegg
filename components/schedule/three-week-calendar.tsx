@@ -5,18 +5,20 @@ import {
   DndContext,
   DragOverlay,
   PointerSensor,
+  TouchSensor,
   useSensor,
   useSensors,
   type DragStartEvent,
   type DragEndEvent,
   type DragOverEvent,
 } from '@dnd-kit/core'
-import { addWeeks, subWeeks, isSameDay, isToday, format } from 'date-fns'
+import { addWeeks, subWeeks, addDays, subDays, isSameDay, isToday, format } from 'date-fns'
 import { ko } from 'date-fns/locale'
 import { toast } from 'sonner'
 import { cn } from '@/lib/utils'
+import { useIsMobile } from '@/lib/hooks/use-mobile'
 import { useScheduleEvents } from '@/lib/hooks/use-schedule'
-import { getThreeWeekRange, getWeeksInRange } from '@/lib/utils/date'
+import { getThreeWeekRange, getOneWeekRange, getWeeksInRange } from '@/lib/utils/date'
 import { updateScheduleEvent } from '@/app/actions/schedule'
 import { CalendarEventBlock, CalendarEventBlockOverlay } from './calendar-event-block'
 import { DroppableCell } from './droppable-cell'
@@ -27,6 +29,8 @@ import type { ScheduleEventWithStudent } from '@/lib/types/database'
 
 const HOURS = Array.from({ length: 15 }, (_, i) => i + 8) // 08:00 ~ 22:00
 const MINUTES_10 = [0, 10, 20, 30, 40, 50] as const
+
+type ViewMode = '3week' | '1week' | 'day'
 
 /** Encode a cell position into a droppable id */
 function cellId(dayIdx: number, hour: number): string {
@@ -75,21 +79,51 @@ function parseInitialDate(dateStr?: string): Date {
   return isNaN(parsed.getTime()) ? new Date() : parsed
 }
 
+/** Grid columns CSS for each view mode */
+function getGridCols(mode: ViewMode): string {
+  switch (mode) {
+    case '3week': return 'grid-cols-[64px_repeat(21,1fr)]'
+    case '1week': return 'grid-cols-[48px_repeat(7,1fr)]'
+    case 'day': return 'grid-cols-[48px_1fr]'
+  }
+}
+
 export function ThreeWeekCalendar({
   initialDate,
 }: {
   readonly initialDate?: string
 }) {
+  const isMobile = useIsMobile()
   const [baseDate, setBaseDate] = useState(() => parseInitialDate(initialDate))
   const [selectedSlot, setSelectedSlot] = useState<{ date: Date; hour: number; minute: number } | null>(null)
   const [selectedEvent, setSelectedEvent] = useState<ScheduleEventWithStudent | null>(null)
   const [activeEvent, setActiveEvent] = useState<ScheduleEventWithStudent | null>(null)
   const [overCellId, setOverCellId] = useState<string | null>(null)
   const [isCompact, setIsCompact] = useState(true)
+  const [mobileView, setMobileView] = useState<'1week' | 'day'>('1week')
 
-  const { start, end } = useMemo(() => getThreeWeekRange(baseDate), [baseDate])
+  const viewMode: ViewMode = isMobile ? mobileView : '3week'
+
+  // Compute date range based on view mode
+  const { start, end } = useMemo(() => {
+    if (viewMode === 'day') {
+      const dayStart = new Date(baseDate)
+      dayStart.setHours(0, 0, 0, 0)
+      const dayEnd = new Date(baseDate)
+      dayEnd.setHours(23, 59, 59, 999)
+      return { start: dayStart, end: dayEnd }
+    }
+    if (viewMode === '1week') {
+      return getOneWeekRange(baseDate)
+    }
+    return getThreeWeekRange(baseDate)
+  }, [baseDate, viewMode])
+
   const weeks = useMemo(() => getWeeksInRange(start, end), [start, end])
-  const allDays = useMemo(() => weeks.flat(), [weeks])
+  const allDays = useMemo(() => {
+    if (viewMode === 'day') return [new Date(baseDate)]
+    return weeks.flat()
+  }, [weeks, viewMode, baseDate])
 
   const { data: events, mutate } = useScheduleEvents(
     start.toISOString(),
@@ -136,7 +170,8 @@ export function ThreeWeekCalendar({
 
   // Require 8px of movement before starting drag so clicks still work
   const sensors = useSensors(
-    useSensor(PointerSensor, { activationConstraint: { distance: 8 } })
+    useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
+    useSensor(TouchSensor, { activationConstraint: { delay: 250, tolerance: 8 } })
   )
 
   function getEventsForDayHour(day: Date, hour: number) {
@@ -218,34 +253,63 @@ export function ThreeWeekCalendar({
     setOverCellId(null)
   }, [])
 
+  // Navigation handlers based on view mode
+  const handlePrev = () => {
+    if (viewMode === 'day') setBaseDate(subDays(baseDate, 1))
+    else setBaseDate(subWeeks(baseDate, 1))
+  }
+  const handleNext = () => {
+    if (viewMode === 'day') setBaseDate(addDays(baseDate, 1))
+    else setBaseDate(addWeeks(baseDate, 1))
+  }
+
+  const gridCols = getGridCols(viewMode)
+
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-2 md:gap-4">
       {/* Header: navigation */}
       <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold">스케줄</h2>
-        <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm" onClick={() => setBaseDate(subWeeks(baseDate, 1))}>
-            &larr; 이전 주
+        <h2 className="text-lg font-bold md:text-2xl">스케줄</h2>
+        <div className="flex items-center gap-1 md:gap-2">
+          {isMobile && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setMobileView(mobileView === '1week' ? 'day' : '1week')}
+            >
+              {mobileView === '1week' ? '일간' : '주간'}
+            </Button>
+          )}
+          <Button variant="outline" size="sm" onClick={handlePrev}>
+            {isMobile ? '\u2190' : '\u2190 이전 주'}
           </Button>
           <Button variant="outline" size="sm" onClick={() => setBaseDate(new Date())}>
             오늘
           </Button>
-          <Button variant="outline" size="sm" onClick={() => setBaseDate(addWeeks(baseDate, 1))}>
-            다음 주 &rarr;
+          <Button variant="outline" size="sm" onClick={handleNext}>
+            {isMobile ? '\u2192' : '다음 주 \u2192'}
           </Button>
-          <Button variant="outline" size="sm" onClick={() => setIsCompact(!isCompact)}>
-            {isCompact ? '확대' : '축소'}
-          </Button>
+          {!isMobile && (
+            <Button variant="outline" size="sm" onClick={() => setIsCompact(!isCompact)}>
+              {isCompact ? '확대' : '축소'}
+            </Button>
+          )}
         </div>
       </div>
 
       {/* Week range headers */}
       <div className="flex items-center gap-2 text-sm text-muted-foreground">
-        {weeks.map((week, i) => (
-          <span key={i} className="flex-1 text-center font-medium">
-            {format(week[0], 'M월 d일', { locale: ko })} ~ {format(week[6], 'M월 d일', { locale: ko })}
+        {viewMode === 'day' ? (
+          <span className="flex-1 text-center font-medium">
+            {format(baseDate, 'M월 d일 (EEE)', { locale: ko })}
           </span>
-        ))}
+        ) : (
+          weeks.map((week, i) => (
+            <span key={i} className="flex-1 text-center font-medium">
+              {format(week[0], 'M월 d일', { locale: ko })} ~ {format(week[6], 'M월 d일', { locale: ko })}
+            </span>
+          ))
+        )}
       </div>
 
       {/* Calendar grid with DnD */}
@@ -257,9 +321,9 @@ export function ThreeWeekCalendar({
         onDragCancel={handleDragCancel}
       >
         <div className="relative overflow-auto max-h-[calc(100vh-220px)] rounded-lg border" data-testid="calendar-grid">
-          <div className="min-w-[1200px]">
+          <div className={cn(viewMode === '3week' && 'min-w-[1200px]')}>
             {/* Day headers - sticky top */}
-            <div className="sticky top-0 z-30 grid grid-cols-[64px_repeat(21,1fr)] border-b bg-background">
+            <div className={cn('sticky top-0 z-30 grid border-b bg-background', gridCols)}>
               <div className="sticky left-0 z-40 bg-background" />
               {allDays.map((day, i) => (
                 <div
@@ -267,7 +331,7 @@ export function ThreeWeekCalendar({
                   className={cn(
                     'border-l px-1 py-2 text-center text-xs',
                     isToday(day) && 'bg-primary/10 font-bold',
-                    i % 7 === 0 && i > 0 && 'border-l-2 border-l-primary/30'
+                    viewMode === '3week' && i % 7 === 0 && i > 0 && 'border-l-2 border-l-primary/30'
                   )}
                 >
                   <div>{format(day, 'EEE', { locale: ko })}</div>
@@ -283,7 +347,7 @@ export function ThreeWeekCalendar({
 
             {/* Hour rows with 10-min subdivisions */}
             {HOURS.map((hour) => (
-              <div key={hour} className="grid grid-cols-[64px_repeat(21,1fr)]">
+              <div key={hour} className={cn('grid', gridCols)}>
                 {/* Time labels - sticky left, compact mode shows only :00 and :30 */}
                 <div className="sticky left-0 z-20 flex flex-col border-r bg-background">
                   {isCompact ? (
@@ -323,7 +387,7 @@ export function ThreeWeekCalendar({
                       key={dayIdx}
                       id={currentCellId}
                       isToday={isToday(day)}
-                      isWeekBoundary={dayIdx % 7 === 0 && dayIdx > 0}
+                      isWeekBoundary={viewMode === '3week' && dayIdx % 7 === 0 && dayIdx > 0}
                       conflictHalfId={dragConflictCellId}
                       compact={isCompact}
                       onClick={(e) => {
