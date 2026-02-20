@@ -36,8 +36,11 @@ export function CalendarEventBlock({
     data: { event },
   })
 
+  const isMemo = event.event_type === 'memo'
   const course = event.students?.ib_course ?? ''
-  const colorClass = courseColors[course] ?? 'bg-gray-200 border-gray-400 text-gray-900'
+  const colorClass = isMemo
+    ? 'bg-yellow-100 border-yellow-400 text-yellow-900 dark:bg-yellow-900 dark:border-yellow-700 dark:text-yellow-100'
+    : (courseColors[course] ?? 'bg-gray-200 border-gray-400 text-gray-900')
   const statusClass = statusStyles[event.status] ?? ''
   const isCancelled = event.status === 'cancelled'
   const showAddOverlay = isCancelled && onAddMakeup && isHovered
@@ -67,7 +70,9 @@ export function CalendarEventBlock({
         {hasConflict && (
           <AlertTriangle className="h-3 w-3 shrink-0 text-red-600 dark:text-red-400" />
         )}
-        <span className="font-semibold truncate">{event.students?.name_ko}</span>
+        <span className="font-semibold truncate">
+          {isMemo ? event.title : event.students?.name_ko}
+        </span>
       </div>
       <div className="text-[10px] opacity-75" data-testid="event-time">
         {formatTime(event.start_at)} - {formatTime(event.end_at)}
@@ -98,8 +103,11 @@ export function CalendarEventBlockOverlay({
 }: {
   readonly event: ScheduleEventWithStudent
 }) {
+  const isMemo = event.event_type === 'memo'
   const course = event.students?.ib_course ?? ''
-  const colorClass = courseColors[course] ?? 'bg-gray-200 border-gray-400 text-gray-900'
+  const colorClass = isMemo
+    ? 'bg-yellow-100 border-yellow-400 text-yellow-900 dark:bg-yellow-900 dark:border-yellow-700 dark:text-yellow-100'
+    : (courseColors[course] ?? 'bg-gray-200 border-gray-400 text-gray-900')
 
   return (
     <div
@@ -108,7 +116,9 @@ export function CalendarEventBlockOverlay({
         colorClass
       )}
     >
-      <div className="font-semibold truncate">{event.students?.name_ko}</div>
+      <div className="font-semibold truncate">
+        {isMemo ? event.title : event.students?.name_ko}
+      </div>
       <div className="text-[10px] opacity-75">
         {formatTime(event.start_at)} - {formatTime(event.end_at)}
       </div>

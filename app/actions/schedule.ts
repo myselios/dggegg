@@ -27,21 +27,23 @@ export async function createScheduleEvent(input: ScheduleEventInsert): Promise<A
     const validated = scheduleEventInsertSchema.parse(input)
     const supabase = await createClient()
 
-    // 같은 학생, 겹치는 시간대에 기존 이벤트가 있는지 확인
-    const { data: existing } = await supabase
-      .from('schedule_events')
-      .select('id')
-      .eq('student_id', validated.student_id)
-      .neq('status', 'cancelled')
-      .lt('start_at', validated.end_at)
-      .gt('end_at', validated.start_at)
-      .limit(1)
+    // 수업(lesson)인 경우에만 같은 학생, 겹치는 시간대에 기존 이벤트가 있는지 확인
+    if (validated.student_id && validated.event_type === 'lesson') {
+      const { data: existing } = await supabase
+        .from('schedule_events')
+        .select('id')
+        .eq('student_id', validated.student_id)
+        .neq('status', 'cancelled')
+        .lt('start_at', validated.end_at)
+        .gt('end_at', validated.start_at)
+        .limit(1)
 
-    if (existing && existing.length > 0) {
-      return { success: false, error: '해당 시간에 이미 수업이 등록되어 있습니다' }
+      if (existing && existing.length > 0) {
+        return { success: false, error: '해당 시간에 이미 수업이 등록되어 있습니다' }
+      }
     }
 
-    const { data, error } = await supabase
+    const { data, error} = await supabase
       .from('schedule_events')
       .insert(validated)
       .select('*, students(id, name_ko, school, ib_course)')
@@ -67,15 +69,15 @@ export async function updateScheduleEvent(id: string, input: ScheduleEventUpdate
     const validated = scheduleEventUpdateSchema.parse(input)
     const supabase = await createClient()
 
-    // 시간이 변경되는 경우 중복 체크
+    // 시간이 변경되는 경우 중복 체크 (수업인 경우에만)
     if (validated.start_at && validated.end_at) {
       const { data: current } = await supabase
         .from('schedule_events')
-        .select('student_id')
+        .select('student_id, event_type')
         .eq('id', id)
         .single()
 
-      if (current) {
+      if (current && current.student_id && current.event_type === 'lesson') {
         const { data: existing } = await supabase
           .from('schedule_events')
           .select('id')
@@ -177,6 +179,8 @@ export async function createRecurringEvents(
 
       events.push({
         student_id: validatedBase.student_id,
+        title: validatedBase.title,
+        event_type: validatedBase.event_type,
         status: validatedBase.status,
         template_type: validatedBase.template_type,
         color: validatedBase.color,

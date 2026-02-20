@@ -39,7 +39,7 @@ export type EnrollmentInsert = Omit<Enrollment, 'id' | 'created_at'>
 
 export type ScheduleEvent = {
   readonly id: string
-  readonly student_id: string
+  readonly student_id: string | null
   readonly start_at: string
   readonly end_at: string
   readonly status: 'scheduled' | 'completed' | 'cancelled' | 'no_show'
@@ -47,6 +47,8 @@ export type ScheduleEvent = {
   readonly recurrence_rule: string | null
   readonly recurrence_group_id: string | null
   readonly color: string | null
+  readonly title: string | null
+  readonly event_type: 'lesson' | 'memo'
   readonly created_at: string
   readonly updated_at: string
 }
@@ -96,7 +98,7 @@ export type ConsultationLogInsert = Omit<ConsultationLog, 'id' | 'created_at'>
 
 // 조인 타입
 export type ScheduleEventWithStudent = ScheduleEvent & {
-  readonly students: Pick<Student, 'id' | 'name_ko' | 'school' | 'ib_course'>
+  readonly students: Pick<Student, 'id' | 'name_ko' | 'school' | 'ib_course'> | null
 }
 
 export type LessonNoteWithEvent = LessonNote & {

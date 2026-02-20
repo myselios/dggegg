@@ -27,7 +27,7 @@ import { LessonNotePanel } from './lesson-note-panel'
 import { Button } from '@/components/ui/button'
 import type { ScheduleEventWithStudent } from '@/lib/types/database'
 
-const HOURS = Array.from({ length: 15 }, (_, i) => i + 8) // 08:00 ~ 22:00
+const HOURS = Array.from({ length: 16 }, (_, i) => i + 8) // 08:00 ~ 23:00
 const MINUTES_10 = [0, 10, 20, 30, 40, 50] as const
 
 type ViewMode = '3week' | '1week' | 'day'
@@ -404,8 +404,11 @@ export function ThreeWeekCalendar({
                           event={event}
                           hasConflict={conflictingIds.has(event.id)}
                           onClick={() => {
-                            setSelectedEvent(event)
-                            setSelectedSlot(null)
+                            // Only open lesson note panel for lessons, not memos
+                            if (event.event_type === 'lesson') {
+                              setSelectedEvent(event)
+                              setSelectedSlot(null)
+                            }
                           }}
                           onAddMakeup={(cancelledEvent) => {
                             const cancelledStart = new Date(cancelledEvent.start_at)

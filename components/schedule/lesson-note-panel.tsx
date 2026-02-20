@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { format } from 'date-fns'
 import { ko } from 'date-fns/locale'
+import { toast } from 'sonner'
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
@@ -33,12 +34,19 @@ export function LessonNotePanel({
 
   useEffect(() => {
     getLessonNote(event.id).then(setExistingNote)
-    getPreviousLessonNote(event.student_id, event.start_at).then((note) => {
-      if (note) setPreviousNote(note.content ?? null)
-    })
+    if (event.student_id) {
+      getPreviousLessonNote(event.student_id, event.start_at).then((note) => {
+        if (note) setPreviousNote(note.content ?? null)
+      })
+    }
   }, [event.id, event.student_id, event.start_at])
 
   async function handleSave(formData: FormData) {
+    if (!event.student_id) {
+      toast.error('개인 메모에는 수업 노트를 작성할 수 없습니다')
+      return
+    }
+
     const noteResult = await upsertLessonNote({
       event_id: event.id,
       student_id: event.student_id,
