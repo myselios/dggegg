@@ -69,7 +69,7 @@ test.describe('스케줄 드래그앤드롭', () => {
     await expect(firstEvent).toHaveAttribute('tabindex', '0')
   })
 
-  test('이벤트를 다른 셀로 드래그하면 시간이 변경된다', async ({ page }) => {
+  test('이벤트를 다른 시간대로 드래그하면 시간이 변경된다', async ({ page }) => {
     let events = page.locator('[data-testid="event-block"]')
     if (await events.count() === 0) {
       await createEventViaUI(page, 10)
@@ -83,12 +83,11 @@ test.describe('스케줄 드래그앤드롭', () => {
     const eventBox = await firstEvent.boundingBox()
     if (!eventBox) throw new Error('이벤트 블록의 위치를 가져올 수 없습니다')
 
-    // 이벤트가 속한 셀 위치 파악
     const eventCenterX = eventBox.x + eventBox.width / 2
     const eventCenterY = eventBox.y + eventBox.height / 2
 
-    // 빈 droppable 셀을 찾아서 그 중앙으로 드래그
-    // 이벤트가 없는 인접 셀을 찾는다
+    // 같은 열에서 다른 시간대(아래쪽) 빈 셀을 찾는다
+    // 이렇게 하면 시간 텍스트가 확실히 변경된다
     const allCells = page.locator('[data-testid="droppable-cell"]')
     const cellCount = await allCells.count()
     let targetBox = null
@@ -98,18 +97,11 @@ test.describe('스케줄 드래그앤드롭', () => {
       const box = await cell.boundingBox()
       if (!box) continue
 
-      // 이벤트가 현재 있는 셀은 건너뛴다
-      const cellCenterX = box.x + box.width / 2
-      const cellCenterY = box.y + box.height / 2
-      const isCurrentCell =
-        cellCenterX > eventBox.x && cellCenterX < eventBox.x + eventBox.width &&
-        cellCenterY > eventBox.y - 10 && cellCenterY < eventBox.y + eventBox.height + 10
+      // 같은 열(비슷한 X)이고, 다른 행(다른 Y, 최소 30px 아래)인 셀
+      const sameColumn = Math.abs(box.x - eventBox.x) < 10
+      const differentRow = box.y > eventBox.y + 30
 
-      if (isCurrentCell) continue
-
-      // 같은 행(비슷한 Y)에서 다른 열의 셀
-      if (Math.abs(box.y - eventBox.y) < 20) {
-        // 이 셀에 이벤트가 없는지 확인
+      if (sameColumn && differentRow) {
         const childEvents = await cell.locator('[data-testid="event-block"]').count()
         if (childEvents === 0) {
           targetBox = box
@@ -129,9 +121,8 @@ test.describe('스케줄 드래그앤드롭', () => {
     // 드래그 수행
     await performDrag(page, { x: eventCenterX, y: eventCenterY }, { x: targetX, y: targetY })
 
-    // DragOverlay가 나타났다가 사라지거나, toast가 뜨거나, 시간이 변경됨
-    // 잠시 대기 후 결과 확인
-    await page.waitForTimeout(1_000)
+    // 결과 확인
+    await page.waitForTimeout(1_500)
 
     const toast = page.locator('text=수업 일정이 변경되었습니다')
     const dragSucceeded = await toast.isVisible({ timeout: 3_000 }).catch(() => false)
