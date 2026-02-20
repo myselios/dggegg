@@ -1,0 +1,176 @@
+import { test, expect, type Page } from '@playwright/test'
+
+/**
+ * 헬퍼: 캘린더 셀을 클릭하여 이벤트 생성 다이얼로그를 열고, 수업을 추가한다.
+ */
+async function createEventViaUI(page: Page, cellIndex: number) {
+  const cell = page.locator('[data-testid="droppable-cell"]').nth(cellIndex)
+  await cell.click()
+
+  const dialog = page.locator('[role="dialog"]')
+  await expect(dialog).toBeVisible({ timeout: 5_000 })
+
+  // 학생 선택 (첫 번째 active 학생)
+  const studentTrigger = dialog.locator('button').filter({ hasText: '학생 선택' })
+  await studentTrigger.click()
+  const firstStudent = page.locator('[role="option"]').first()
+  await expect(firstStudent).toBeVisible({ timeout: 3_000 })
+  await firstStudent.click()
+
+  // 수업 추가
+  const submitBtn = dialog.locator('button[type="submit"]')
+  await submitBtn.click()
+  await expect(dialog).toBeHidden({ timeout: 10_000 })
+}
+
+/**
+ * 헬퍼: dnd-kit 드래그를 수행한다.
+ * 시작점에서 마우스를 누르고, activation distance(8px)를 넘긴 후, 목표까지 이동하고 놓는다.
+ */
+async function performDrag(page: Page, from: { x: number; y: number }, to: { x: number; y: number }) {
+  await page.mouse.move(from.x, from.y)
+  await page.mouse.down()
+
+  // dnd-kit PointerSensor activation distance: 8px 이상 이동 필요
+  const dx = to.x - from.x
+  const dy = to.y - from.y
+  const activateX = from.x + (dx > 0 ? 10 : -10)
+  await page.mouse.move(activateX, from.y, { steps: 3 })
+  await page.waitForTimeout(150)
+
+  // 목표 위치까지 천천히 이동
+  await page.mouse.move(to.x, to.y, { steps: 15 })
+  await page.waitForTimeout(300)
+
+  await page.mouse.up()
+}
+
+test.describe('스케줄 드래그앤드롭', () => {
+  test.beforeEach(async ({ page }) => {
+    await page.goto('/schedule')
+    await page.waitForSelector('[data-testid="calendar-grid"]', { timeout: 15_000 })
+  })
+
+  test('이벤트를 생성하고 드래그 가능한 상태로 렌더링되는지 확인', async ({ page }) => {
+    let events = page.locator('[data-testid="event-block"]')
+    let count = await events.count()
+
+    if (count === 0) {
+      await createEventViaUI(page, 10)
+      await expect(page.locator('[data-testid="event-block"]').first()).toBeVisible({ timeout: 10_000 })
+      events = page.locator('[data-testid="event-block"]')
+      count = await events.count()
+    }
+
+    expect(count).toBeGreaterThan(0)
+
+    const firstEvent = events.first()
+    await expect(firstEvent).toBeVisible()
+    await expect(firstEvent).toHaveAttribute('tabindex', '0')
+  })
+
+  test('이벤트를 다른 셀로 드래그하면 시간이 변경된다', async ({ page }) => {
+    let events = page.locator('[data-testid="event-block"]')
+    if (await events.count() === 0) {
+      await createEventViaUI(page, 10)
+      await expect(page.locator('[data-testid="event-block"]').first()).toBeVisible({ timeout: 10_000 })
+      events = page.locator('[data-testid="event-block"]')
+    }
+
+    const firstEvent = events.first()
+    const timeBefore = await firstEvent.locator('[data-testid="event-time"]').textContent()
+
+    const eventBox = await firstEvent.boundingBox()
+    if (!eventBox) throw new Error('이벤트 블록의 위치를 가져올 수 없습니다')
+
+    // 이벤트가 속한 셀 위치 파악
+    const eventCenterX = eventBox.x + eventBox.width / 2
+    const eventCenterY = eventBox.y + eventBox.height / 2
+
+    // 빈 droppable 셀을 찾아서 그 중앙으로 드래그
+    // 이벤트가 없는 인접 셀을 찾는다
+    const allCells = page.locator('[data-testid="droppable-cell"]')
+    const cellCount = await allCells.count()
+    let targetBox = null
+
+    for (let i = 0; i < cellCount; i++) {
+      const cell = allCells.nth(i)
+      const box = await cell.boundingBox()
+      if (!box) continue
+
+      // 이벤트가 현재 있는 셀은 건너뛴다
+      const cellCenterX = box.x + box.width / 2
+      const cellCenterY = box.y + box.height / 2
+      const isCurrentCell =
+        cellCenterX > eventBox.x && cellCenterX < eventBox.x + eventBox.width &&
+        cellCenterY > eventBox.y - 10 && cellCenterY < eventBox.y + eventBox.height + 10
+
+      if (isCurrentCell) continue
+
+      // 같은 행(비슷한 Y)에서 다른 열의 셀
+      if (Math.abs(box.y - eventBox.y) < 20) {
+        // 이 셀에 이벤트가 없는지 확인
+        const childEvents = await cell.locator('[data-testid="event-block"]').count()
+        if (childEvents === 0) {
+          targetBox = box
+          break
+        }
+      }
+    }
+
+    if (!targetBox) {
+      test.skip(true, '드래그할 빈 셀을 찾을 수 없습니다')
+      return
+    }
+
+    const targetX = targetBox.x + targetBox.width / 2
+    const targetY = targetBox.y + targetBox.height / 2
+
+    // 드래그 수행
+    await performDrag(page, { x: eventCenterX, y: eventCenterY }, { x: targetX, y: targetY })
+
+    // DragOverlay가 나타났다가 사라지거나, toast가 뜨거나, 시간이 변경됨
+    // 잠시 대기 후 결과 확인
+    await page.waitForTimeout(1_000)
+
+    const toast = page.locator('text=수업 일정이 변경되었습니다')
+    const dragSucceeded = await toast.isVisible({ timeout: 3_000 }).catch(() => false)
+
+    const timeAfter = await page.locator('[data-testid="event-block"]').first()
+      .locator('[data-testid="event-time"]').textContent().catch(() => null)
+
+    const timeChanged = timeAfter !== timeBefore
+
+    expect(dragSucceeded || timeChanged).toBeTruthy()
+  })
+
+  test('드래그 중 DragOverlay가 표시된다', async ({ page }) => {
+    let events = page.locator('[data-testid="event-block"]')
+    if (await events.count() === 0) {
+      await createEventViaUI(page, 10)
+      await expect(page.locator('[data-testid="event-block"]').first()).toBeVisible({ timeout: 10_000 })
+      events = page.locator('[data-testid="event-block"]')
+    }
+
+    const firstEvent = events.first()
+    const eventBox = await firstEvent.boundingBox()
+    if (!eventBox) throw new Error('이벤트 블록 위치를 가져올 수 없습니다')
+
+    const startX = eventBox.x + eventBox.width / 2
+    const startY = eventBox.y + eventBox.height / 2
+
+    // 드래그 시작 (마우스 누르고 8px 이상 이동)
+    await page.mouse.move(startX, startY)
+    await page.mouse.down()
+    await page.mouse.move(startX + 15, startY, { steps: 5 })
+    await page.waitForTimeout(200)
+
+    // DragOverlay 확인
+    const overlay = page.locator('[data-testid="drag-overlay"]')
+    await expect(overlay).toBeVisible({ timeout: 3_000 })
+
+    // 드래그 취소
+    await page.keyboard.press('Escape')
+    await expect(overlay).toBeHidden({ timeout: 2_000 })
+  })
+})

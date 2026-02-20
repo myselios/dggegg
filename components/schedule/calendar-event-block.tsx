@@ -46,6 +46,7 @@ export function CalendarEventBlock({
     <button
       ref={setNodeRef}
       type="button"
+      data-testid="event-block"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       onClick={(e) => {
@@ -68,7 +69,7 @@ export function CalendarEventBlock({
         )}
         <span className="font-semibold truncate">{event.students?.name_ko}</span>
       </div>
-      <div className="text-[10px] opacity-75">
+      <div className="text-[10px] opacity-75" data-testid="event-time">
         {formatTime(event.start_at)} - {formatTime(event.end_at)}
       </div>
       {event.template_type && (
