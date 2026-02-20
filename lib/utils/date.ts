@@ -32,6 +32,15 @@ export function getWeeksInRange(start: Date, end: Date): Date[][] {
   return weeks
 }
 
+/**
+ * 1주 범위: 이번주 월요일 ~ 이번주 일요일
+ */
+export function getOneWeekRange(baseDate: Date = new Date()) {
+  const weekStart = startOfWeek(baseDate, { weekStartsOn: 1 })
+  const weekEnd = endOfWeek(baseDate, { weekStartsOn: 1 })
+  return { start: weekStart, end: weekEnd }
+}
+
 export function formatTime(date: Date | string): string {
   return format(new Date(date), 'HH:mm')
 }

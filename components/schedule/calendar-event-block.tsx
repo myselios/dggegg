@@ -54,7 +54,7 @@ export function CalendarEventBlock({
         onClick()
       }}
       className={cn(
-        'relative w-full rounded border-l-4 px-2 py-1 text-left text-xs transition-shadow hover:shadow-md cursor-grab active:cursor-grabbing',
+        'relative w-full rounded border-l-4 px-2 py-1 text-left text-xs transition-shadow hover:shadow-md cursor-grab active:cursor-grabbing touch-none',
         colorClass,
         statusClass,
         isDragging && 'opacity-30',

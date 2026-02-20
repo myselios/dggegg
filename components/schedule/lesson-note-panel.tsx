@@ -91,7 +91,7 @@ export function LessonNotePanel({
 
   return (
     <Sheet open onOpenChange={onClose}>
-      <SheetContent className="w-[480px] overflow-y-auto sm:max-w-lg">
+      <SheetContent className="w-full overflow-y-auto sm:w-[480px] sm:max-w-lg">
         <SheetHeader>
           <SheetTitle className="flex items-center gap-2">
             {event.students?.name_ko}
