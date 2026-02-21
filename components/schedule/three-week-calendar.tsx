@@ -400,9 +400,15 @@ export function ThreeWeekCalendar({
                           event={event}
                           hasConflict={conflictingIds.has(event.id)}
                           onClick={() => {
-                            // Open lesson note panel for lessons (not memos)
-                            // Fallback: events with student_id are lessons even if event_type is undefined
-                            if (event.event_type !== 'memo' && event.student_id) {
+                            const isMemo = event.event_type === 'memo' || (!event.student_id && event.title)
+                            if (isMemo) {
+                              // 메모 클릭 시 편집 다이얼로그 열기
+                              setSelectedSlot({
+                                date: new Date(event.start_at),
+                                hour: new Date(event.start_at).getHours(),
+                                minute: new Date(event.start_at).getMinutes(),
+                              })
+                            } else if (event.student_id) {
                               setSelectedEvent(event)
                               setSelectedSlot(null)
                             }

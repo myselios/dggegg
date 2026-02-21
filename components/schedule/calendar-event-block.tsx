@@ -44,7 +44,7 @@ export function CalendarEventBlock({
     data: { event },
   })
 
-  const isMemo = event.event_type === 'memo'
+  const isMemo = event.event_type === 'memo' || (!event.student_id && event.title)
   const course = event.students?.ib_course ?? ''
   const barColor = isMemo
     ? 'bg-yellow-500 dark:bg-yellow-600'
@@ -131,7 +131,7 @@ export function CalendarEventBlockOverlay({
 }: {
   readonly event: ScheduleEventWithStudent
 }) {
-  const isMemo = event.event_type === 'memo'
+  const isMemo = event.event_type === 'memo' || (!event.student_id && event.title)
   const course = event.students?.ib_course ?? ''
   const barColor = isMemo
     ? 'bg-yellow-500 dark:bg-yellow-600'

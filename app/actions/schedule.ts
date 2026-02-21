@@ -51,7 +51,8 @@ export async function createScheduleEvent(input: ScheduleEventInsert): Promise<A
       .single()
 
     if (error) {
-      return { success: false, error: '수업 일정 등록에 실패했습니다' }
+      console.error('[createScheduleEvent] Supabase error:', error.message, error.code, error.details)
+      return { success: false, error: `일정 등록에 실패했습니다: ${error.message}` }
     }
 
     revalidatePath('/schedule')
