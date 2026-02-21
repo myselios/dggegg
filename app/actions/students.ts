@@ -83,6 +83,41 @@ export async function updateStudent(id: string, input: StudentUpdate): Promise<A
   }
 }
 
+export async function createStudentsBatch(
+  inputs: readonly StudentInsert[]
+): Promise<ActionResult<{ created: number; skipped: number }>> {
+  try {
+    await requireAuth()
+
+    if (inputs.length === 0) {
+      return { success: false, error: '추가할 학생이 없습니다' }
+    }
+
+    const validated = inputs.map((input) => studentInsertSchema.parse(input))
+
+    const supabase = await createClient()
+    const { data, error } = await supabase
+      .from('students')
+      .insert(validated)
+      .select()
+
+    if (error) {
+      return { success: false, error: `학생 일괄 등록에 실패했습니다: ${error.message}` }
+    }
+
+    revalidatePath('/students')
+    return {
+      success: true,
+      data: { created: data.length, skipped: inputs.length - data.length },
+    }
+  } catch (e) {
+    if (e instanceof ZodError) {
+      return { success: false, error: e.issues.map((issue) => issue.message).join(', ') }
+    }
+    return { success: false, error: '학생 일괄 등록 중 오류가 발생했습니다' }
+  }
+}
+
 export async function deleteStudent(id: string): Promise<ActionResult<null>> {
   try {
     await requireAuth()
