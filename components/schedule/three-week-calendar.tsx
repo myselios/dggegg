@@ -30,6 +30,8 @@ import type { ScheduleEventWithStudent } from '@/lib/types/database'
 
 const HOURS = Array.from({ length: 16 }, (_, i) => i + 8) // 08:00 ~ 23:00
 const MINUTES_10 = [0, 10, 20, 30, 40, 50] as const
+const CELL_HEIGHT_COMPACT = 48  // h-12
+const CELL_HEIGHT_EXPANDED = 120 // h-[120px]
 
 type ViewMode = '3week' | '1week' | 'day'
 
@@ -401,6 +403,8 @@ export function ThreeWeekCalendar({
                           key={event.id}
                           event={event}
                           hasConflict={conflictingIds.has(event.id)}
+                          cellHeightPx={isCompact ? CELL_HEIGHT_COMPACT : CELL_HEIGHT_EXPANDED}
+                          offsetMinutes={new Date(event.start_at).getMinutes()}
                           onClick={() => {
                             const isMemo = event.event_type === 'memo' || (!event.student_id && event.title)
                             if (isMemo) {

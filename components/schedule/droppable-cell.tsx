@@ -76,8 +76,8 @@ export function DroppableCell({
           <div className="h-5 border-t border-border/20" />
         </div>
       )}
-      {/* Events */}
-      <div className="relative z-10 p-0.5 overflow-hidden">
+      {/* Events — absolute positioned based on duration */}
+      <div className="absolute inset-0 z-10">
         {children}
       </div>
     </div>
