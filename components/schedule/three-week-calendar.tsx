@@ -390,12 +390,8 @@ export function ThreeWeekCalendar({
                       isWeekBoundary={viewMode === '3week' && dayIdx % 7 === 0 && dayIdx > 0}
                       conflictHalfId={dragConflictCellId}
                       compact={isCompact}
-                      onClick={(e) => {
-                        const rect = e.currentTarget.getBoundingClientRect()
-                        const yOffset = e.clientY - rect.top
-                        const minuteRaw = Math.floor((yOffset / rect.height) * 60)
-                        const minute = Math.max(0, Math.min(50, Math.floor(minuteRaw / 10) * 10))
-                        setSelectedSlot({ date: day, hour, minute })
+                      onClick={() => {
+                        setSelectedSlot({ date: day, hour, minute: 0 })
                       }}
                     >
                       {cellEvents.map((event) => (
