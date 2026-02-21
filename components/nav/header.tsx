@@ -53,13 +53,13 @@ export function Header({
       <div className="flex items-center gap-2">
         {showMenuButton && (
           <Button variant="ghost" size="icon" onClick={onMenuClick} className="shrink-0">
-            <Menu className="h-5 w-5" />
+            <Menu className="size-5" />
           </Button>
         )}
         <h2 className="text-base font-semibold text-foreground">{pageTitle}</h2>
       </div>
       <div className="flex items-center gap-2 text-sm text-muted-foreground">
-        <CalendarDays className="h-4 w-4" />
+        <CalendarDays className="size-4" />
         <span className="hidden sm:inline">{today}</span>
       </div>
     </header>

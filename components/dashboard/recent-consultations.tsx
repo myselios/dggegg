@@ -14,6 +14,14 @@ import { createClient } from '@/lib/supabase/client'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { cn } from '@/lib/utils'
+import { getConsultationType } from '@/lib/constants/status-styles'
+
+const TYPE_ICONS = {
+  consultation: MessageSquare,
+  complaint: AlertCircle,
+  request: HelpCircle,
+  notice: Bell,
+} as const
 
 type ConsultationWithStudent = {
   readonly id: string
@@ -21,41 +29,6 @@ type ConsultationWithStudent = {
   readonly content: string
   readonly date: string
   readonly students: { readonly name_ko: string }
-}
-
-const TYPE_CONFIG = {
-  consultation: {
-    label: '상담',
-    icon: MessageSquare,
-    badgeClass: 'border-blue-200 text-blue-700 bg-blue-50 dark:border-blue-800 dark:text-blue-300 dark:bg-blue-950',
-    iconBg: 'bg-blue-100 dark:bg-blue-900',
-    iconColor: 'text-blue-600 dark:text-blue-400',
-  },
-  complaint: {
-    label: '불만',
-    icon: AlertCircle,
-    badgeClass: 'border-red-200 text-red-700 bg-red-50 dark:border-red-800 dark:text-red-300 dark:bg-red-950',
-    iconBg: 'bg-red-100 dark:bg-red-900',
-    iconColor: 'text-red-600 dark:text-red-400',
-  },
-  request: {
-    label: '요청',
-    icon: HelpCircle,
-    badgeClass: 'border-violet-200 text-violet-700 bg-violet-50 dark:border-violet-800 dark:text-violet-300 dark:bg-violet-950',
-    iconBg: 'bg-violet-100 dark:bg-violet-900',
-    iconColor: 'text-violet-600 dark:text-violet-400',
-  },
-  notice: {
-    label: '공지',
-    icon: Bell,
-    badgeClass: 'border-amber-200 text-amber-700 bg-amber-50 dark:border-amber-800 dark:text-amber-300 dark:bg-amber-950',
-    iconBg: 'bg-amber-100 dark:bg-amber-900',
-    iconColor: 'text-amber-600 dark:text-amber-400',
-  },
-} as const
-
-function getTypeConfig(type: string) {
-  return TYPE_CONFIG[type as keyof typeof TYPE_CONFIG] ?? TYPE_CONFIG.consultation
 }
 
 export function RecentConsultations() {
@@ -74,10 +47,10 @@ export function RecentConsultations() {
   }, [])
 
   return (
-    <Card className="shadow-sm">
+    <Card>
       <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <MessagesSquare className="h-5 w-5 text-violet-600 dark:text-violet-400" />
+        <CardTitle className="flex items-center gap-2 text-base font-semibold">
+          <MessagesSquare className="size-5 text-violet-600 dark:text-violet-400" />
           최근 상담
           {logs.length > 0 && (
             <Badge variant="secondary" className="ml-auto text-xs font-normal">
@@ -89,8 +62,8 @@ export function RecentConsultations() {
       <CardContent>
         {logs.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-8 text-center">
-            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-muted">
-              <MessagesSquare className="h-6 w-6 text-muted-foreground/50" />
+            <div className="flex size-10 items-center justify-center rounded-full bg-muted">
+              <MessagesSquare className="size-5 text-muted-foreground/50" />
             </div>
             <p className="mt-3 text-sm font-medium text-muted-foreground">
               상담 기록이 없습니다
@@ -102,23 +75,21 @@ export function RecentConsultations() {
         ) : (
           <div className="flex flex-col gap-3">
             {logs.map((log) => {
-              const config = getTypeConfig(log.type)
-              const Icon = config.icon
+              const config = getConsultationType(log.type)
+              const Icon = TYPE_ICONS[log.type as keyof typeof TYPE_ICONS] ?? MessageSquare
 
               return (
                 <div
                   key={log.id}
-                  className="flex gap-3 rounded-lg border p-3 transition-colors hover:bg-accent/50"
+                  className="flex gap-3 rounded-lg border border-border/40 p-3 transition-colors hover:bg-accent/50"
                 >
-                  {/* Type Icon */}
                   <div className={cn(
-                    'flex h-9 w-9 shrink-0 items-center justify-center rounded-lg',
+                    'flex size-9 shrink-0 items-center justify-center rounded-lg',
                     config.iconBg
                   )}>
-                    <Icon className={cn('h-4 w-4', config.iconColor)} />
+                    <Icon className={cn('size-4', config.iconColor)} />
                   </div>
 
-                  {/* Content */}
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2">
                       <span className="text-sm font-medium truncate">
@@ -126,7 +97,7 @@ export function RecentConsultations() {
                       </span>
                       <Badge
                         variant="outline"
-                        className={cn('text-[10px] px-1.5 py-0 gap-1', config.badgeClass)}
+                        className={cn('text-[10px] px-1.5 py-0 gap-1', config.badge)}
                       >
                         {config.label}
                       </Badge>
