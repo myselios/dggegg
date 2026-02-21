@@ -8,16 +8,76 @@
 
 ## 현재 상태
 
-- **현재 브랜치**: feat/ui-design-renewal-phase2
-- **마지막 커밋**: 9ad6e08 ([style] UI/UX 디자인 리뉴얼 Phase 2)
-- **마지막 빌드**: ✅ 통과 (2026-02-21)
-- **마지막 E2E**: ✅ 20 passed, 3 skipped (2026-02-21)
+- **현재 브랜치**: main
+- **마지막 커밋**: 7322a71 ([fix] 3주 뷰 주간 범위 헤더 정렬 수정)
+- **마지막 빌드**: ✅ 통과 (2026-02-22)
+- **마지막 E2E**: ✅ 18 passed, 5 skipped (2026-02-22)
 - **DB 마이그레이션**: 005 적용 완료 (student_id nullable, title, event_type 추가)
-- **진행 중 작업**: Sprint 4 완료 — merge 대기
+- **진행 중 작업**: 없음 — Sprint 4 완료
 
 ---
 
-## 완료된 추가 작업 (Sprint 3 이후)
+## ✅ Sprint 4: UI/UX 전면 디자인 리뉴얼
+- **상태**: ✅ Completed
+- **기간**: 2026-02-21 ~ 2026-02-22
+- **목표**: 전체 UI를 Glassmorphism + Indigo 브랜드 컬러로 모던 리뉴얼
+
+### Phase 1: Minimal Clean 디자인 통일 (2026-02-21)
+| # | 파일 | 변경 내용 | 커밋 |
+|---|------|----------|------|
+| 1 | `app/globals.css` | Indigo 브랜드 컬러 테마 + CSS 변수 | 50f929f |
+| 2 | `components/nav/sidebar.tsx` | 사이드바 리디자인 | 50f929f |
+| 3 | `components/nav/header.tsx` | 프로스티드 글래스 헤더 | 50f929f |
+| 4 | `app/(authenticated)/page.tsx` | 대시보드 통계 카드 | 50f929f |
+| 5 | `components/dashboard/today-lessons.tsx` | 아이콘 컨테이너 + 카드 | 50f929f |
+| 6 | `components/dashboard/weekly-schedule.tsx` | 아이콘 컨테이너 + 카드 | 50f929f |
+| 7 | `components/dashboard/recent-consultations.tsx` | 카드 스타일 통일 | 50f929f |
+| 8 | `app/login/page.tsx` | 로그인 컬러 적용 | 50f929f |
+| 9 | `components/students/student-board.tsx` | 학생 보드 스타일 | 50f929f |
+
+### Phase 2: 나머지 컴포넌트 통일 (2026-02-21)
+| # | 파일 | 변경 내용 | 커밋 |
+|---|------|----------|------|
+| 10 | `components/schedule/three-week-calendar.tsx` | 캘린더 그리드 shadow | 9ad6e08 |
+| 11 | `components/schedule/*.tsx` | 다이얼로그 타이포그래피 | 9ad6e08 |
+| 12 | `components/students/student-tabs.tsx` | 학생 상세 헤더 리디자인 | 9ad6e08 |
+| 13 | `components/students/student-card.tsx` | 카드 shadow + hover | 9ad6e08 |
+| 14 | `app/(authenticated)/materials/page.tsx` | 빈 상태 디자인 | 9ad6e08 |
+| 15 | 학생 탭 컴포넌트 (4개) | 수업기록/성적/상담 스타일 | 9ad6e08 |
+| 16 | `components/dashboard/incomplete-lessons.tsx` | 아이콘/보더 통일 | 9ad6e08 |
+
+### Phase 3: Glassmorphism 적용 (2026-02-22)
+| # | 변경 내용 | 커밋 |
+|---|----------|------|
+| 17 | `globals.css` — 반투명 카드 + 메쉬 그래디언트 배경 + glass-card 유틸리티 | 55e5854 |
+| 18 | 레이아웃 — glass-mesh 배경 (Indigo/Violet/Blue 메쉬) | 55e5854 |
+| 19 | 사이드바/헤더 — backdrop-blur-xl + 반투명 보더 | 55e5854 |
+| 20 | 대시보드 — 환영/통계/위젯 모두 glass-card | 55e5854 |
+| 21 | 로그인 — 강화된 메쉬 배경 + blur-2xl 카드 | 55e5854 |
+| 22 | 스케줄 — 캘린더 glass-card + frosted 헤더 | 55e5854 |
+| 23 | 학생 — 보드/카드/프로필/탭 전부 glass-card | 55e5854 |
+| 24 | 모든 카드 rounded-2xl 통일 | 55e5854 |
+
+### Phase 4: 스케줄 UX 개선 (2026-02-22)
+| # | 변경 내용 | 커밋 |
+|---|----------|------|
+| 25 | 이벤트 블록 텍스트 가시성 개선 (패딩/폰트 축소) | 0ccd053 |
+| 26 | 이벤트 블록 클릭/드래그 영역 역전 — 학생 카드 패턴 (좌클릭/우드래그) | 902d19f |
+| 27 | 3주 뷰 칸 너비 확대 (min-w 1200→1800px, 시간컬럼 64→52px) | 89c1b42 |
+| 28 | 주간 범위 헤더 그리드 정렬 (weeks 배열 + col-span-7) | 7322a71 |
+
+### 병행 완료된 기능/버그 수정
+| 커밋 | 타입 | 내용 |
+|------|------|------|
+| 4a6fac4 | fix | 캘린더 이벤트 duration 표시 + E2E cleanup |
+| c89c5ea | style | 캘린더 이벤트 상태별 색상 구분 (완료=emerald) |
+| 6976ce4 | fix | 과거 수업 자동 완료 + cancelled/no_show UI 제거 |
+| 6a57360 | feat | 수업 등록에 메모 필드 추가, 반복(주) 제거 |
+| 1f1280d | fix | E2E 드래그 테스트 DB 변경 방지 |
+
+---
+
+## 완료된 추가 작업 (Sprint 3 이후, Sprint 4 이전)
 
 | 커밋 | 타입 | 내용 |
 |------|------|------|
@@ -31,200 +91,57 @@
 | 54c3fff | feat | 터치 드래그 지원 + 모바일 반응형 레이아웃 |
 | 3767930 | fix | 스케줄 이벤트 서버사이드 중복 방지 |
 | 2975bd4 | feat | 23시 시간대 추가 + 개인 메모 기능 |
-| 34d2a95 | chore | .gitignore 업데이트 |
 | 5ff7268 | fix | 수업 클릭 이벤트 복구 - 드래그와 클릭 충돌 해결 |
 | 6472dc8 | fix | 클릭-드래그 영역 분리 + 서버 업데이트 수정 |
 | 21f28c3 | fix | 스케줄 셀 클릭 시 분 기본값 0분 |
 | 30b73cb | fix | 메모 이벤트 표시 및 클릭 수정 |
-| b6e2519 | fix | 버그 3건 수정 (터치드래그/메모삭제/overflow) + 검증 게이트 방법론 + E2E 안정화 |
-| edcb73c | fix | 터치 드래그 inline style 방식 + overflow 재수정 |
-| 06892ad | style | 이벤트 블록에서 시간 표시 제거 - 제목/메모만 표시 |
-| ef7bce7 | feat | 이벤트 블록 높이를 수업 시간에 비례하도록 변경 |
-| 5aa115d | fix | 이벤트 제목을 여러 줄로 표시 (line-clamp-3) |
-| 5b2d420 | fix | 학생카드 클릭/드래그/삭제 영역 분리 + 터치 드래그 지원 |
-| 8c2a19a | feat | 학생 CSV 임포트 기능 추가 |
+| b6e2519 | fix | 버그 3건 수정 + 검증 게이트 방법론 + E2E 안정화 |
+| edcb73c | fix | 터치 드래그 inline style + overflow 재수정 |
+| 06892ad | style | 이벤트 블록 시간 표시 제거 |
+| ef7bce7 | feat | 이벤트 블록 높이를 수업 시간에 비례 |
+| 5aa115d | fix | 이벤트 제목 여러 줄 표시 |
+| 5b2d420 | fix | 학생카드 클릭/드래그/삭제 영역 분리 |
+| 8c2a19a | feat | 학생 CSV 임포트 기능 |
 | cfdc6cf | refactor | 디자인 통일 — Minimal Clean 스타일 |
 | e4d8927 | test | 학생 관리 보드 E2E 테스트 추가 |
-| 50f929f | style | 시각적 디자인 리뉴얼 — Indigo 브랜드 컬러 + Minimal Clean |
-
----
-
-## 🎨 Sprint 4: UI/UX 전면 디자인 리뉴얼 (진행 중)
-- **상태**: ✅ Completed
-- **시작일**: 2026-02-21
-- **완료일**: 2026-02-21
-- **목표**: ui-ux-pro-max 스킬 활용, 전체 UI를 Indigo 브랜드 컬러 + Minimal Clean 디자인으로 리뉴얼
-
-### ✅ 완료된 파일 (50f929f 커밋)
-| # | 파일 | 변경 내용 | 상태 |
-|---|------|----------|------|
-| 1 | `app/globals.css` | Indigo 브랜드 컬러 테마 + CSS 변수 정의 | ✅ 완료 |
-| 2 | `components/nav/sidebar.tsx` | 사이드바 리디자인 (로고, 메뉴, 활성 상태) | ✅ 완료 |
-| 3 | `components/nav/header.tsx` | 프로스티드 글래스 효과 + 날짜 필 스타일 | ✅ 완료 |
-| 4 | `app/(authenticated)/page.tsx` | 대시보드 환영 섹션 + 통계 카드 그래디언트 | ✅ 완료 |
-| 5 | `components/dashboard/today-lessons.tsx` | 아이콘 컨테이너 + 카드 스타일링 | ✅ 완료 |
-| 6 | `components/dashboard/weekly-schedule.tsx` | 아이콘 컨테이너 + 카드 스타일링 | ✅ 완료 |
-| 7 | `components/dashboard/recent-consultations.tsx` | 카드 스타일 통일 | ✅ 완료 |
-| 8 | `app/login/page.tsx` | 로그인 페이지 컬러 적용 | ✅ 완료 |
-| 9 | `components/students/student-board.tsx` | 학생 보드 스타일 통일 | ✅ 완료 |
-
-### ✅ Phase 2 완료 (9ad6e08 커밋)
-| # | 대상 | 설명 | 상태 |
-|---|------|------|------|
-| 10 | `components/schedule/three-week-calendar.tsx` | 캘린더 그리드 shadow + 타이포그래피 | ✅ 완료 |
-| 11 | `components/schedule/event-create-dialog.tsx` 외 | 다이얼로그 타이포그래피 + 레이아웃 | ✅ 완료 |
-| 12 | `components/students/student-tabs.tsx` + `student-profile.tsx` | 학생 상세 페이지 헤더/카드 리디자인 | ✅ 완료 |
-| 13 | `components/students/student-card.tsx` | 카드 shadow + hover 개선 | ✅ 완료 |
-| 14 | `app/(authenticated)/materials/page.tsx` | 빈 상태 디자인 추가 | ✅ 완료 |
-| 15 | 다이얼로그/폼 + 학생 탭 컴포넌트 | 수업기록/성적/상담 탭 스타일 통일 | ✅ 완료 |
-| 16 | `components/dashboard/incomplete-lessons.tsx` | 아이콘/보더 사이즈 통일 | ✅ 완료 |
-
-### 디자인 가이드 참조
-- 설계 문서: `docs/plans/2026-02-21-design-unification-design.md`
-- 스타일 상수: `lib/constants/status-styles.ts`
-- 브랜드 컬러: Indigo 계열 (globals.css CSS 변수)
+| 50f929f | style | 시각적 디자인 리뉴얼 Phase 1 |
 
 ---
 
 ## 완료된 스프린트 상세
 
-### Sprint 3: 스케줄 UX 개선 (10분 단위 정밀도 + 컴팩트 모드) ✅
-- **상태**: ✅ Completed
-- **시작일**: 2026-02-15
-- **목표**: 비정시 수업 등록/DnD 지원, 취소 보강 UX, 컴팩트 뷰, 미니캘린더 요약
+### Sprint 3: 스케줄 UX 개선 ✅
+- **기간**: 2026-02-15
+- **완료**: 10분 단위 시간 선택기, DnD 30분 분할, 취소 보강 UX, 컴팩트/확대 모드, 미니캘린더
 
-#### Frontend (frontend-dev)
-| # | 태스크 | 우선순위 | 상태 | blockedBy |
-|---|--------|---------|------|-----------|
-| S3-1 | 10분 단위 시간 선택기 (EventCreateDialog) | P0 | ✅ 완료 | 없음 |
-| S3-2 | DnD 30분 droppable 분할 | P0 | ✅ 완료 | S3-1 |
-| S3-3 | 취소 이벤트 "보강 추가" UX | P1 | ✅ 완료 | S3-1 |
-| S3-4 | 컴팩트/확대 모드 토글 (기본=컴팩트) | P2 | ✅ 완료 | S3-2 |
-| S3-5 | 미니캘린더 수업 요약 | P2 | ✅ 완료 | 없음 |
+### Sprint 2: 완성도 향상 ✅
+- **기간**: 2026-02-14
+- **완료**: 성적 차트, 미니 캘린더, 충돌 감지, 에러 핸들링 통합, 보안 수정 (I5~I7)
 
-#### Phase 구현 순서
-- Phase A (병렬): S3-1 + S3-5
-- Phase B (순차): S3-2
-- Phase C (병렬): S3-3 + S3-4
-
----
-
-### Sprint 2: 완성도 향상 (차트, 미니캘린더, 충돌감지, 에러통합) ✅
-- **상태**: ✅ Completed
-- **시작일**: 2026-02-14
-- **목표**: P2 백로그 전체 + 남은 이슈(I5~I7) 해결
-
-#### Frontend (frontend-dev)
-| # | 태스크 | 상태 |
-|---|--------|------|
-| S2-F1 | 성적 추이 차트 (Recharts 라인차트) [B8] | ✅ 완료 |
-| S2-F2 | Dashboard 미니 캘린더 [B9] | ✅ 완료 |
-| S2-F3 | 캘린더 충돌 감지 (시간 겹침 경고) [B10] | ✅ 완료 |
-
-#### Backend (backend-dev)
-| # | 태스크 | 상태 |
-|---|--------|------|
-| S2-B1 | 에러 핸들링 통합 ActionResult 패턴 [B11] | ✅ 완료 |
-| S2-B2 | 비밀번호 비교 timing-safe 수정 [I5] | ✅ 완료 |
-| S2-B3 | SWR 글로벌 설정 추가 [I6] | ✅ 완료 |
-| S2-B4 | 환경변수 시작 시 검증 [I7] | ✅ 완료 |
-
----
+### Sprint 1: MVP-0 DoD + 보안 강화 ✅
+- **기간**: 2026-02-14
+- **완료**: 캘린더/학생 DnD, 검색/필터, RLS, Zod 검증, 인증 헬퍼
 
 ### Sprint 0: MVP-0 기반 구현 ✅
 - **기간**: 2026-02-14
-- **커밋**: ded3f31 → 4e22e41 → 3b84e5b → 836e1fb
-- **완료 항목**:
-  - [x] shadcn/ui + 의존성 설치 (Task 1)
-  - [x] Supabase 연동 + 환경변수 (Task 2)
-  - [x] DB 스키마 + 마이그레이션 (Task 3)
-  - [x] 패스워드 게이트 인증 (Task 4)
-  - [x] 앱 레이아웃 + 네비게이션 (Task 5)
-  - [x] 학생 CRUD + SWR 훅 (Task 6)
-  - [x] 학생 카드 보드 Kanban (Task 7)
-  - [x] 학생 상세 페이지 (Task 8)
-  - [x] 스케줄 CRUD + SWR 훅 (Task 9)
-  - [x] 3주 슬라이딩 캘린더 (Task 10)
-  - [x] 수업 기록 슬라이드 패널 (Task 11)
-  - [x] 상담 로그 CRUD (Task 12)
-  - [x] 학생 상세 탭 채우기 (Task 13)
-  - [x] Dashboard 구현 (Task 14)
-  - [x] 최종 검증 + 정리 (Task 15)
-  - [x] UI/UX 세련화 (로그인/사이드바/헤더/대시보드/학생)
-
----
-
-### Sprint 1: MVP-0 DoD 충족 + 보안 강화
-- **상태**: ✅ Completed
-- **시작일**: 2026-02-14
-- **목표**: MVP-0 Definition of Done 5개 항목 모두 충족 + 보안 이슈 해결
-
-#### Frontend (frontend-dev)
-| # | 태스크 | 상태 |
-|---|--------|------|
-| S1-F1 | 캘린더 드래그앤드롭 (시간/날짜 변경) [B1] | ✅ 완료 |
-| S1-F2 | 학생 Kanban 드래그앤드롭 (상태 변경) [B2] | ✅ 완료 |
-| S1-F3 | 학생 검색 (이름 한/영) [B3] | ✅ 완료 |
-| S1-F4 | 학생 필터 (학교/과정/상태) [B4] | ✅ 완료 |
-
-#### Backend (backend-dev)
-| # | 태스크 | 상태 |
-|---|--------|------|
-| S1-B1 | lesson_notes.event_id UNIQUE 제약 추가 [I2] | ✅ 완료 |
-| S1-B2 | RLS 정책 추가 [B5, I1] | ✅ 완료 |
-| S1-B3 | Server Action 인증 헬퍼 [B7, I4] | ✅ 완료 |
-| S1-B4 | Server Action Zod 입력 검증 [B6, I3] | ✅ 완료 |
+- **완료**: 전체 15개 태스크 (Supabase 연동 ~ Dashboard ~ UI 세련화)
 
 ---
 
 ## 백로그 (우선순위순)
 
-### P0 - MVP DoD 필수
-| # | 기능 | 담당 | 의존관계 | 상태 |
-|---|------|------|----------|------|
-| B1 | 캘린더 드래그앤드롭 (시간/날짜 변경) | frontend-dev | 없음 | ✅ Sprint 1 |
-| B2 | 학생 Kanban 드래그앤드롭 (상태 변경) | frontend-dev | 없음 | ✅ Sprint 1 |
-
-### P1 - 높은 우선순위
-| # | 기능 | 담당 | 의존관계 | 상태 |
-|---|------|------|----------|------|
-| B3 | 학생 검색 (이름 한/영) | frontend-dev | 없음 | ✅ Sprint 1 |
-| B4 | 학생 필터 (학교/과정/상태) | frontend-dev | 없음 | ✅ Sprint 1 |
-| B5 | RLS 정책 추가 | backend-dev | 없음 | ✅ Sprint 1 |
-| B6 | Server Action 입력 검증 (Zod) | backend-dev | 없음 | ✅ Sprint 1 |
-| B7 | Server Action 인증 헬퍼 | backend-dev | 없음 | ✅ Sprint 1 |
-
-### P2 - 중간 우선순위
-| # | 기능 | 담당 | 의존관계 | 상태 |
-|---|------|------|----------|------|
-| B8 | 성적 추이 차트 (Recharts) | frontend-dev | 없음 | ✅ Sprint 2 |
-| B9 | Dashboard 미니 캘린더 | frontend-dev | 없음 | ✅ Sprint 2 |
-| B10 | 캘린더 충돌 감지 | frontend-dev | B1 | ✅ Sprint 2 |
-| B11 | 에러 핸들링 통합 (ActionResult) | backend-dev | B6 | ✅ Sprint 2 |
-
 ### P3 - 낮은 우선순위
-| # | 기능 | 담당 | 의존관계 | 상태 |
-|---|------|------|----------|------|
-| B12 | 월간 뷰 전환 | frontend-dev | 없음 | ⬜ 미시작 |
-| B13 | 반복 수업 일괄 수정 | frontend-dev + backend-dev | 없음 | ⬜ 미시작 |
-| B14 | Enrollment 관리 UI | frontend-dev + backend-dev | 없음 | ⬜ 미시작 |
+| # | 기능 | 담당 | 상태 |
+|---|------|------|------|
+| B12 | 월간 뷰 전환 | frontend-dev | ⬜ 미시작 |
+| B13 | 반복 수업 일괄 수정 | frontend-dev + backend-dev | ⬜ 미시작 |
+| B14 | Enrollment 관리 UI | frontend-dev + backend-dev | ⬜ 미시작 |
 
 ---
 
 ## 알려진 이슈
 
-| # | 심각도 | 설명 | 발견일 |
-|---|--------|------|--------|
-| I1 | ~~🔴 심각~~ | ~~RLS 미적용~~ → ✅ Sprint 1에서 해결 (S1-B2) | 2026-02-14 |
-| I2 | ~~🔴 심각~~ | ~~lesson_notes UNIQUE 누락~~ → ✅ Sprint 1에서 해결 (S1-B1) | 2026-02-14 |
-| I3 | ~~🟠 높음~~ | ~~입력 검증 없음~~ → ✅ Sprint 1에서 해결 (S1-B4) | 2026-02-14 |
-| I4 | ~~🟠 높음~~ | ~~인증 미확인~~ → ✅ Sprint 1에서 해결 (S1-B3) | 2026-02-14 |
-| I5 | ~~🟡 중간~~ | ~~비밀번호 평문 비교 (timing attack)~~ → ✅ Sprint 2에서 해결 (S2-B2) | 2026-02-14 |
-| I6 | ~~🟡 중간~~ | ~~SWR 글로벌 설정 없음~~ → ✅ Sprint 2에서 해결 (S2-B3) | 2026-02-14 |
-| I7 | ~~🟡 중간~~ | ~~환경변수 non-null assertion~~ → ✅ Sprint 2에서 해결 (S2-B4) | 2026-02-14 |
-| I8 | ~~🟠 높음~~ | ~~갤럭시탭 터치 드래그 작동 안 됨~~ → ✅ inline style touchAction 수정 (edcb73c) | 2026-02-21 |
-| I9 | ~~🟠 높음~~ | ~~메모 이벤트 삭제 불가~~ → ✅ MemoEditDialog 추가 (b6e2519) | 2026-02-21 |
-| I10 | ~~🟡 중간~~ | ~~긴 메모 제목이 옆 날짜 칸으로 침범~~ → ✅ overflow-hidden + line-clamp (edcb73c, 5aa115d) | 2026-02-21 |
+모든 이슈 해결 완료 (I1~I10). 새로운 이슈 없음.
 
 ---
 
@@ -236,28 +153,25 @@
 2. **마지막 커밋 확인**: `git log --oneline -5`
 3. **빌드 상태 확인**: `npm run build`
 4. **E2E 테스트 확인**: `npm run test:e2e`
-5. **이 파일의 "현재 스프린트" 섹션 읽기**
+5. **이 파일의 "현재 상태" 섹션 읽기**
 6. **백로그에서 다음 작업 선택**
 
-### 2026-02-21 세션 노트
+### 2026-02-22 세션 노트
 
-**완료한 작업:**
-- 스케줄 셀 클릭 시 분 기본값 0분 수정
-- DB 마이그레이션 005 적용 (메모 기능 지원)
-- 메모 이벤트 표시/클릭/삭제 기능 구현 (MemoEditDialog)
-- 갤럭시탭 터치 드래그 수정 (inline style touchAction)
-- 제목 overflow 수정 (overflow-hidden + line-clamp-3)
-- 이벤트 블록 시간 표시 제거 (이름/메모만 표시)
-- 이벤트 블록 높이를 수업 시간에 비례하도록 변경
-- Push 전 필수 검증 게이트 방법론 정의 (tsc → lint → build → e2e)
-- E2E 테스트 안정화 + 메모 테스트 추가
+**완료한 작업 (Sprint 4):**
+- Phase 2: 나머지 12개 컴포넌트 Minimal Clean 스타일 통일
+- Phase 3: Glassmorphism 전체 사이트 적용 (glass-card, 메쉬 그래디언트, backdrop-blur)
+- Phase 4: 스케줄 이벤트 블록 UX 개선
+  - 클릭/드래그 영역 역전 (좌측 전체=클릭→팝업, 우측=드래그 핸들)
+  - 3주 뷰 칸 너비 확대 (1200→1800px)
+  - 주간 범위 헤더 그리드 내부 정렬 (col-span-7)
+- 병행: 이벤트 상태 색상, 과거 수업 자동 완료, 메모 필드, E2E DB 변경 방지
 
-**주의사항:**
-- E2E 테스트가 실제 프로덕션 DB에 데이터 생성함 → 테스트 데이터 격리 필요
-- `schedule-dnd.spec.ts` 3건은 수업 이벤트가 없으면 skip됨
-- main 브랜치 직접 push 중 → 브랜치 전략 재정비 필요
+**디자인 가이드:**
+- 글래스 유틸리티: `glass-card`, `glass-subtle`, `glass-mesh` (globals.css)
+- 브랜드 컬러: Indigo oklch(0.5 0.19 265)
+- 스타일 상수: `lib/constants/status-styles.ts`
 
 **다음 할 일 후보:**
-- E2E 테스트 데이터 격리 (테스트 DB 또는 cleanup)
 - 백로그: B12 월간 뷰, B13 반복 수업 일괄 수정, B14 Enrollment 관리 UI
-- CSV 학생 임포트 기능 (설계 완료: `docs/plans/2026-02-21-csv-student-import-design.md`)
+- E2E 테스트 커버리지 확대
