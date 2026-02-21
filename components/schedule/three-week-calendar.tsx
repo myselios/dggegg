@@ -311,46 +311,37 @@ export function ThreeWeekCalendar({
       >
         <div className="glass-card relative overflow-auto max-h-[calc(100vh-220px)] rounded-2xl border-none" data-testid="calendar-grid">
           <div className={cn(viewMode === '3week' && 'min-w-[1800px]')}>
-            {/* Week range labels - inside scrollable area */}
-            {viewMode === '3week' && (
-              <div className={cn('sticky top-0 z-[31] grid bg-white/70 dark:bg-white/5 backdrop-blur-lg', gridCols)}>
-                <div className="sticky left-0 z-40 bg-background" />
-                {allDays.map((day, i) => {
-                  const isWeekStart = i % 7 === 0
-                  if (!isWeekStart) return <div key={i} />
-                  const weekEnd = allDays[i + 6]
-                  return (
-                    <div
-                      key={i}
-                      className="col-span-7 border-l border-l-primary/30 py-1 text-center text-[11px] font-medium text-muted-foreground"
-                    >
-                      {format(day, 'M/d', { locale: ko })} ~ {weekEnd ? format(weekEnd, 'M/d', { locale: ko }) : ''}
-                    </div>
-                  )
-                })}
-              </div>
-            )}
-            {viewMode === 'day' && (
-              <div className="sticky top-0 z-[31] bg-white/70 dark:bg-white/5 backdrop-blur-lg py-1 text-center text-sm font-medium text-muted-foreground border-b">
-                {format(baseDate, 'M월 d일 (EEE)', { locale: ko })}
-              </div>
-            )}
+            {/* Day headers - sticky top (with week range labels for 3week) */}
+            <div className={cn('sticky top-0 z-30 grid bg-white/70 dark:bg-white/5 backdrop-blur-lg', gridCols)}>
+              {/* Time column spacer */}
+              <div className="sticky left-0 z-40 bg-white/70 dark:bg-white/5 backdrop-blur-lg row-span-2" />
 
-            {/* Day headers - sticky top */}
-            <div className={cn('sticky z-30 grid border-b bg-white/70 dark:bg-white/5 backdrop-blur-lg', viewMode === '3week' ? 'top-[28px]' : 'top-0', gridCols)}>
-              <div className="sticky left-0 z-40 bg-background" />
+              {/* Week range row (3week only) */}
+              {viewMode === '3week' && weeks.map((week, wi) => (
+                <div
+                  key={wi}
+                  className={cn(
+                    'col-span-7 py-1.5 text-center text-xs font-semibold text-muted-foreground border-b border-border/30',
+                    wi > 0 && 'border-l-2 border-l-primary/30'
+                  )}
+                >
+                  {format(week[0], 'M월 d일')} — {format(week[6], 'M월 d일')}
+                </div>
+              ))}
+
+              {/* Day name + date row */}
               {allDays.map((day, i) => (
                 <div
                   key={i}
                   className={cn(
-                    'border-l px-1 py-1 text-center text-xs',
+                    'border-l border-b px-1 py-1.5 text-center',
                     isToday(day) && 'bg-primary/10 font-bold',
                     viewMode === '3week' && i % 7 === 0 && i > 0 && 'border-l-2 border-l-primary/30'
                   )}
                 >
-                  <div className="text-[10px] text-muted-foreground">{format(day, 'EEE', { locale: ko })}</div>
+                  <div className="text-[10px] leading-none text-muted-foreground">{format(day, 'EEE', { locale: ko })}</div>
                   <div className={cn(
-                    'text-sm font-semibold',
+                    'mt-0.5 text-sm font-semibold leading-none',
                     isToday(day) && 'rounded-full bg-primary text-primary-foreground mx-auto w-6 h-6 flex items-center justify-center text-xs'
                   )}>
                     {format(day, 'd')}
