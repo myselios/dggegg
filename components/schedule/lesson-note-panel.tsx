@@ -101,21 +101,21 @@ export function LessonNotePanel({
     <Sheet open onOpenChange={onClose}>
       <SheetContent className="w-full overflow-y-auto sm:w-[480px] sm:max-w-lg">
         <SheetHeader>
-          <SheetTitle className="flex items-center gap-2">
+          <SheetTitle className="flex items-center gap-2 text-base font-semibold tracking-tight">
             {event.students?.name_ko}
-            <Badge variant="outline">{event.template_type ?? '일반'}</Badge>
+            <Badge variant="outline" className="text-[10px]">{event.template_type ?? '일반'}</Badge>
           </SheetTitle>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-xs text-muted-foreground tabular-nums">
             {format(new Date(event.start_at), 'M월 d일 (EEE) HH:mm', { locale: ko })}
-            {' - '}
+            {' — '}
             {format(new Date(event.end_at), 'HH:mm')}
           </p>
         </SheetHeader>
 
         {previousNote && (
-          <div className="mt-4 rounded-md bg-muted p-3">
-            <p className="text-xs font-medium text-muted-foreground">이전 수업 메모</p>
-            <p className="mt-1 text-sm">{previousNote}</p>
+          <div className="mt-4 rounded-lg border border-border/50 bg-muted/50 p-3">
+            <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/60">이전 수업 메모</p>
+            <p className="mt-1.5 text-sm">{previousNote}</p>
           </div>
         )}
 

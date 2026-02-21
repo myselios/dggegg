@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { format } from 'date-fns'
 import { ko } from 'date-fns/locale'
+import { MessageSquare, Plus, Search, Trash2 } from 'lucide-react'
 import { getConsultationLogs, createConsultationLog, deleteConsultationLog } from '@/app/actions/consultations'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -11,14 +12,14 @@ import { Textarea } from '@/components/ui/textarea'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent } from '@/components/ui/card'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { getConsultationType, CONSULTATION_TYPE } from '@/lib/constants/status-styles'
+import { cn } from '@/lib/utils'
 import type { ConsultationLog } from '@/lib/types/database'
 
-const LOG_TYPES = [
-  { value: 'consultation', label: '상담', color: 'bg-blue-100 text-blue-800' },
-  { value: 'complaint', label: '컴플레인', color: 'bg-red-100 text-red-800' },
-  { value: 'request', label: '요청', color: 'bg-yellow-100 text-yellow-800' },
-  { value: 'notice', label: '공지', color: 'bg-green-100 text-green-800' },
-] as const
+const LOG_TYPES = Object.entries(CONSULTATION_TYPE).map(([value, config]) => ({
+  value,
+  label: config.label,
+})) as readonly { readonly value: string; readonly label: string }[]
 
 export function ConsultationLogTab({ studentId }: { readonly studentId: string }) {
   const [logs, setLogs] = useState<ConsultationLog[]>([])
@@ -65,20 +66,23 @@ export function ConsultationLogTab({ studentId }: { readonly studentId: string }
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex items-center gap-4">
-        <Input
-          placeholder="검색 (키워드/태그)..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="max-w-sm"
-        />
+      <div className="flex items-center gap-3">
+        <div className="relative flex-1 max-w-sm">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground/60" />
+          <Input
+            placeholder="검색 (키워드/태그)..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="pl-9"
+          />
+        </div>
         <Button size="sm" onClick={() => setShowForm(!showForm)}>
-          {showForm ? '취소' : '상담 추가'}
+          {showForm ? '취소' : <><Plus className="mr-1 size-4" />상담 추가</>}
         </Button>
       </div>
 
       {showForm && (
-        <Card>
+        <Card className="shadow-sm border-border/50">
           <CardContent className="p-4">
             <form action={handleSubmit} className="flex flex-col gap-4">
               <div className="grid grid-cols-2 gap-4">
@@ -110,14 +114,17 @@ export function ConsultationLogTab({ studentId }: { readonly studentId: string }
 
       <div className="flex flex-col gap-3">
         {filtered.map((log) => {
-          const typeInfo = LOG_TYPES.find((t) => t.value === log.type)
+          const typeConfig = getConsultationType(log.type)
           return (
-            <Card key={log.id}>
+            <Card key={log.id} className="shadow-sm border-border/50">
               <CardContent className="flex items-start justify-between p-4">
                 <div className="flex flex-col gap-1">
                   <div className="flex items-center gap-2">
-                    <Badge variant="secondary" className={typeInfo?.color}>
-                      {typeInfo?.label}
+                    <Badge
+                      variant="outline"
+                      className={cn('text-[10px]', typeConfig.badge)}
+                    >
+                      {typeConfig.label}
                     </Badge>
                     <span className="text-xs text-muted-foreground">
                       {format(new Date(log.date), 'M월 d일 HH:mm', { locale: ko })}
@@ -127,25 +134,31 @@ export function ConsultationLogTab({ studentId }: { readonly studentId: string }
                   {log.tags && log.tags.length > 0 && (
                     <div className="mt-1 flex gap-1">
                       {log.tags.map((tag) => (
-                        <Badge key={tag} variant="outline" className="text-xs">{tag}</Badge>
+                        <Badge key={tag} variant="outline" className="text-[10px]">{tag}</Badge>
                       ))}
                     </div>
                   )}
                 </div>
                 <Button
                   variant="ghost"
-                  size="sm"
-                  className="text-muted-foreground"
+                  size="icon"
+                  className="size-8 shrink-0 text-muted-foreground hover:text-destructive"
                   onClick={() => handleDelete(log.id)}
                 >
-                  삭제
+                  <Trash2 className="size-3.5" />
                 </Button>
               </CardContent>
             </Card>
           )
         })}
         {filtered.length === 0 && (
-          <p className="text-center text-sm text-muted-foreground">상담 로그가 없습니다.</p>
+          <div className="flex flex-col items-center justify-center py-12 text-center">
+            <div className="flex size-10 items-center justify-center rounded-full bg-muted">
+              <MessageSquare className="size-5 text-muted-foreground/50" />
+            </div>
+            <p className="mt-3 text-sm font-medium text-muted-foreground">상담 로그가 없습니다</p>
+            <p className="mt-1 text-xs text-muted-foreground/60">상담 기록을 추가해보세요</p>
+          </div>
         )}
       </div>
     </div>

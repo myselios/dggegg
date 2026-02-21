@@ -51,8 +51,8 @@ export function StudentCard({ student }: { readonly student: Student }) {
     >
       <Card
         className={cn(
-          'border-border/40 py-0 transition-all duration-200',
-          'hover:-translate-y-0.5 hover:shadow-sm hover:border-border',
+          'shadow-sm border-border/50 py-0 transition-all duration-200',
+          'hover:-translate-y-0.5 hover:shadow-md hover:border-primary/20',
         )}
       >
         <CardContent className="flex items-stretch gap-0 p-0">

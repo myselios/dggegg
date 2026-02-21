@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { BookOpen, Phone } from 'lucide-react'
 import { updateStudent } from '@/app/actions/students'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -39,10 +40,15 @@ export function StudentProfile({ student }: { readonly student: Student }) {
     return (
       <div className="flex flex-col gap-6">
         <div className="grid gap-6 md:grid-cols-2">
-          <Card>
+          <Card className="shadow-sm border-border/50">
             <CardHeader>
-              <CardTitle className="flex items-center justify-between">
-                기본 정보
+              <CardTitle className="flex items-center justify-between text-sm font-semibold">
+                <div className="flex items-center gap-2">
+                  <div className="flex size-7 items-center justify-center rounded-lg bg-primary/10">
+                    <BookOpen className="size-3.5 text-primary" />
+                  </div>
+                  기본 정보
+                </div>
                 <Button variant="outline" size="sm" onClick={() => setIsEditing(true)}>
                   수정
                 </Button>
@@ -56,9 +62,14 @@ export function StudentProfile({ student }: { readonly student: Student }) {
             <InfoRow label="IB 과정" value={student.ib_course} />
           </CardContent>
         </Card>
-        <Card>
+        <Card className="shadow-sm border-border/50">
           <CardHeader>
-            <CardTitle>성적 / 연락처</CardTitle>
+            <CardTitle className="flex items-center gap-2 text-sm font-semibold">
+              <div className="flex size-7 items-center justify-center rounded-lg bg-emerald-100 dark:bg-emerald-900">
+                <Phone className="size-3.5 text-emerald-600 dark:text-emerald-400" />
+              </div>
+              성적 / 연락처
+            </CardTitle>
           </CardHeader>
           <CardContent className="grid gap-3">
             <InfoRow label="현재 점수" value={student.current_score?.toString()} />
@@ -80,9 +91,9 @@ export function StudentProfile({ student }: { readonly student: Student }) {
 
   return (
     <form action={handleUpdate}>
-      <Card>
+      <Card className="shadow-sm border-border/50">
         <CardHeader>
-          <CardTitle className="flex items-center justify-between">
+          <CardTitle className="flex items-center justify-between text-sm font-semibold">
             프로필 수정
             <div className="flex gap-2">
               <Button variant="outline" size="sm" type="button" onClick={() => setIsEditing(false)}>
@@ -125,9 +136,9 @@ export function StudentProfile({ student }: { readonly student: Student }) {
 
 function InfoRow({ label, value }: { readonly label: string; readonly value: string | null | undefined }) {
   return (
-    <div className="flex items-center justify-between text-sm">
+    <div className="flex items-center justify-between rounded-lg border border-border/30 px-3 py-2 text-sm">
       <span className="text-muted-foreground">{label}</span>
-      <span>{value ?? '-'}</span>
+      <span className="font-medium">{value ?? '-'}</span>
     </div>
   )
 }
