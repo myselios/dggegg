@@ -6,23 +6,22 @@ import { cn } from '@/lib/utils'
 
 import type { ScheduleEventWithStudent } from '@/lib/types/database'
 
-/** Left color bar (click zone) */
-const barColors: Record<string, string> = {
-  'Ab initio': 'bg-green-500 dark:bg-green-600',
-  'SL': 'bg-blue-500 dark:bg-blue-600',
-  'HL': 'bg-purple-500 dark:bg-purple-600',
+/** Left border color by course */
+const borderColors: Record<string, string> = {
+  'Ab initio': 'border-l-green-500 dark:border-l-green-400',
+  'SL': 'border-l-blue-500 dark:border-l-blue-400',
+  'HL': 'border-l-purple-500 dark:border-l-purple-400',
 }
 
 /** Content area background + text */
 const contentColors: Record<string, string> = {
-  'Ab initio': 'bg-green-100 text-green-900 dark:bg-green-900 dark:text-green-100',
-  'SL': 'bg-blue-100 text-blue-900 dark:bg-blue-900 dark:text-blue-100',
-  'HL': 'bg-purple-100 text-purple-900 dark:bg-purple-900 dark:text-purple-100',
+  'Ab initio': 'bg-green-100/80 text-green-900 dark:bg-green-900/60 dark:text-green-100',
+  'SL': 'bg-blue-100/80 text-blue-900 dark:bg-blue-900/60 dark:text-blue-100',
+  'HL': 'bg-purple-100/80 text-purple-900 dark:bg-purple-900/60 dark:text-purple-100',
 }
 
-/** Completed status colors (override course colors) */
-const completedBarColor = 'bg-emerald-500 dark:bg-emerald-600'
-const completedContentColor = 'bg-emerald-50 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-200'
+const completedBorderColor = 'border-l-emerald-500 dark:border-l-emerald-400'
+const completedContentColor = 'bg-emerald-50/80 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-200'
 
 export function CalendarEventBlock({
   event,
@@ -51,50 +50,39 @@ export function CalendarEventBlock({
   const course = event.students?.ib_course ?? ''
   const isCompleted = event.status === 'completed'
 
-  const barColor = isMemo
-    ? 'bg-yellow-500 dark:bg-yellow-600'
+  const borderColor = isMemo
+    ? 'border-l-yellow-500 dark:border-l-yellow-400'
     : isCompleted
-      ? completedBarColor
-      : (barColors[course] ?? 'bg-gray-400 dark:bg-gray-500')
+      ? completedBorderColor
+      : (borderColors[course] ?? 'border-l-gray-400 dark:border-l-gray-500')
   const contentColor = isMemo
-    ? 'bg-yellow-100 text-yellow-900 dark:bg-yellow-900 dark:text-yellow-100'
+    ? 'bg-yellow-100/80 text-yellow-900 dark:bg-yellow-900/60 dark:text-yellow-100'
     : isCompleted
       ? completedContentColor
-      : (contentColors[course] ?? 'bg-gray-100 text-gray-900 dark:bg-gray-800 dark:text-gray-100')
+      : (contentColors[course] ?? 'bg-gray-100/80 text-gray-900 dark:bg-gray-800/60 dark:text-gray-100')
 
   return (
     <div
       ref={setNodeRef}
       className={cn(
-        'absolute left-0.5 right-0.5 flex rounded text-left text-xs transition-shadow hover:shadow-md overflow-hidden',
+        'absolute left-0.5 right-0.5 flex rounded-sm text-left text-xs overflow-hidden border-l-[3px]',
+        borderColor,
+        contentColor,
+        'transition-shadow hover:shadow-md',
         isDragging && 'opacity-30',
         hasConflict && 'ring-2 ring-red-500 dark:ring-red-400'
       )}
       style={{ top: `${topPx}px`, height: `${heightPx}px` }}
       data-testid="event-block"
     >
-      {/* Left color bar — CLICK zone */}
+      {/* LEFT: Click zone → opens popup */}
       <div
         data-testid="event-click-bar"
-        className={cn(
-          'w-1.5 shrink-0 cursor-pointer transition-all hover:brightness-90',
-          barColor
-        )}
+        className="flex-1 min-w-0 cursor-pointer px-1 py-0.5"
         onClick={(e) => {
           e.stopPropagation()
           onClick()
         }}
-      />
-
-      {/* Right content — DRAG zone */}
-      <div
-        className={cn(
-          'flex-1 min-w-0 px-1 py-0.5 cursor-grab active:cursor-grabbing',
-          contentColor
-        )}
-        style={{ touchAction: 'none' }}
-        {...listeners}
-        {...attributes}
       >
         <div className="pointer-events-none h-full overflow-hidden">
           <div className="flex items-start gap-0.5 min-w-0">
@@ -118,6 +106,22 @@ export function CalendarEventBlock({
         </div>
       </div>
 
+      {/* RIGHT: Drag handle */}
+      <div
+        className="flex w-4 shrink-0 cursor-grab items-center justify-center border-l border-black/5 text-current/20 hover:text-current/50 active:cursor-grabbing dark:border-white/10"
+        style={{ touchAction: 'none' }}
+        {...listeners}
+        {...attributes}
+      >
+        <svg width="4" height="10" viewBox="0 0 4 10" fill="currentColor" className="opacity-30">
+          <circle cx="1" cy="1" r="0.8" />
+          <circle cx="3" cy="1" r="0.8" />
+          <circle cx="1" cy="5" r="0.8" />
+          <circle cx="3" cy="5" r="0.8" />
+          <circle cx="1" cy="9" r="0.8" />
+          <circle cx="3" cy="9" r="0.8" />
+        </svg>
+      </div>
     </div>
   )
 }
@@ -130,17 +134,19 @@ export function CalendarEventBlockOverlay({
 }) {
   const isMemo = event.event_type === 'memo' || (!event.student_id && event.title)
   const course = event.students?.ib_course ?? ''
-  const barColor = isMemo
-    ? 'bg-yellow-500 dark:bg-yellow-600'
-    : (barColors[course] ?? 'bg-gray-400 dark:bg-gray-500')
+  const borderColor = isMemo
+    ? 'border-l-yellow-500'
+    : (borderColors[course] ?? 'border-l-gray-400')
   const contentColor = isMemo
     ? 'bg-yellow-100 text-yellow-900 dark:bg-yellow-900 dark:text-yellow-100'
     : (contentColors[course] ?? 'bg-gray-100 text-gray-900 dark:bg-gray-800 dark:text-gray-100')
 
   return (
-    <div className="flex w-40 rounded text-left text-xs shadow-lg rotate-2 overflow-hidden">
-      <div className={cn('w-1.5 shrink-0', barColor)} />
-      <div className={cn('flex-1 px-1 py-0.5', contentColor)}>
+    <div className={cn(
+      'flex w-40 rounded-sm text-left text-xs shadow-lg rotate-2 overflow-hidden border-l-[3px]',
+      borderColor, contentColor
+    )}>
+      <div className="flex-1 px-1.5 py-1">
         <div className="font-semibold truncate">
           {isMemo ? event.title : event.students?.name_ko}
         </div>
