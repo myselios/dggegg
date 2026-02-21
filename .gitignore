@@ -48,3 +48,6 @@ next-env.d.ts
 scripts/
 supabase/.branches/
 supabase/.temp/
+
+# AI skills (installed locally)
+.claude/skills/

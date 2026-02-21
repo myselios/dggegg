@@ -12,6 +12,7 @@ import { createClient } from '@/lib/supabase/client'
 import { autoCompletePastEvents } from '@/app/actions/schedule'
 import { Card, CardContent } from '@/components/ui/card'
 import { cn } from '@/lib/utils'
+import { STAT_STYLES } from '@/lib/constants/status-styles'
 import { TodayLessons } from '@/components/dashboard/today-lessons'
 import { RecentConsultations } from '@/components/dashboard/recent-consultations'
 import { IncompleteLessons } from '@/components/dashboard/incomplete-lessons'
@@ -31,27 +32,9 @@ function useGreeting(): string {
 }
 
 const STAT_CARDS = [
-  {
-    key: 'total',
-    label: '오늘 수업',
-    icon: Calendar,
-    colorClasses: 'bg-blue-50 text-blue-600 dark:bg-blue-950 dark:text-blue-400',
-    iconBg: 'bg-blue-100 dark:bg-blue-900',
-  },
-  {
-    key: 'completed',
-    label: '완료',
-    icon: CheckCircle2,
-    colorClasses: 'bg-emerald-50 text-emerald-600 dark:bg-emerald-950 dark:text-emerald-400',
-    iconBg: 'bg-emerald-100 dark:bg-emerald-900',
-  },
-  {
-    key: 'incomplete',
-    label: '미완료',
-    icon: AlertTriangle,
-    colorClasses: 'bg-amber-50 text-amber-600 dark:bg-amber-950 dark:text-amber-400',
-    iconBg: 'bg-amber-100 dark:bg-amber-900',
-  },
+  { key: 'total', label: '오늘 수업', icon: Calendar, style: STAT_STYLES.info },
+  { key: 'completed', label: '완료', icon: CheckCircle2, style: STAT_STYLES.success },
+  { key: 'incomplete', label: '미완료', icon: AlertTriangle, style: STAT_STYLES.warning },
 ] as const
 
 export const dynamic = 'force-dynamic'
@@ -103,11 +86,8 @@ export default function DashboardPage() {
     <div className="flex flex-col gap-8">
       {/* Welcome Section */}
       <div className="flex items-center gap-3">
-        <div className={cn(
-          'flex h-10 w-10 items-center justify-center rounded-lg',
-          'bg-primary/10'
-        )}>
-          <BookOpen className="h-5 w-5 text-primary" />
+        <div className="flex size-10 items-center justify-center rounded-lg bg-primary/10">
+          <BookOpen className="size-5 text-primary" />
         </div>
         <div>
           <h2 className="text-2xl font-bold tracking-tight">
@@ -128,20 +108,17 @@ export default function DashboardPage() {
           return (
             <Card
               key={card.key}
-              className={cn(
-                'border-none shadow-sm transition-shadow hover:shadow-md',
-                card.colorClasses
-              )}
+              className={cn('border-none', card.style.card)}
             >
               <CardContent className="flex items-center gap-4 py-5">
                 <div className={cn(
-                  'flex h-11 w-11 shrink-0 items-center justify-center rounded-xl',
-                  card.iconBg
+                  'flex size-10 shrink-0 items-center justify-center rounded-lg',
+                  card.style.iconBg
                 )}>
-                  <Icon className="h-5 w-5" />
+                  <Icon className="size-5" />
                 </div>
                 <div className="min-w-0">
-                  <p className="text-sm font-medium opacity-80">
+                  <p className="text-xs font-medium opacity-80">
                     {card.label}
                   </p>
                   <p className="text-2xl font-bold tabular-nums">

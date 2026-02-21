@@ -37,13 +37,13 @@ export function IncompleteLessons() {
 
   return (
     <Card className={cn(
-      'border-amber-200 bg-amber-50/50 shadow-sm',
+      'border-amber-200 bg-amber-50/50',
       'dark:border-amber-800 dark:bg-amber-950/20'
     )}>
       <CardHeader>
-        <CardTitle className="flex items-center gap-2 text-amber-700 dark:text-amber-400">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-amber-100 dark:bg-amber-900">
-            <AlertTriangle className="h-4 w-4" />
+        <CardTitle className="flex items-center gap-2 text-base font-semibold text-amber-700 dark:text-amber-400">
+          <div className="flex size-8 items-center justify-center rounded-lg bg-amber-100 dark:bg-amber-900">
+            <AlertTriangle className="size-4" />
           </div>
           미완료 수업
           <Badge
@@ -67,8 +67,8 @@ export function IncompleteLessons() {
               )}
             >
               <div className="flex items-center gap-3">
-                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-amber-100 dark:bg-amber-900">
-                  <Clock className="h-4 w-4 text-amber-600 dark:text-amber-400" />
+                <div className="flex size-8 items-center justify-center rounded-full bg-amber-100 dark:bg-amber-900">
+                  <Clock className="size-4 text-amber-600 dark:text-amber-400" />
                 </div>
                 <div>
                   <span className="text-sm font-medium">
@@ -79,7 +79,7 @@ export function IncompleteLessons() {
                   </p>
                 </div>
               </div>
-              <ChevronRight className="h-4 w-4 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
+              <ChevronRight className="size-4 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
             </Link>
           ))}
         </div>

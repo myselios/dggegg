@@ -34,7 +34,7 @@ export function Sidebar() {
     <aside className="flex h-screen w-60 flex-col border-r bg-muted/30">
       {/* Logo */}
       <Link href="/" className="flex h-14 items-center gap-2 border-b px-4 transition-opacity hover:opacity-80">
-        <Rocket className="h-5 w-5 text-primary" />
+        <Rocket className="size-5 text-primary" />
         <h1 className="text-lg font-semibold tracking-tight">Rocket Tutor</h1>
       </Link>
 
@@ -58,7 +58,7 @@ export function Sidebar() {
                   : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
               )}
             >
-              <Icon className="h-4 w-4 shrink-0" />
+              <Icon className="size-4 shrink-0" />
               {item.label}
             </Link>
           )
@@ -76,7 +76,7 @@ export function Sidebar() {
               'hover:bg-destructive/10 hover:text-destructive'
             )}
           >
-            <LogOut className="h-4 w-4 shrink-0" />
+            <LogOut className="size-4 shrink-0" />
             로그아웃
           </button>
         </form>
