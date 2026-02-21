@@ -77,7 +77,7 @@ export function CalendarEventBlock({
       <div
         data-testid="event-click-bar"
         className={cn(
-          'w-3 shrink-0 cursor-pointer transition-all hover:brightness-90',
+          'w-1.5 shrink-0 cursor-pointer transition-all hover:brightness-90',
           barColor
         )}
         onClick={(e) => {
@@ -89,7 +89,7 @@ export function CalendarEventBlock({
       {/* Right content — DRAG zone */}
       <div
         className={cn(
-          'flex-1 min-w-0 px-2 py-1 cursor-grab active:cursor-grabbing',
+          'flex-1 min-w-0 px-1 py-0.5 cursor-grab active:cursor-grabbing',
           contentColor
         )}
         style={{ touchAction: 'none' }}
@@ -97,14 +97,14 @@ export function CalendarEventBlock({
         {...attributes}
       >
         <div className="pointer-events-none h-full overflow-hidden">
-          <div className="flex items-start gap-1 min-w-0">
+          <div className="flex items-start gap-0.5 min-w-0">
             {hasConflict && (
-              <AlertTriangle className="mt-0.5 h-3 w-3 shrink-0 text-red-600 dark:text-red-400" />
+              <AlertTriangle className="mt-0.5 size-2.5 shrink-0 text-red-600 dark:text-red-400" />
             )}
             {isCompleted && (
-              <Check className="mt-0.5 h-3 w-3 shrink-0 text-emerald-600 dark:text-emerald-400" />
+              <Check className="mt-0.5 size-2.5 shrink-0 text-emerald-600 dark:text-emerald-400" />
             )}
-            <span className="font-semibold break-words line-clamp-3">
+            <span className="font-semibold break-words line-clamp-3 leading-tight text-[11px]">
               {isMemo
                 ? event.title
                 : event.title
@@ -113,7 +113,7 @@ export function CalendarEventBlock({
             </span>
           </div>
           {event.template_type && (
-            <div className="text-[10px] opacity-60">{event.template_type}</div>
+            <div className="text-[9px] leading-tight opacity-60">{event.template_type}</div>
           )}
         </div>
       </div>
@@ -139,8 +139,8 @@ export function CalendarEventBlockOverlay({
 
   return (
     <div className="flex w-40 rounded text-left text-xs shadow-lg rotate-2 overflow-hidden">
-      <div className={cn('w-3 shrink-0', barColor)} />
-      <div className={cn('flex-1 px-2 py-1', contentColor)}>
+      <div className={cn('w-1.5 shrink-0', barColor)} />
+      <div className={cn('flex-1 px-1 py-0.5', contentColor)}>
         <div className="font-semibold truncate">
           {isMemo ? event.title : event.students?.name_ko}
         </div>
