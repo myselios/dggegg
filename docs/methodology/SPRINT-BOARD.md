@@ -8,11 +8,12 @@
 
 ## 현재 상태
 
-- **현재 브랜치**: main
-- **마지막 커밋**: 5aa115d ([fix] 이벤트 제목을 여러 줄로 표시)
+- **현재 브랜치**: feat/ui-design-renewal-phase2
+- **마지막 커밋**: 9ad6e08 ([style] UI/UX 디자인 리뉴얼 Phase 2)
 - **마지막 빌드**: ✅ 통과 (2026-02-21)
-- **마지막 E2E**: ✅ 16 passed, 0 failed (2026-02-21)
+- **마지막 E2E**: ✅ 20 passed, 3 skipped (2026-02-21)
 - **DB 마이그레이션**: 005 적용 완료 (student_id nullable, title, event_type 추가)
+- **진행 중 작업**: Sprint 4 완료 — merge 대기
 
 ---
 
@@ -40,6 +41,48 @@
 | 06892ad | style | 이벤트 블록에서 시간 표시 제거 - 제목/메모만 표시 |
 | ef7bce7 | feat | 이벤트 블록 높이를 수업 시간에 비례하도록 변경 |
 | 5aa115d | fix | 이벤트 제목을 여러 줄로 표시 (line-clamp-3) |
+| 5b2d420 | fix | 학생카드 클릭/드래그/삭제 영역 분리 + 터치 드래그 지원 |
+| 8c2a19a | feat | 학생 CSV 임포트 기능 추가 |
+| cfdc6cf | refactor | 디자인 통일 — Minimal Clean 스타일 |
+| e4d8927 | test | 학생 관리 보드 E2E 테스트 추가 |
+| 50f929f | style | 시각적 디자인 리뉴얼 — Indigo 브랜드 컬러 + Minimal Clean |
+
+---
+
+## 🎨 Sprint 4: UI/UX 전면 디자인 리뉴얼 (진행 중)
+- **상태**: ✅ Completed
+- **시작일**: 2026-02-21
+- **완료일**: 2026-02-21
+- **목표**: ui-ux-pro-max 스킬 활용, 전체 UI를 Indigo 브랜드 컬러 + Minimal Clean 디자인으로 리뉴얼
+
+### ✅ 완료된 파일 (50f929f 커밋)
+| # | 파일 | 변경 내용 | 상태 |
+|---|------|----------|------|
+| 1 | `app/globals.css` | Indigo 브랜드 컬러 테마 + CSS 변수 정의 | ✅ 완료 |
+| 2 | `components/nav/sidebar.tsx` | 사이드바 리디자인 (로고, 메뉴, 활성 상태) | ✅ 완료 |
+| 3 | `components/nav/header.tsx` | 프로스티드 글래스 효과 + 날짜 필 스타일 | ✅ 완료 |
+| 4 | `app/(authenticated)/page.tsx` | 대시보드 환영 섹션 + 통계 카드 그래디언트 | ✅ 완료 |
+| 5 | `components/dashboard/today-lessons.tsx` | 아이콘 컨테이너 + 카드 스타일링 | ✅ 완료 |
+| 6 | `components/dashboard/weekly-schedule.tsx` | 아이콘 컨테이너 + 카드 스타일링 | ✅ 완료 |
+| 7 | `components/dashboard/recent-consultations.tsx` | 카드 스타일 통일 | ✅ 완료 |
+| 8 | `app/login/page.tsx` | 로그인 페이지 컬러 적용 | ✅ 완료 |
+| 9 | `components/students/student-board.tsx` | 학생 보드 스타일 통일 | ✅ 완료 |
+
+### ✅ Phase 2 완료 (9ad6e08 커밋)
+| # | 대상 | 설명 | 상태 |
+|---|------|------|------|
+| 10 | `components/schedule/three-week-calendar.tsx` | 캘린더 그리드 shadow + 타이포그래피 | ✅ 완료 |
+| 11 | `components/schedule/event-create-dialog.tsx` 외 | 다이얼로그 타이포그래피 + 레이아웃 | ✅ 완료 |
+| 12 | `components/students/student-tabs.tsx` + `student-profile.tsx` | 학생 상세 페이지 헤더/카드 리디자인 | ✅ 완료 |
+| 13 | `components/students/student-card.tsx` | 카드 shadow + hover 개선 | ✅ 완료 |
+| 14 | `app/(authenticated)/materials/page.tsx` | 빈 상태 디자인 추가 | ✅ 완료 |
+| 15 | 다이얼로그/폼 + 학생 탭 컴포넌트 | 수업기록/성적/상담 탭 스타일 통일 | ✅ 완료 |
+| 16 | `components/dashboard/incomplete-lessons.tsx` | 아이콘/보더 사이즈 통일 | ✅ 완료 |
+
+### 디자인 가이드 참조
+- 설계 문서: `docs/plans/2026-02-21-design-unification-design.md`
+- 스타일 상수: `lib/constants/status-styles.ts`
+- 브랜드 컬러: Indigo 계열 (globals.css CSS 변수)
 
 ---
 
