@@ -1,6 +1,7 @@
 import { test, expect } from '@playwright/test'
 import path from 'path'
 import fs from 'fs'
+import { cleanupE2EStudents } from './helpers/supabase'
 
 const FIXTURES_DIR = path.join(__dirname, 'fixtures')
 const TEST_ID = Date.now().toString(36)
@@ -35,8 +36,9 @@ test.describe('학생 CSV 임포트', () => {
     )
   })
 
-  test.afterAll(() => {
+  test.afterAll(async () => {
     fs.rmSync(FIXTURES_DIR, { recursive: true, force: true })
+    await cleanupE2EStudents()
   })
 
   test.beforeEach(async ({ page }) => {

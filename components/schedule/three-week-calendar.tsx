@@ -350,8 +350,8 @@ export function ThreeWeekCalendar({
             </div>
 
             {/* Hour rows with 10-min subdivisions */}
-            {HOURS.map((hour) => (
-              <div key={hour} className={cn('grid', gridCols)}>
+            {HOURS.map((hour, hourIdx) => (
+              <div key={hour} className={cn('grid relative', gridCols)} style={{ zIndex: HOURS.length - hourIdx }}>
                 {/* Time labels - sticky left, compact mode shows only :00 and :30 */}
                 <div className="sticky left-0 z-20 flex flex-col border-r bg-background">
                   {isCompact ? (
