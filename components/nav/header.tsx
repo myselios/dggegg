@@ -49,7 +49,7 @@ export function Header({
   const today = formatDate(new Date())
 
   return (
-    <header className="flex h-14 items-center justify-between border-b border-border/60 bg-card/80 px-4 backdrop-blur-sm md:px-6">
+    <header className="flex h-14 items-center justify-between border-b border-white/15 bg-white/50 px-4 backdrop-blur-xl dark:bg-white/5 md:px-6">
       <div className="flex items-center gap-2">
         {showMenuButton && (
           <Button variant="ghost" size="icon" onClick={onMenuClick} className="shrink-0">

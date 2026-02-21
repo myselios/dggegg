@@ -167,7 +167,7 @@ export function WeeklySchedule() {
   }
 
   return (
-    <Card className="shadow-sm border-border/50">
+    <Card className="glass-card rounded-2xl border-none">
       <CardHeader className="pb-3">
         <CardTitle className="flex items-center gap-2 text-sm font-semibold">
           <div className="flex size-7 items-center justify-center rounded-lg bg-violet-100 dark:bg-violet-900">

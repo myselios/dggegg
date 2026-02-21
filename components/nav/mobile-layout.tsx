@@ -21,7 +21,7 @@ export function MobileLayout({
     return (
       <div className="flex h-screen">
         <Sidebar />
-        <div className="flex flex-1 flex-col overflow-hidden">
+        <div className="flex flex-1 flex-col overflow-hidden glass-mesh">
           <Header />
           <main className="flex-1 overflow-y-auto p-6">{children}</main>
         </div>
@@ -31,7 +31,7 @@ export function MobileLayout({
 
   // Mobile: overlay drawer sidebar
   return (
-    <div className="flex h-screen flex-col">
+    <div className="flex h-screen flex-col glass-mesh">
       <Header showMenuButton onMenuClick={handleMenuClick} />
       <main className="flex-1 overflow-y-auto p-4">{children}</main>
 

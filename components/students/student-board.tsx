@@ -70,7 +70,7 @@ const columns: readonly ColumnConfig[] = [
 
 function ColumnPlaceholder({ message }: { readonly message: string }) {
   return (
-    <div className="flex flex-col items-center justify-center rounded-lg border border-dashed border-border/60 py-10 text-center">
+    <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-white/20 py-10 text-center">
       <UserPlus className="mb-2 size-8 text-muted-foreground/30" />
       <p className="text-sm text-muted-foreground/50">{message}</p>
     </div>
@@ -91,7 +91,7 @@ function DroppableColumn({
     <div
       ref={setNodeRef}
       className={cn(
-        'flex flex-col gap-3 rounded-xl border border-border/50 border-t-3 bg-card p-4 shadow-sm transition-colors',
+        'flex flex-col gap-3 rounded-2xl glass-card border-none border-t-3 p-4 transition-colors',
         config.borderColor,
         isOver && 'bg-primary/10 ring-2 ring-primary/30 ring-inset',
       )}

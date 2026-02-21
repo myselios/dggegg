@@ -324,10 +324,10 @@ export function ThreeWeekCalendar({
         onDragEnd={handleDragEnd}
         onDragCancel={handleDragCancel}
       >
-        <div className="relative overflow-auto max-h-[calc(100vh-220px)] rounded-lg border border-border/50 shadow-sm" data-testid="calendar-grid">
+        <div className="glass-card relative overflow-auto max-h-[calc(100vh-220px)] rounded-2xl border-none" data-testid="calendar-grid">
           <div className={cn(viewMode === '3week' && 'min-w-[1200px]')}>
             {/* Day headers - sticky top */}
-            <div className={cn('sticky top-0 z-30 grid border-b bg-background', gridCols)}>
+            <div className={cn('sticky top-0 z-30 grid border-b bg-white/70 dark:bg-white/5 backdrop-blur-lg', gridCols)}>
               <div className="sticky left-0 z-40 bg-background" />
               {allDays.map((day, i) => (
                 <div

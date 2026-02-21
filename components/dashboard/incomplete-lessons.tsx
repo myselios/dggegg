@@ -37,8 +37,8 @@ export function IncompleteLessons() {
 
   return (
     <Card className={cn(
-      'shadow-sm border-amber-200/60 bg-amber-50/30',
-      'dark:border-amber-800/60 dark:bg-amber-950/20'
+      'glass-card rounded-2xl border-none',
+      'bg-amber-50/50 dark:bg-amber-950/20'
     )}>
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-sm font-semibold text-amber-700 dark:text-amber-400">

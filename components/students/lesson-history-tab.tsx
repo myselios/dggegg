@@ -43,7 +43,7 @@ export function LessonHistoryTab({ studentId }: { readonly studentId: string }) 
   return (
     <div className="flex flex-col gap-3">
       {lessons.map((lesson) => (
-        <Card key={lesson.id} className="shadow-sm border-border/50">
+        <Card key={lesson.id} className="glass-card border-none rounded-xl">
           <CardContent className="p-4">
             <div className="flex items-center gap-2">
               <span className="text-sm font-medium">

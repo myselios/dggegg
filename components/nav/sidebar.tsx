@@ -31,9 +31,9 @@ export function Sidebar() {
   const pathname = usePathname()
 
   return (
-    <aside className="flex h-screen w-60 flex-col border-r border-border/60 bg-sidebar">
+    <aside className="flex h-screen w-60 flex-col border-r border-white/15 bg-sidebar backdrop-blur-xl">
       {/* Logo */}
-      <Link href="/" className="flex h-14 items-center gap-2.5 border-b border-border/60 px-5 transition-opacity hover:opacity-80">
+      <Link href="/" className="flex h-14 items-center gap-2.5 border-b border-white/15 px-5 transition-opacity hover:opacity-80">
         <div className="flex size-8 items-center justify-center rounded-lg bg-primary">
           <Rocket className="size-4 text-primary-foreground" />
         </div>
@@ -74,7 +74,7 @@ export function Sidebar() {
       </nav>
 
       {/* Logout */}
-      <div className="border-t border-border/60 p-3">
+      <div className="border-t border-white/15 p-3">
         <form action={logout}>
           <button
             type="submit"

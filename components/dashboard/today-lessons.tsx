@@ -48,7 +48,7 @@ export function TodayLessons() {
   }, [])
 
   return (
-    <Card className="shadow-sm border-border/50">
+    <Card className="glass-card rounded-2xl border-none">
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-sm font-semibold">
           <div className="flex size-7 items-center justify-center rounded-lg bg-blue-100 dark:bg-blue-900">

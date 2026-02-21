@@ -85,9 +85,9 @@ export default function DashboardPage() {
   return (
     <div className="flex flex-col gap-8">
       {/* Welcome Section */}
-      <div className="flex items-center justify-between">
+      <div className="glass-card flex items-center justify-between rounded-2xl p-5">
         <div className="flex items-center gap-3">
-          <div className="flex size-11 items-center justify-center rounded-xl bg-gradient-to-br from-primary/20 to-primary/5">
+          <div className="flex size-11 items-center justify-center rounded-xl bg-gradient-to-br from-primary/25 to-primary/5">
             <BookOpen className="size-5 text-primary" />
           </div>
           <div>
@@ -110,7 +110,7 @@ export default function DashboardPage() {
           return (
             <Card
               key={card.key}
-              className={cn('border-none shadow-sm', card.style.card)}
+              className={cn('glass-card border-none rounded-2xl', card.style.card)}
             >
               <CardContent className="flex items-center gap-4 py-5">
                 <div className={cn(

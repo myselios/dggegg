@@ -40,7 +40,7 @@ export function StudentProfile({ student }: { readonly student: Student }) {
     return (
       <div className="flex flex-col gap-6">
         <div className="grid gap-6 md:grid-cols-2">
-          <Card className="shadow-sm border-border/50">
+          <Card className="glass-card border-none rounded-2xl">
             <CardHeader>
               <CardTitle className="flex items-center justify-between text-sm font-semibold">
                 <div className="flex items-center gap-2">
@@ -62,7 +62,7 @@ export function StudentProfile({ student }: { readonly student: Student }) {
             <InfoRow label="IB 과정" value={student.ib_course} />
           </CardContent>
         </Card>
-        <Card className="shadow-sm border-border/50">
+        <Card className="glass-card border-none rounded-2xl">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-sm font-semibold">
               <div className="flex size-7 items-center justify-center rounded-lg bg-emerald-100 dark:bg-emerald-900">
@@ -91,7 +91,7 @@ export function StudentProfile({ student }: { readonly student: Student }) {
 
   return (
     <form action={handleUpdate}>
-      <Card className="shadow-sm border-border/50">
+      <Card className="glass-card border-none rounded-2xl">
         <CardHeader>
           <CardTitle className="flex items-center justify-between text-sm font-semibold">
             프로필 수정

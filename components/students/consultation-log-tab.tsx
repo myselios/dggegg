@@ -82,7 +82,7 @@ export function ConsultationLogTab({ studentId }: { readonly studentId: string }
       </div>
 
       {showForm && (
-        <Card className="shadow-sm border-border/50">
+        <Card className="glass-card border-none rounded-xl">
           <CardContent className="p-4">
             <form action={handleSubmit} className="flex flex-col gap-4">
               <div className="grid grid-cols-2 gap-4">
@@ -116,7 +116,7 @@ export function ConsultationLogTab({ studentId }: { readonly studentId: string }
         {filtered.map((log) => {
           const typeConfig = getConsultationType(log.type)
           return (
-            <Card key={log.id} className="shadow-sm border-border/50">
+            <Card key={log.id} className="glass-card border-none rounded-xl">
               <CardContent className="flex items-start justify-between p-4">
                 <div className="flex flex-col gap-1">
                   <div className="flex items-center gap-2">

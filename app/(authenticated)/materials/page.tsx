@@ -4,7 +4,7 @@ export default function MaterialsPage() {
   return (
     <div className="flex flex-col gap-6">
       <h2 className="text-2xl font-bold tracking-tight">자료 관리</h2>
-      <div className="flex flex-col items-center justify-center rounded-lg border border-dashed border-border/60 py-20 text-center">
+      <div className="glass-card flex flex-col items-center justify-center rounded-2xl border-none py-20 text-center">
         <div className="flex size-12 items-center justify-center rounded-full bg-muted">
           <FolderOpen className="size-6 text-muted-foreground/50" />
         </div>

@@ -19,12 +19,13 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false)
 
   return (
-    <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 px-4 dark:from-slate-950 dark:via-slate-900 dark:to-indigo-950">
-      {/* Decorative background elements */}
+    <div className="relative flex min-h-screen items-center justify-center overflow-hidden px-4 bg-[oklch(0.97_0.008_270)]  dark:bg-[oklch(0.11_0.015_265)]">
+      {/* Animated mesh gradient background */}
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
-        <div className="absolute -top-40 -right-40 h-80 w-80 rounded-full bg-blue-200/30 blur-3xl dark:bg-blue-800/20" />
-        <div className="absolute -bottom-40 -left-40 h-80 w-80 rounded-full bg-indigo-200/30 blur-3xl dark:bg-indigo-800/20" />
-        <div className="absolute top-1/2 left-1/2 h-96 w-96 -translate-x-1/2 -translate-y-1/2 rounded-full bg-purple-100/20 blur-3xl dark:bg-purple-900/10" />
+        <div className="absolute -top-40 -right-40 h-96 w-96 rounded-full bg-indigo-300/40 blur-[100px] dark:bg-indigo-700/20" />
+        <div className="absolute -bottom-40 -left-40 h-96 w-96 rounded-full bg-violet-300/30 blur-[100px] dark:bg-violet-800/15" />
+        <div className="absolute top-1/3 left-1/2 h-80 w-80 -translate-x-1/2 rounded-full bg-blue-200/25 blur-[80px] dark:bg-blue-900/10" />
+        <div className="absolute bottom-1/4 right-1/4 h-64 w-64 rounded-full bg-pink-200/15 blur-[80px] dark:bg-pink-900/10" />
       </div>
 
       <div className="relative z-10 w-full max-w-md">
@@ -35,7 +36,7 @@ export default function LoginPage() {
           </div>
         </div>
 
-        <Card className="border-white/60 bg-white/70 shadow-xl shadow-black/5 backdrop-blur-xl dark:border-white/10 dark:bg-slate-900/70 dark:shadow-black/20">
+        <Card className="rounded-2xl border-white/25 bg-white/60 shadow-2xl shadow-indigo-500/10 backdrop-blur-2xl dark:border-white/8 dark:bg-white/5 dark:shadow-black/30">
           <CardHeader className="pb-2 text-center">
             <CardTitle className="text-2xl font-bold tracking-tight">
               Rocket Tutor OS

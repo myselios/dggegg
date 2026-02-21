@@ -51,8 +51,8 @@ export function StudentCard({ student }: { readonly student: Student }) {
     >
       <Card
         className={cn(
-          'shadow-sm border-border/50 py-0 transition-all duration-200',
-          'hover:-translate-y-0.5 hover:shadow-md hover:border-primary/20',
+          'glass-card border-none py-0 rounded-xl transition-all duration-200',
+          'hover:-translate-y-0.5 hover:shadow-lg hover:shadow-primary/8',
         )}
       >
         <CardContent className="flex items-stretch gap-0 p-0">
@@ -147,7 +147,7 @@ export function StudentCardOverlay({ student }: { readonly student: Student }) {
   const course = student.ib_course ? IB_COURSE_STYLES[student.ib_course] : null
 
   return (
-    <Card className="w-72 rotate-2 border-border py-0 shadow-lg">
+    <Card className="w-72 rotate-2 glass-card border-none py-0 shadow-lg rounded-xl">
       <CardContent className="flex items-start gap-3 p-3.5">
         <Avatar className="mt-0.5 shrink-0">
           <AvatarFallback className={cn(avatarColor, 'text-white text-xs font-semibold')}>
