@@ -110,6 +110,11 @@ Step 4: Playwright E2E 테스트 검증
 - 검증 없이 push한 코드는 즉시 revert 대상
 - 긴급 핫픽스도 최소 Step 1 + Step 3 필수
 
+**자동 배포 규칙:**
+- Step 1~4 모두 통과하면 feature 브랜치 → main 머지 → `git push origin main`까지 자동 수행
+- Vercel이 main 브랜치 기준으로 배포하므로, 검증 완료된 코드는 반드시 main에 push해야 확인 가능
+- 사용자에게 push 여부를 묻지 않고, 검증 통과 시 자동으로 main push 진행
+
 ### E2E 테스트 작성 규칙
 
 - 새 기능 추가 시 → 해당 기능의 E2E 테스트도 함께 작성
