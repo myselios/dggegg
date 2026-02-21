@@ -88,7 +88,7 @@ export function LessonNotePanel({
     onUpdated()
   }
 
-  async function handleCancel() {
+  async function handleDelete() {
     const result = await deleteScheduleEvent(event.id)
     if (!result.success) {
       alert(result.error)
@@ -184,8 +184,8 @@ export function LessonNotePanel({
 
           <div className="flex gap-2">
             <Button type="submit" className="flex-1">완료 (기록 저장)</Button>
-            <Button type="button" variant="destructive" size="sm" onClick={handleCancel}>
-              수업 취소
+            <Button type="button" variant="destructive" size="sm" onClick={handleDelete}>
+              삭제
             </Button>
           </div>
         </form>
