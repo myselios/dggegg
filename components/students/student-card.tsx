@@ -1,12 +1,13 @@
 'use client'
 
-import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { useDraggable } from '@dnd-kit/core'
 import { GraduationCap, Trash2 } from 'lucide-react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { cn } from '@/lib/utils'
+import { IB_COURSE_STYLES } from '@/lib/constants/status-styles'
 import { StudentDeleteDialog } from './student-delete-dialog'
 import type { Student } from '@/lib/types/database'
 
@@ -23,33 +24,6 @@ const AVATAR_COLORS = [
   'bg-cyan-500',
 ] as const
 
-const courseConfig: Record<string, { readonly label: string; readonly className: string }> = {
-  'Ab initio': {
-    label: 'Ab initio',
-    className: 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950 dark:text-emerald-300 dark:border-emerald-800',
-  },
-  SL: {
-    label: 'SL',
-    className: 'bg-sky-50 text-sky-700 border-sky-200 dark:bg-sky-950 dark:text-sky-300 dark:border-sky-800',
-  },
-  HL: {
-    label: 'HL',
-    className: 'bg-violet-50 text-violet-700 border-violet-200 dark:bg-violet-950 dark:text-violet-300 dark:border-violet-800',
-  },
-  IGCSE: {
-    label: 'IGCSE',
-    className: 'bg-orange-50 text-orange-700 border-orange-200 dark:bg-orange-950 dark:text-orange-300 dark:border-orange-800',
-  },
-  MYP: {
-    label: 'MYP',
-    className: 'bg-teal-50 text-teal-700 border-teal-200 dark:bg-teal-950 dark:text-teal-300 dark:border-teal-800',
-  },
-  '기타': {
-    label: '기타',
-    className: 'bg-gray-50 text-gray-700 border-gray-200 dark:bg-gray-900 dark:text-gray-300 dark:border-gray-700',
-  },
-}
-
 function getAvatarColor(name: string): string {
   const charSum = [...name].reduce((sum, char) => sum + char.charCodeAt(0), 0)
   return AVATAR_COLORS[charSum % AVATAR_COLORS.length]
@@ -60,6 +34,7 @@ function getInitials(name: string): string {
 }
 
 export function StudentCard({ student }: { readonly student: Student }) {
+  const router = useRouter()
   const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
     id: student.id,
     data: { student },
@@ -67,23 +42,28 @@ export function StudentCard({ student }: { readonly student: Student }) {
 
   const avatarColor = getAvatarColor(student.name_ko)
   const initials = getInitials(student.name_ko)
-  const course = student.ib_course ? courseConfig[student.ib_course] : null
+  const course = student.ib_course ? IB_COURSE_STYLES[student.ib_course] : null
 
   return (
     <div
       ref={setNodeRef}
-      {...listeners}
-      {...attributes}
       className={cn('group/card relative', isDragging && 'opacity-30')}
     >
-      <Link href={`/students/${student.id}`} draggable={false}>
-        <Card
-          className={cn(
-            'cursor-grab active:cursor-grabbing border-border/60 py-0 transition-all duration-200',
-            'hover:-translate-y-0.5 hover:shadow-md hover:border-border',
-          )}
-        >
-          <CardContent className="flex items-start gap-3 p-3.5">
+      <Card
+        className={cn(
+          'border-border/40 py-0 transition-all duration-200',
+          'hover:-translate-y-0.5 hover:shadow-sm hover:border-border',
+        )}
+      >
+        <CardContent className="flex items-stretch gap-0 p-0">
+          {/* LEFT: Click zone → navigate to detail */}
+          <div
+            className="flex flex-1 min-w-0 cursor-pointer items-start gap-3 p-3.5"
+            onClick={(e) => {
+              e.stopPropagation()
+              router.push(`/students/${student.id}`)
+            }}
+          >
             <Avatar className="mt-0.5 shrink-0">
               <AvatarFallback className={cn(avatarColor, 'text-white text-xs font-semibold')}>
                 {initials}
@@ -115,14 +95,32 @@ export function StudentCard({ student }: { readonly student: Student }) {
                   </span>
                 )}
               </div>
-
             </div>
-          </CardContent>
-        </Card>
-      </Link>
+          </div>
 
+          {/* RIGHT: Drag handle */}
+          <div
+            className="flex w-8 shrink-0 cursor-grab items-center justify-center border-l border-border/30 text-muted-foreground/30 hover:text-muted-foreground/60 active:cursor-grabbing"
+            style={{ touchAction: 'none' }}
+            {...listeners}
+            {...attributes}
+          >
+            <svg width="6" height="14" viewBox="0 0 6 14" fill="currentColor">
+              <circle cx="1.5" cy="1.5" r="1.5" />
+              <circle cx="4.5" cy="1.5" r="1.5" />
+              <circle cx="1.5" cy="7" r="1.5" />
+              <circle cx="4.5" cy="7" r="1.5" />
+              <circle cx="1.5" cy="12.5" r="1.5" />
+              <circle cx="4.5" cy="12.5" r="1.5" />
+            </svg>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Delete button — hover overlay */}
       <div
-        className="absolute top-2 right-2 z-10 opacity-0 transition-opacity group-hover/card:opacity-100"
+        className="absolute top-2 left-2 z-10 opacity-0 transition-opacity group-hover/card:opacity-100"
+        onClick={(e) => e.stopPropagation()}
         onPointerDown={(e) => e.stopPropagation()}
       >
         <StudentDeleteDialog
@@ -132,7 +130,6 @@ export function StudentCard({ student }: { readonly student: Student }) {
             <button
               type="button"
               className="flex size-7 items-center justify-center rounded-md bg-background/80 text-muted-foreground shadow-sm backdrop-blur-sm transition-colors hover:bg-destructive hover:text-destructive-foreground"
-              onClick={(e) => e.preventDefault()}
             >
               <Trash2 className="size-3.5" />
             </button>
@@ -147,7 +144,7 @@ export function StudentCard({ student }: { readonly student: Student }) {
 export function StudentCardOverlay({ student }: { readonly student: Student }) {
   const avatarColor = getAvatarColor(student.name_ko)
   const initials = getInitials(student.name_ko)
-  const course = student.ib_course ? courseConfig[student.ib_course] : null
+  const course = student.ib_course ? IB_COURSE_STYLES[student.ib_course] : null
 
   return (
     <Card className="w-72 rotate-2 border-border py-0 shadow-lg">

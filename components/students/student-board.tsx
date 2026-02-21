@@ -5,6 +5,7 @@ import {
   DndContext,
   DragOverlay,
   PointerSensor,
+  TouchSensor,
   useSensor,
   useSensors,
   useDroppable,
@@ -17,9 +18,11 @@ import { useStudents } from '@/lib/hooks/use-students'
 import { updateStudent } from '@/app/actions/students'
 import { StudentCard, StudentCardOverlay } from './student-card'
 import { StudentCreateDialog } from './student-create-dialog'
+import { StudentCsvImportDialog } from './student-csv-import-dialog'
 import { StudentToolbar, EMPTY_FILTERS, type StudentFilters } from './student-toolbar'
 import { Badge } from '@/components/ui/badge'
 import { cn } from '@/lib/utils'
+import { STUDENT_STATUS } from '@/lib/constants/status-styles'
 import type { Student } from '@/lib/types/database'
 import type { LucideIcon } from 'lucide-react'
 
@@ -38,29 +41,29 @@ type ColumnConfig = {
 const columns: readonly ColumnConfig[] = [
   {
     key: 'active',
-    label: '수업 중',
+    label: STUDENT_STATUS.active.label,
     icon: CheckCircle2,
-    borderColor: 'border-t-emerald-500',
-    iconColor: 'text-emerald-500',
-    badgeClassName: 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950 dark:text-emerald-300 dark:border-emerald-800',
+    borderColor: STUDENT_STATUS.active.border,
+    iconColor: STUDENT_STATUS.active.icon,
+    badgeClassName: STUDENT_STATUS.active.badge,
     emptyMessage: '활성 학생이 없습니다',
   },
   {
     key: 'paused',
-    label: '일시 중지',
+    label: STUDENT_STATUS.paused.label,
     icon: PauseCircle,
-    borderColor: 'border-t-amber-500',
-    iconColor: 'text-amber-500',
-    badgeClassName: 'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950 dark:text-amber-300 dark:border-amber-800',
+    borderColor: STUDENT_STATUS.paused.border,
+    iconColor: STUDENT_STATUS.paused.icon,
+    badgeClassName: STUDENT_STATUS.paused.badge,
     emptyMessage: '일시 중지된 학생이 없습니다',
   },
   {
     key: 'ended',
-    label: '종료',
+    label: STUDENT_STATUS.ended.label,
     icon: XCircle,
-    borderColor: 'border-t-gray-400',
-    iconColor: 'text-gray-400',
-    badgeClassName: 'bg-gray-50 text-gray-600 border-gray-200 dark:bg-gray-900 dark:text-gray-400 dark:border-gray-700',
+    borderColor: STUDENT_STATUS.ended.border,
+    iconColor: STUDENT_STATUS.ended.icon,
+    badgeClassName: STUDENT_STATUS.ended.badge,
     emptyMessage: '종료된 학생이 없습니다',
   },
 ] as const
@@ -150,7 +153,8 @@ export function StudentBoard() {
   const [filters, setFilters] = useState<StudentFilters>(EMPTY_FILTERS)
 
   const sensors = useSensors(
-    useSensor(PointerSensor, { activationConstraint: { distance: 8 } })
+    useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
+    useSensor(TouchSensor, { activationConstraint: { delay: 250, tolerance: 8 } })
   )
 
   // Extract unique schools for filter options
@@ -251,7 +255,10 @@ export function StudentBoard() {
             {isFiltered ? `${filtered.length}/${totalCount}명` : `${totalCount}명`}
           </Badge>
         </div>
-        <StudentCreateDialog />
+        <div className="flex items-center gap-2">
+          <StudentCreateDialog />
+          <StudentCsvImportDialog />
+        </div>
       </div>
 
       <StudentToolbar
