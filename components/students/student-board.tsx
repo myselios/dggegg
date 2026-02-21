@@ -91,7 +91,7 @@ function DroppableColumn({
     <div
       ref={setNodeRef}
       className={cn(
-        'flex flex-col gap-3 rounded-xl border border-border/40 border-t-4 bg-muted/20 p-4 transition-colors',
+        'flex flex-col gap-3 rounded-xl border border-border/50 border-t-3 bg-card p-4 shadow-sm transition-colors',
         config.borderColor,
         isOver && 'bg-primary/10 ring-2 ring-primary/30 ring-inset',
       )}

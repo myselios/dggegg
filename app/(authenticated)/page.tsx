@@ -85,17 +85,19 @@ export default function DashboardPage() {
   return (
     <div className="flex flex-col gap-8">
       {/* Welcome Section */}
-      <div className="flex items-center gap-3">
-        <div className="flex size-10 items-center justify-center rounded-lg bg-primary/10">
-          <BookOpen className="size-5 text-primary" />
-        </div>
-        <div>
-          <h2 className="text-2xl font-bold tracking-tight">
-            {greeting} 👋
-          </h2>
-          <p className="text-sm text-muted-foreground">
-            오늘 하루도 좋은 수업 되세요.
-          </p>
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="flex size-11 items-center justify-center rounded-xl bg-gradient-to-br from-primary/20 to-primary/5">
+            <BookOpen className="size-5 text-primary" />
+          </div>
+          <div>
+            <h2 className="text-xl font-bold tracking-tight">
+              {greeting}
+            </h2>
+            <p className="text-xs text-muted-foreground">
+              오늘 하루도 좋은 수업 되세요.
+            </p>
+          </div>
         </div>
       </div>
 
@@ -108,20 +110,20 @@ export default function DashboardPage() {
           return (
             <Card
               key={card.key}
-              className={cn('border-none', card.style.card)}
+              className={cn('border-none shadow-sm', card.style.card)}
             >
               <CardContent className="flex items-center gap-4 py-5">
                 <div className={cn(
-                  'flex size-10 shrink-0 items-center justify-center rounded-lg',
+                  'flex size-10 shrink-0 items-center justify-center rounded-xl',
                   card.style.iconBg
                 )}>
                   <Icon className="size-5" />
                 </div>
                 <div className="min-w-0">
-                  <p className="text-xs font-medium opacity-80">
+                  <p className="text-[11px] font-medium uppercase tracking-wider opacity-70">
                     {card.label}
                   </p>
-                  <p className="text-2xl font-bold tabular-nums">
+                  <p className="text-2xl font-bold tabular-nums leading-tight">
                     {value}
                   </p>
                 </div>

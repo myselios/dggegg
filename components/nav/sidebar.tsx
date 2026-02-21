@@ -31,15 +31,20 @@ export function Sidebar() {
   const pathname = usePathname()
 
   return (
-    <aside className="flex h-screen w-60 flex-col border-r bg-muted/30">
+    <aside className="flex h-screen w-60 flex-col border-r border-border/60 bg-sidebar">
       {/* Logo */}
-      <Link href="/" className="flex h-14 items-center gap-2 border-b px-4 transition-opacity hover:opacity-80">
-        <Rocket className="size-5 text-primary" />
-        <h1 className="text-lg font-semibold tracking-tight">Rocket Tutor</h1>
+      <Link href="/" className="flex h-14 items-center gap-2.5 border-b border-border/60 px-5 transition-opacity hover:opacity-80">
+        <div className="flex size-8 items-center justify-center rounded-lg bg-primary">
+          <Rocket className="size-4 text-primary-foreground" />
+        </div>
+        <h1 className="text-base font-bold tracking-tight">Rocket Tutor</h1>
       </Link>
 
       {/* Navigation */}
-      <nav className="flex flex-1 flex-col gap-1 p-3">
+      <nav className="flex flex-1 flex-col gap-0.5 px-3 pt-4">
+        <p className="mb-2 px-3 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/60">
+          Menu
+        </p>
         {navItems.map((item) => {
           const isActive =
             pathname === item.href ||
@@ -51,28 +56,31 @@ export function Sidebar() {
               key={item.href}
               href={item.href}
               className={cn(
-                'flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium',
-                'transition-all duration-200 ease-in-out',
+                'flex items-center gap-3 rounded-lg px-3 py-2 text-[13px] font-medium',
+                'transition-all duration-150',
                 isActive
-                  ? 'bg-primary text-primary-foreground shadow-sm'
-                  : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
+                  ? 'bg-primary/10 text-primary font-semibold'
+                  : 'text-muted-foreground hover:bg-accent hover:text-foreground'
               )}
             >
-              <Icon className="size-4 shrink-0" />
+              <Icon className={cn('size-4 shrink-0', isActive && 'text-primary')} />
               {item.label}
+              {isActive && (
+                <span className="ml-auto size-1.5 rounded-full bg-primary" />
+              )}
             </Link>
           )
         })}
       </nav>
 
       {/* Logout */}
-      <div className="border-t p-3">
+      <div className="border-t border-border/60 p-3">
         <form action={logout}>
           <button
             type="submit"
             className={cn(
-              'flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium',
-              'text-muted-foreground transition-all duration-200 ease-in-out',
+              'flex w-full items-center gap-3 rounded-lg px-3 py-2 text-[13px] font-medium',
+              'text-muted-foreground transition-all duration-150',
               'hover:bg-destructive/10 hover:text-destructive'
             )}
           >

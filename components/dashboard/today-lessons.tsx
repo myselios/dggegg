@@ -48,10 +48,12 @@ export function TodayLessons() {
   }, [])
 
   return (
-    <Card>
+    <Card className="shadow-sm border-border/50">
       <CardHeader>
-        <CardTitle className="flex items-center gap-2 text-base font-semibold">
-          <CalendarDays className="size-5 text-blue-600 dark:text-blue-400" />
+        <CardTitle className="flex items-center gap-2 text-sm font-semibold">
+          <div className="flex size-7 items-center justify-center rounded-lg bg-blue-100 dark:bg-blue-900">
+            <CalendarDays className="size-3.5 text-blue-600 dark:text-blue-400" />
+          </div>
           오늘 수업
           {events.length > 0 && (
             <Badge variant="secondary" className="ml-auto text-xs font-normal">

@@ -167,10 +167,12 @@ export function WeeklySchedule() {
   }
 
   return (
-    <Card>
+    <Card className="shadow-sm border-border/50">
       <CardHeader className="pb-3">
-        <CardTitle className="flex items-center gap-2 text-base font-semibold">
-          <CalendarDays className="size-5 text-violet-600 dark:text-violet-400" />
+        <CardTitle className="flex items-center gap-2 text-sm font-semibold">
+          <div className="flex size-7 items-center justify-center rounded-lg bg-violet-100 dark:bg-violet-900">
+            <CalendarDays className="size-3.5 text-violet-600 dark:text-violet-400" />
+          </div>
           이번 주 스케줄
           <Link
             href="/schedule"
