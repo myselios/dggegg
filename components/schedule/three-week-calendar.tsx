@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo, useCallback } from 'react'
+import { useState, useMemo, useCallback, useEffect, useRef } from 'react'
 import {
   DndContext,
   DragOverlay,
@@ -105,6 +105,7 @@ export function ThreeWeekCalendar({
   const [overCellId, setOverCellId] = useState<string | null>(null)
   const [isCompact, setIsCompact] = useState(true)
   const [mobileView, setMobileView] = useState<'1week' | 'day'>('1week')
+  const gridRef = useRef<HTMLDivElement>(null)
 
   const viewMode: ViewMode = isMobile ? mobileView : '3week'
 
@@ -133,6 +134,18 @@ export function ThreeWeekCalendar({
     start.toISOString(),
     end.toISOString()
   )
+
+  // Auto-scroll to today's column on mount
+  useEffect(() => {
+    if (viewMode !== '3week' || !gridRef.current) return
+    const todayIdx = allDays.findIndex((d) => isToday(d))
+    if (todayIdx < 0) return
+    const container = gridRef.current
+    const timeColWidth = 52
+    const dayColWidth = (container.scrollWidth - timeColWidth) / allDays.length
+    const scrollTarget = timeColWidth + todayIdx * dayColWidth - container.clientWidth / 2 + dayColWidth * 3.5
+    container.scrollLeft = Math.max(0, scrollTarget)
+  }, [viewMode, allDays])
 
   // Conflict detection: find all events that overlap with at least one other
   const conflictingIds = useMemo(
@@ -309,7 +322,7 @@ export function ThreeWeekCalendar({
         onDragEnd={handleDragEnd}
         onDragCancel={handleDragCancel}
       >
-        <div className="glass-card relative overflow-auto max-h-[calc(100vh-220px)] rounded-2xl border-none" data-testid="calendar-grid">
+        <div ref={gridRef} className="glass-card relative overflow-auto max-h-[calc(100vh-220px)] rounded-2xl border-none" data-testid="calendar-grid">
           <div className={cn(viewMode === '3week' && 'min-w-[1800px]')}>
             {/* Day headers - sticky top (with week range labels for 3week) */}
             <div className={cn('sticky top-0 z-30 grid bg-white/70 dark:bg-white/5 backdrop-blur-lg', gridCols)}>

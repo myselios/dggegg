@@ -5,6 +5,10 @@ test.describe('Schedule Event Click vs Drag (영역 분리)', () => {
     await page.goto('/schedule')
     await page.waitForLoadState('networkidle')
     await page.waitForSelector('[data-testid="event-block"]', { timeout: 10000 })
+    // Scroll grid so first event is fully visible
+    const firstEvent = page.locator('[data-testid="event-block"]').first()
+    await firstEvent.scrollIntoViewIfNeeded()
+    await page.waitForTimeout(300)
   })
 
   test('좌측 콘텐츠 영역 클릭 → 패널/다이얼로그 열림', async ({ page }) => {
