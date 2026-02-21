@@ -5,7 +5,7 @@ import { format } from 'date-fns'
 import { ko } from 'date-fns/locale'
 import { AlertTriangle } from 'lucide-react'
 import { useStudents } from '@/lib/hooks/use-students'
-import { createScheduleEvent, createRecurringEvents } from '@/app/actions/schedule'
+import { createScheduleEvent } from '@/app/actions/schedule'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -74,8 +74,8 @@ export function EventCreateDialog({
     try {
       const studentId = formData.get('student_id') as string | null
       const title = formData.get('title') as string | null
+      const lessonMemo = (formData.get('lesson_memo') as string) || null
       const templateType = formData.get('template_type') as string
-      const repeatWeeks = Number(formData.get('repeat_weeks')) || 0
 
       const startAt = new Date(date)
       startAt.setHours(startHour, startMinute, 0, 0)
@@ -86,7 +86,7 @@ export function EventCreateDialog({
 
       const baseEvent = {
         student_id: eventType === 'lesson' ? studentId : null,
-        title: eventType === 'memo' ? title : null,
+        title: eventType === 'memo' ? title : lessonMemo,
         event_type: eventType,
         start_at: startAt.toISOString(),
         end_at: endAt.toISOString(),
@@ -96,19 +96,10 @@ export function EventCreateDialog({
         recurrence_group_id: null,
         color: null,
       }
-
-      if (repeatWeeks > 1 && eventType === 'lesson') {
-        const result = await createRecurringEvents(baseEvent, repeatWeeks)
-        if (!result.success) {
-          alert(result.error)
-          return
-        }
-      } else {
-        const result = await createScheduleEvent(baseEvent)
-        if (!result.success) {
-          alert(result.error)
-          return
-        }
+      const result = await createScheduleEvent(baseEvent)
+      if (!result.success) {
+        alert(result.error)
+        return
       }
       onCreated()
     } finally {
@@ -251,8 +242,8 @@ export function EventCreateDialog({
                 </Select>
               </div>
               <div className="flex flex-col gap-2">
-                <Label>반복 (주)</Label>
-                <Input name="repeat_weeks" type="number" min={0} max={52} defaultValue={0} placeholder="0 = 반복 없음" />
+                <Label>메모</Label>
+                <Input name="lesson_memo" placeholder="예: 1, 보충 등" />
               </div>
             </>
           )}
