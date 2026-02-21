@@ -53,7 +53,8 @@ export type ScheduleEvent = {
   readonly updated_at: string
 }
 
-export type ScheduleEventInsert = Omit<ScheduleEvent, 'id' | 'created_at' | 'updated_at'>
+// event_type excluded: column not yet in production DB (migration 005 pending)
+export type ScheduleEventInsert = Omit<ScheduleEvent, 'id' | 'created_at' | 'updated_at' | 'event_type'>
 
 export type ScheduleEventUpdate = Partial<ScheduleEventInsert>
 

@@ -168,7 +168,7 @@ export function ThreeWeekCalendar({
     return wouldConflict ? overCellId : null
   }, [activeEvent, overCellId, events, allDays])
 
-  // Require 8px of movement before starting drag so clicks still work
+  // Distance constraint: move 8px to start drag, allowing clicks to work
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
     useSensor(TouchSensor, { activationConstraint: { delay: 250, tolerance: 8 } })
@@ -404,8 +404,9 @@ export function ThreeWeekCalendar({
                           event={event}
                           hasConflict={conflictingIds.has(event.id)}
                           onClick={() => {
-                            // Only open lesson note panel for lessons, not memos
-                            if (event.event_type === 'lesson') {
+                            // Open lesson note panel for lessons (not memos)
+                            // Fallback: events with student_id are lessons even if event_type is undefined
+                            if (event.event_type !== 'memo' && event.student_id) {
                               setSelectedEvent(event)
                               setSelectedSlot(null)
                             }

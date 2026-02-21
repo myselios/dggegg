@@ -27,8 +27,8 @@ export async function createScheduleEvent(input: ScheduleEventInsert): Promise<A
     const validated = scheduleEventInsertSchema.parse(input)
     const supabase = await createClient()
 
-    // 수업(lesson)인 경우에만 같은 학생, 겹치는 시간대에 기존 이벤트가 있는지 확인
-    if (validated.student_id && validated.event_type === 'lesson') {
+    // 수업인 경우에만 같은 학생, 겹치는 시간대에 기존 이벤트가 있는지 확인
+    if (validated.student_id) {
       const { data: existing } = await supabase
         .from('schedule_events')
         .select('id')
@@ -43,9 +43,10 @@ export async function createScheduleEvent(input: ScheduleEventInsert): Promise<A
       }
     }
 
+    const { event_type: _eventType, ...insertData } = validated
     const { data, error} = await supabase
       .from('schedule_events')
-      .insert(validated)
+      .insert(insertData)
       .select('*, students(id, name_ko, school, ib_course)')
       .single()
 
@@ -66,26 +67,30 @@ export async function createScheduleEvent(input: ScheduleEventInsert): Promise<A
 export async function updateScheduleEvent(id: string, input: ScheduleEventUpdate): Promise<ActionResult<ScheduleEventWithStudent>> {
   try {
     await requireAuth()
-    const validated = scheduleEventUpdateSchema.parse(input)
+    scheduleEventUpdateSchema.parse(input) // validation only
+    // Only send fields that were actually provided (avoid Zod filling in defaults)
+    const updateData = Object.fromEntries(
+      Object.entries(input).filter(([_, v]) => v !== undefined)
+    )
     const supabase = await createClient()
 
-    // 시간이 변경되는 경우 중복 체크 (수업인 경우에만)
-    if (validated.start_at && validated.end_at) {
+    // 시간이 변경되는 경우 중복 체크 (학생이 있는 수업인 경우에만)
+    if (updateData.start_at && updateData.end_at) {
       const { data: current } = await supabase
         .from('schedule_events')
-        .select('student_id, event_type')
+        .select('student_id')
         .eq('id', id)
         .single()
 
-      if (current && current.student_id && current.event_type === 'lesson') {
+      if (current && current.student_id) {
         const { data: existing } = await supabase
           .from('schedule_events')
           .select('id')
           .eq('student_id', current.student_id)
           .neq('id', id)
           .neq('status', 'cancelled')
-          .lt('start_at', validated.end_at)
-          .gt('end_at', validated.start_at)
+          .lt('start_at', updateData.end_at as string)
+          .gt('end_at', updateData.start_at as string)
           .limit(1)
 
         if (existing && existing.length > 0) {
@@ -96,13 +101,14 @@ export async function updateScheduleEvent(id: string, input: ScheduleEventUpdate
 
     const { data, error } = await supabase
       .from('schedule_events')
-      .update(validated)
+      .update(updateData)
       .eq('id', id)
       .select('*, students(id, name_ko, school, ib_course)')
       .single()
 
     if (error) {
-      return { success: false, error: '수업 일정 수정에 실패했습니다' }
+      console.error('[updateScheduleEvent] Supabase error:', error.message, error.code, error.details)
+      return { success: false, error: `수업 일정 수정에 실패했습니다: ${error.message}` }
     }
 
     revalidatePath('/schedule')
@@ -180,7 +186,6 @@ export async function createRecurringEvents(
       events.push({
         student_id: validatedBase.student_id,
         title: validatedBase.title,
-        event_type: validatedBase.event_type,
         status: validatedBase.status,
         template_type: validatedBase.template_type,
         color: validatedBase.color,

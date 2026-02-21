@@ -7,16 +7,24 @@ import { cn } from '@/lib/utils'
 import { formatTime } from '@/lib/utils/date'
 import type { ScheduleEventWithStudent } from '@/lib/types/database'
 
-const courseColors: Record<string, string> = {
-  'Ab initio': 'bg-green-200 border-green-400 text-green-900 dark:bg-green-900 dark:border-green-700 dark:text-green-100',
-  'SL': 'bg-blue-200 border-blue-400 text-blue-900 dark:bg-blue-900 dark:border-blue-700 dark:text-blue-100',
-  'HL': 'bg-purple-200 border-purple-400 text-purple-900 dark:bg-purple-900 dark:border-purple-700 dark:text-purple-100',
+/** Left color bar (click zone) */
+const barColors: Record<string, string> = {
+  'Ab initio': 'bg-green-500 dark:bg-green-600',
+  'SL': 'bg-blue-500 dark:bg-blue-600',
+  'HL': 'bg-purple-500 dark:bg-purple-600',
+}
+
+/** Content area background + text */
+const contentColors: Record<string, string> = {
+  'Ab initio': 'bg-green-100 text-green-900 dark:bg-green-900 dark:text-green-100',
+  'SL': 'bg-blue-100 text-blue-900 dark:bg-blue-900 dark:text-blue-100',
+  'HL': 'bg-purple-100 text-purple-900 dark:bg-purple-900 dark:text-purple-100',
 }
 
 const statusStyles: Record<string, string> = {
   completed: 'opacity-60',
   cancelled: 'opacity-40 line-through',
-  no_show: 'opacity-40 bg-red-100 border-red-300',
+  no_show: 'opacity-40',
 }
 
 export function CalendarEventBlock({
@@ -38,9 +46,12 @@ export function CalendarEventBlock({
 
   const isMemo = event.event_type === 'memo'
   const course = event.students?.ib_course ?? ''
-  const colorClass = isMemo
-    ? 'bg-yellow-100 border-yellow-400 text-yellow-900 dark:bg-yellow-900 dark:border-yellow-700 dark:text-yellow-100'
-    : (courseColors[course] ?? 'bg-gray-200 border-gray-400 text-gray-900')
+  const barColor = isMemo
+    ? 'bg-yellow-500 dark:bg-yellow-600'
+    : (barColors[course] ?? 'bg-gray-400 dark:bg-gray-500')
+  const contentColor = isMemo
+    ? 'bg-yellow-100 text-yellow-900 dark:bg-yellow-900 dark:text-yellow-100'
+    : (contentColors[course] ?? 'bg-gray-100 text-gray-900 dark:bg-gray-800 dark:text-gray-100')
   const statusClass = statusStyles[event.status] ?? ''
   const isCancelled = event.status === 'cancelled'
   const showAddOverlay = isCancelled && onAddMakeup && isHovered
@@ -49,8 +60,7 @@ export function CalendarEventBlock({
     <div
       ref={setNodeRef}
       className={cn(
-        'relative w-full rounded border-l-4 px-2 py-1 text-left text-xs transition-shadow hover:shadow-md cursor-grab active:cursor-grabbing touch-none',
-        colorClass,
+        'relative flex w-full rounded text-left text-xs transition-shadow hover:shadow-md overflow-hidden',
         statusClass,
         isDragging && 'opacity-30',
         hasConflict && 'ring-2 ring-red-500 dark:ring-red-400'
@@ -58,41 +68,51 @@ export function CalendarEventBlock({
       data-testid="event-block"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      {...listeners}
-      {...attributes}
     >
-      <button
-        type="button"
+      {/* Left color bar — CLICK zone */}
+      <div
+        data-testid="event-click-bar"
+        className={cn(
+          'w-3 shrink-0 cursor-pointer transition-all hover:brightness-90',
+          barColor
+        )}
         onClick={(e) => {
           e.stopPropagation()
           onClick()
         }}
-        className="absolute inset-0 z-10 cursor-pointer"
-        aria-label="이벤트 상세보기"
       />
 
-      {/* Content layer - pointer-events-none to allow click-through to button */}
-      <div className="relative z-0 pointer-events-none">
-        <div className="flex items-center gap-1">
-          {hasConflict && (
-            <AlertTriangle className="h-3 w-3 shrink-0 text-red-600 dark:text-red-400" />
-          )}
-          <span className="font-semibold truncate">
-            {isMemo ? event.title : event.students?.name_ko}
-          </span>
-        </div>
-        <div className="text-[10px] opacity-75" data-testid="event-time">
-          {formatTime(event.start_at)} - {formatTime(event.end_at)}
-        </div>
-        {event.template_type && (
-          <div className="text-[10px] opacity-60">{event.template_type}</div>
+      {/* Right content — DRAG zone */}
+      <div
+        className={cn(
+          'flex-1 min-w-0 px-2 py-1 cursor-grab active:cursor-grabbing touch-none',
+          contentColor
         )}
+        {...listeners}
+        {...attributes}
+      >
+        <div className="pointer-events-none">
+          <div className="flex items-center gap-1">
+            {hasConflict && (
+              <AlertTriangle className="h-3 w-3 shrink-0 text-red-600 dark:text-red-400" />
+            )}
+            <span className="font-semibold truncate">
+              {isMemo ? event.title : event.students?.name_ko}
+            </span>
+          </div>
+          <div className="text-[10px] opacity-75" data-testid="event-time">
+            {formatTime(event.start_at)} - {formatTime(event.end_at)}
+          </div>
+          {event.template_type && (
+            <div className="text-[10px] opacity-60">{event.template_type}</div>
+          )}
+        </div>
       </div>
 
       {/* Add makeup overlay for cancelled events */}
       {showAddOverlay && (
         <div
-          className="absolute inset-0 z-20 flex items-center justify-center bg-black/20 rounded cursor-pointer hover:bg-black/30 transition-colors pointer-events-auto"
+          className="absolute inset-0 z-20 flex items-center justify-center bg-black/20 rounded cursor-pointer hover:bg-black/30 transition-colors"
           onClick={(e) => {
             e.stopPropagation()
             onAddMakeup(event)
@@ -113,26 +133,27 @@ export function CalendarEventBlockOverlay({
 }) {
   const isMemo = event.event_type === 'memo'
   const course = event.students?.ib_course ?? ''
-  const colorClass = isMemo
-    ? 'bg-yellow-100 border-yellow-400 text-yellow-900 dark:bg-yellow-900 dark:border-yellow-700 dark:text-yellow-100'
-    : (courseColors[course] ?? 'bg-gray-200 border-gray-400 text-gray-900')
+  const barColor = isMemo
+    ? 'bg-yellow-500 dark:bg-yellow-600'
+    : (barColors[course] ?? 'bg-gray-400 dark:bg-gray-500')
+  const contentColor = isMemo
+    ? 'bg-yellow-100 text-yellow-900 dark:bg-yellow-900 dark:text-yellow-100'
+    : (contentColors[course] ?? 'bg-gray-100 text-gray-900 dark:bg-gray-800 dark:text-gray-100')
 
   return (
-    <div
-      className={cn(
-        'w-40 rounded border-l-4 px-2 py-1 text-left text-xs shadow-lg rotate-2',
-        colorClass
-      )}
-    >
-      <div className="font-semibold truncate">
-        {isMemo ? event.title : event.students?.name_ko}
+    <div className="flex w-40 rounded text-left text-xs shadow-lg rotate-2 overflow-hidden">
+      <div className={cn('w-3 shrink-0', barColor)} />
+      <div className={cn('flex-1 px-2 py-1', contentColor)}>
+        <div className="font-semibold truncate">
+          {isMemo ? event.title : event.students?.name_ko}
+        </div>
+        <div className="text-[10px] opacity-75">
+          {formatTime(event.start_at)} - {formatTime(event.end_at)}
+        </div>
+        {event.template_type && (
+          <div className="text-[10px] opacity-60">{event.template_type}</div>
+        )}
       </div>
-      <div className="text-[10px] opacity-75">
-        {formatTime(event.start_at)} - {formatTime(event.end_at)}
-      </div>
-      {event.template_type && (
-        <div className="text-[10px] opacity-60">{event.template_type}</div>
-      )}
     </div>
   )
 }
