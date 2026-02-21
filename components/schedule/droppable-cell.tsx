@@ -77,7 +77,7 @@ export function DroppableCell({
         </div>
       )}
       {/* Events */}
-      <div className="relative z-10 p-0.5">
+      <div className="relative z-10 p-0.5 overflow-hidden">
         {children}
       </div>
     </div>

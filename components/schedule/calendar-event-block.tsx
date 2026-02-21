@@ -85,14 +85,14 @@ export function CalendarEventBlock({
       {/* Right content — DRAG zone */}
       <div
         className={cn(
-          'flex-1 min-w-0 px-2 py-1 cursor-grab active:cursor-grabbing touch-none',
+          'flex-1 min-w-0 px-2 py-1 cursor-grab active:cursor-grabbing',
           contentColor
         )}
         {...listeners}
         {...attributes}
       >
         <div className="pointer-events-none">
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-1 min-w-0">
             {hasConflict && (
               <AlertTriangle className="h-3 w-3 shrink-0 text-red-600 dark:text-red-400" />
             )}

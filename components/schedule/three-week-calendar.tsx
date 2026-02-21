@@ -24,6 +24,7 @@ import { CalendarEventBlock, CalendarEventBlockOverlay } from './calendar-event-
 import { DroppableCell } from './droppable-cell'
 import { EventCreateDialog } from './event-create-dialog'
 import { LessonNotePanel } from './lesson-note-panel'
+import { MemoEditDialog } from './memo-edit-dialog'
 import { Button } from '@/components/ui/button'
 import type { ScheduleEventWithStudent } from '@/lib/types/database'
 
@@ -97,6 +98,7 @@ export function ThreeWeekCalendar({
   const [baseDate, setBaseDate] = useState(() => parseInitialDate(initialDate))
   const [selectedSlot, setSelectedSlot] = useState<{ date: Date; hour: number; minute: number } | null>(null)
   const [selectedEvent, setSelectedEvent] = useState<ScheduleEventWithStudent | null>(null)
+  const [selectedMemo, setSelectedMemo] = useState<ScheduleEventWithStudent | null>(null)
   const [activeEvent, setActiveEvent] = useState<ScheduleEventWithStudent | null>(null)
   const [overCellId, setOverCellId] = useState<string | null>(null)
   const [isCompact, setIsCompact] = useState(true)
@@ -402,12 +404,7 @@ export function ThreeWeekCalendar({
                           onClick={() => {
                             const isMemo = event.event_type === 'memo' || (!event.student_id && event.title)
                             if (isMemo) {
-                              // 메모 클릭 시 편집 다이얼로그 열기
-                              setSelectedSlot({
-                                date: new Date(event.start_at),
-                                hour: new Date(event.start_at).getHours(),
-                                minute: new Date(event.start_at).getMinutes(),
-                              })
+                              setSelectedMemo(event)
                             } else if (event.student_id) {
                               setSelectedEvent(event)
                               setSelectedSlot(null)
@@ -459,6 +456,18 @@ export function ThreeWeekCalendar({
           onClose={() => setSelectedEvent(null)}
           onUpdated={() => {
             setSelectedEvent(null)
+            mutate()
+          }}
+        />
+      )}
+
+      {/* Memo edit/delete dialog */}
+      {selectedMemo && (
+        <MemoEditDialog
+          event={selectedMemo}
+          onClose={() => setSelectedMemo(null)}
+          onDeleted={() => {
+            setSelectedMemo(null)
             mutate()
           }}
         />

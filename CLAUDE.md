@@ -8,6 +8,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - `npm run build` — Production build
 - `npm run start` — Start production server
 - `npm run lint` — Run ESLint (runs `eslint` with flat config)
+- `npm run test:e2e` — Playwright E2E 테스트 전체 실행
+- `npm run test:e2e:ui` — Playwright UI 모드
 
 ## Tech Stack
 
@@ -29,7 +31,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **Auth**: Simple password gate (cookie-based, middleware protection)
 - **Data**: Server Actions (`app/actions/`) + SWR hooks (`lib/hooks/`)
 - **Types**: `lib/types/database.ts` (readonly, immutable pattern)
-- **No testing framework** is currently installed
+- Playwright (E2E testing), test files in `e2e/`
 
 ---
 
@@ -78,6 +80,43 @@ Phase 3: Verification → code-reviewer(리뷰) + qa-engineer(검증) → Releas
 - 현재 스프린트 번호 + 목표
 - 구체적 태스크 (수정 파일, 수용 기준)
 - 참조 문서 경로
+
+### Push 전 필수 검증 게이트 (모든 세션/터미널 적용)
+
+**코드 변경 후 git push 전에 반드시 아래 4단계를 순서대로 통과해야 합니다.**
+**이 규칙은 예외 없이 모든 터미널 세션, 모든 에이전트에 적용됩니다.**
+
+```
+Step 1: TypeScript 컴파일 검증
+  $ npx tsc --noEmit
+  → 에러 0건이어야 push 가능
+
+Step 2: ESLint 검증
+  $ npm run lint
+  → 에러 0건이어야 push 가능 (warning은 허용)
+
+Step 3: 프로덕션 빌드 검증
+  $ npm run build
+  → 빌드 성공이어야 push 가능
+
+Step 4: Playwright E2E 테스트 검증
+  $ npm run test:e2e
+  → 모든 테스트 통과해야 push 가능
+  → 테스트 실패 시: 코드 수정 → Step 1부터 재실행
+```
+
+**위반 시:**
+- Step 1~4 중 하나라도 실패하면 **절대 push 금지**
+- 검증 없이 push한 코드는 즉시 revert 대상
+- 긴급 핫픽스도 최소 Step 1 + Step 3 필수
+
+### E2E 테스트 작성 규칙
+
+- 새 기능 추가 시 → 해당 기능의 E2E 테스트도 함께 작성
+- 버그 수정 시 → 해당 버그의 회귀 테스트 추가
+- 테스트 파일 위치: `e2e/` 디렉토리
+- 테스트 파일명: `{기능명}.spec.ts`
+- 테스트는 반드시 실제 UI 동작을 검증 (data-testid 활용)
 
 ### 참조 문서
 - 설계: `docs/plans/2026-02-14-rocket-tutor-os-design.md`
