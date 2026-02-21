@@ -7,15 +7,16 @@ test.describe('Schedule Event Click vs Drag (영역 분리)', () => {
     await page.waitForSelector('[data-testid="event-block"]', { timeout: 10000 })
   })
 
-  test('왼쪽 색상 바 클릭 → 수업기록 패널 열림', async ({ page }) => {
+  test('왼쪽 색상 바 클릭 → 패널/다이얼로그 열림', async ({ page }) => {
     const clickBar = page.locator('[data-testid="event-click-bar"]').first()
     await expect(clickBar).toBeVisible({ timeout: 5000 })
 
     await clickBar.click()
 
-    // 수업기록 패널이 열렸는지 확인 (버튼 중 하나가 보이면 됨)
-    const saveBtn = page.getByRole('button', { name: '완료 (기록 저장)' })
-    await expect(saveBtn).toBeVisible({ timeout: 3000 })
+    // 수업이면 기록 패널, 메모면 삭제 다이얼로그가 열림
+    const lessonPanel = page.getByRole('button', { name: '완료 (기록 저장)' })
+    const memoDialog = page.getByRole('button', { name: '메모 삭제' })
+    await expect(lessonPanel.or(memoDialog)).toBeVisible({ timeout: 3000 })
   })
 
   test('콘텐츠 영역 클릭 → 팝업 안 열림 (드래그 영역)', async ({ page }) => {

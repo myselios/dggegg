@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { useDraggable } from '@dnd-kit/core'
 import { AlertTriangle, Plus } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import { formatTime } from '@/lib/utils/date'
+
 import type { ScheduleEventWithStudent } from '@/lib/types/database'
 
 /** Left color bar (click zone) */
@@ -101,9 +101,6 @@ export function CalendarEventBlock({
               {isMemo ? event.title : event.students?.name_ko}
             </span>
           </div>
-          <div className="text-[10px] opacity-75" data-testid="event-time">
-            {formatTime(event.start_at)} - {formatTime(event.end_at)}
-          </div>
           {event.template_type && (
             <div className="text-[10px] opacity-60">{event.template_type}</div>
           )}
@@ -147,9 +144,6 @@ export function CalendarEventBlockOverlay({
       <div className={cn('flex-1 px-2 py-1', contentColor)}>
         <div className="font-semibold truncate">
           {isMemo ? event.title : event.students?.name_ko}
-        </div>
-        <div className="text-[10px] opacity-75">
-          {formatTime(event.start_at)} - {formatTime(event.end_at)}
         </div>
         {event.template_type && (
           <div className="text-[10px] opacity-60">{event.template_type}</div>

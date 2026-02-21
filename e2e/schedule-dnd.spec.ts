@@ -47,11 +47,10 @@ test.describe('스케줄 드래그앤드롭', () => {
     }
 
     const firstEvent = page.locator('[data-testid="event-block"]').first()
-    const timeBefore = await firstEvent.locator('[data-testid="event-time"]').textContent()
-
     const eventBox = await firstEvent.boundingBox()
     if (!eventBox) throw new Error('이벤트 블록의 위치를 가져올 수 없습니다')
 
+    const positionBefore = { x: eventBox.x, y: eventBox.y }
     const eventCenterX = eventBox.x + eventBox.width / 2
     const eventCenterY = eventBox.y + eventBox.height / 2
 
@@ -96,12 +95,13 @@ test.describe('스케줄 드래그앤드롭', () => {
     const toast = page.locator('text=수업 일정이 변경되었습니다')
     const dragSucceeded = await toast.isVisible({ timeout: 3_000 }).catch(() => false)
 
-    const timeAfter = await page.locator('[data-testid="event-block"]').first()
-      .locator('[data-testid="event-time"]').textContent().catch(() => null)
+    const eventBoxAfter = await page.locator('[data-testid="event-block"]').first().boundingBox()
+    const positionChanged = eventBoxAfter && (
+      Math.abs(eventBoxAfter.y - positionBefore.y) > 10 ||
+      Math.abs(eventBoxAfter.x - positionBefore.x) > 10
+    )
 
-    const timeChanged = timeAfter !== timeBefore
-
-    expect(dragSucceeded || timeChanged).toBeTruthy()
+    expect(dragSucceeded || positionChanged).toBeTruthy()
   })
 
   test('드래그 중 DragOverlay가 표시된다', async ({ page }) => {
