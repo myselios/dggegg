@@ -273,7 +273,7 @@ export function ThreeWeekCalendar({
     <div className="flex flex-col gap-2 md:gap-4">
       {/* Header: navigation */}
       <div className="flex items-center justify-between">
-        <h2 className="text-lg font-bold md:text-2xl">스케줄</h2>
+        <h2 className="text-lg font-bold tracking-tight md:text-2xl">스케줄</h2>
         <div className="flex items-center gap-1 md:gap-2">
           {isMobile && (
             <Button
@@ -324,7 +324,7 @@ export function ThreeWeekCalendar({
         onDragEnd={handleDragEnd}
         onDragCancel={handleDragCancel}
       >
-        <div className="relative overflow-auto max-h-[calc(100vh-220px)] rounded-lg border" data-testid="calendar-grid">
+        <div className="relative overflow-auto max-h-[calc(100vh-220px)] rounded-lg border border-border/50 shadow-sm" data-testid="calendar-grid">
           <div className={cn(viewMode === '3week' && 'min-w-[1200px]')}>
             {/* Day headers - sticky top */}
             <div className={cn('sticky top-0 z-30 grid border-b bg-background', gridCols)}>

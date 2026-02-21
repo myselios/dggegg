@@ -1,21 +1,48 @@
 'use client'
 
 import Link from 'next/link'
+import { ArrowLeft, User } from 'lucide-react'
+import { Badge } from '@/components/ui/badge'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { StudentProfile } from './student-profile'
 import { ConsultationLogTab } from './consultation-log-tab'
 import { LessonHistoryTab } from './lesson-history-tab'
 import { ScoreTab } from './score-tab'
+import { STUDENT_STATUS } from '@/lib/constants/status-styles'
+import { cn } from '@/lib/utils'
 import type { Student } from '@/lib/types/database'
 
 export function StudentTabs({ student }: { readonly student: Student }) {
+  const statusConfig = STUDENT_STATUS[student.status as keyof typeof STUDENT_STATUS] ?? STUDENT_STATUS.active
+
   return (
     <div className="flex flex-col gap-6">
       <div className="flex items-center gap-4">
-        <Link href="/students" className="text-muted-foreground hover:text-foreground">
-          &larr; 학생 목록
+        <Link
+          href="/students"
+          className="flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
+        >
+          <ArrowLeft className="size-4" />
+          학생 목록
         </Link>
-        <h2 className="text-2xl font-bold">{student.name_ko}</h2>
+      </div>
+
+      <div className="flex items-center gap-3">
+        <div className="flex size-10 items-center justify-center rounded-xl bg-primary/10">
+          <User className="size-5 text-primary" />
+        </div>
+        <div>
+          <h2 className="text-xl font-bold tracking-tight">{student.name_ko}</h2>
+          <div className="flex items-center gap-2 mt-0.5">
+            <span className="text-xs text-muted-foreground">{student.school}</span>
+            <Badge
+              variant="outline"
+              className={cn('text-[10px] px-1.5 py-0', statusConfig.badge)}
+            >
+              {statusConfig.label}
+            </Badge>
+          </div>
+        </div>
       </div>
 
       <Tabs defaultValue="profile" className="w-full">
@@ -40,7 +67,13 @@ export function StudentTabs({ student }: { readonly student: Student }) {
           <ConsultationLogTab studentId={student.id} />
         </TabsContent>
         <TabsContent value="materials">
-          <p className="text-muted-foreground">자료가 여기에 표시됩니다.</p>
+          <div className="flex flex-col items-center justify-center py-12 text-center">
+            <div className="flex size-10 items-center justify-center rounded-full bg-muted">
+              <User className="size-5 text-muted-foreground/50" />
+            </div>
+            <p className="mt-3 text-sm font-medium text-muted-foreground">자료가 없습니다</p>
+            <p className="mt-1 text-xs text-muted-foreground/60">학생 관련 자료가 여기에 표시됩니다</p>
+          </div>
         </TabsContent>
       </Tabs>
     </div>

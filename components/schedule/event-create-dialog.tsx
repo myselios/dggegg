@@ -118,8 +118,8 @@ export function EventCreateDialog({
     <Dialog open onOpenChange={onClose}>
       <DialogContent className="max-w-md">
         <DialogHeader>
-          <DialogTitle>
-            수업 추가 - {format(date, 'M월 d일 (EEE)', { locale: ko })}
+          <DialogTitle className="text-base font-semibold tracking-tight">
+            수업 추가 — {format(date, 'M월 d일 (EEE)', { locale: ko })}
           </DialogTitle>
         </DialogHeader>
         <form action={handleSubmit} className="flex flex-col gap-4">

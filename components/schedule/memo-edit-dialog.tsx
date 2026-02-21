@@ -40,8 +40,8 @@ export function MemoEditDialog({
     <Dialog open onOpenChange={onClose}>
       <DialogContent className="max-w-sm">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <span className="inline-block h-3 w-3 rounded-sm bg-yellow-500" />
+          <DialogTitle className="flex items-center gap-2 text-base font-semibold tracking-tight">
+            <span className="inline-block size-3 rounded-sm bg-yellow-500" />
             {event.title ?? '메모'}
           </DialogTitle>
         </DialogHeader>

@@ -37,13 +37,13 @@ export function IncompleteLessons() {
 
   return (
     <Card className={cn(
-      'border-amber-200 bg-amber-50/50',
-      'dark:border-amber-800 dark:bg-amber-950/20'
+      'shadow-sm border-amber-200/60 bg-amber-50/30',
+      'dark:border-amber-800/60 dark:bg-amber-950/20'
     )}>
       <CardHeader>
-        <CardTitle className="flex items-center gap-2 text-base font-semibold text-amber-700 dark:text-amber-400">
-          <div className="flex size-8 items-center justify-center rounded-lg bg-amber-100 dark:bg-amber-900">
-            <AlertTriangle className="size-4" />
+        <CardTitle className="flex items-center gap-2 text-sm font-semibold text-amber-700 dark:text-amber-400">
+          <div className="flex size-7 items-center justify-center rounded-lg bg-amber-100 dark:bg-amber-900">
+            <AlertTriangle className="size-3.5" />
           </div>
           미완료 수업
           <Badge
