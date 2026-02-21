@@ -46,16 +46,8 @@ export function CalendarEventBlock({
   const showAddOverlay = isCancelled && onAddMakeup && isHovered
 
   return (
-    <button
+    <div
       ref={setNodeRef}
-      type="button"
-      data-testid="event-block"
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-      onClick={(e) => {
-        e.stopPropagation()
-        onClick()
-      }}
       className={cn(
         'relative w-full rounded border-l-4 px-2 py-1 text-left text-xs transition-shadow hover:shadow-md cursor-grab active:cursor-grabbing touch-none',
         colorClass,
@@ -63,28 +55,44 @@ export function CalendarEventBlock({
         isDragging && 'opacity-30',
         hasConflict && 'ring-2 ring-red-500 dark:ring-red-400'
       )}
+      data-testid="event-block"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
       {...listeners}
       {...attributes}
     >
-      <div className="flex items-center gap-1">
-        {hasConflict && (
-          <AlertTriangle className="h-3 w-3 shrink-0 text-red-600 dark:text-red-400" />
+      <button
+        type="button"
+        onClick={(e) => {
+          e.stopPropagation()
+          onClick()
+        }}
+        className="absolute inset-0 z-10 cursor-pointer"
+        aria-label="이벤트 상세보기"
+      />
+
+      {/* Content layer - pointer-events-none to allow click-through to button */}
+      <div className="relative z-0 pointer-events-none">
+        <div className="flex items-center gap-1">
+          {hasConflict && (
+            <AlertTriangle className="h-3 w-3 shrink-0 text-red-600 dark:text-red-400" />
+          )}
+          <span className="font-semibold truncate">
+            {isMemo ? event.title : event.students?.name_ko}
+          </span>
+        </div>
+        <div className="text-[10px] opacity-75" data-testid="event-time">
+          {formatTime(event.start_at)} - {formatTime(event.end_at)}
+        </div>
+        {event.template_type && (
+          <div className="text-[10px] opacity-60">{event.template_type}</div>
         )}
-        <span className="font-semibold truncate">
-          {isMemo ? event.title : event.students?.name_ko}
-        </span>
       </div>
-      <div className="text-[10px] opacity-75" data-testid="event-time">
-        {formatTime(event.start_at)} - {formatTime(event.end_at)}
-      </div>
-      {event.template_type && (
-        <div className="text-[10px] opacity-60">{event.template_type}</div>
-      )}
 
       {/* Add makeup overlay for cancelled events */}
       {showAddOverlay && (
         <div
-          className="absolute inset-0 flex items-center justify-center bg-black/20 rounded cursor-pointer hover:bg-black/30 transition-colors"
+          className="absolute inset-0 z-20 flex items-center justify-center bg-black/20 rounded cursor-pointer hover:bg-black/30 transition-colors pointer-events-auto"
           onClick={(e) => {
             e.stopPropagation()
             onAddMakeup(event)
@@ -93,7 +101,7 @@ export function CalendarEventBlock({
           <Plus className="h-6 w-6 text-white drop-shadow-md" />
         </div>
       )}
-    </button>
+    </div>
   )
 }
 
