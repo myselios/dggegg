@@ -32,7 +32,7 @@ test.describe('Schedule Event Click vs Drag (영역 분리)', () => {
     await expect(popup).not.toBeVisible()
   })
 
-  test('콘텐츠 영역 드래그 → 드래그 오버레이 표시', async ({ page }) => {
+  test('콘텐츠 영역 드래그 → 드래그 오버레이 표시 후 ESC 취소', async ({ page }) => {
     const eventBlock = page.locator('[data-testid="event-block"]').first()
     const box = await eventBlock.boundingBox()
     if (!box) throw new Error('이벤트 블록을 찾을 수 없습니다')
@@ -48,15 +48,16 @@ test.describe('Schedule Event Click vs Drag (영역 분리)', () => {
     const dragOverlay = page.locator('[data-testid="drag-overlay"]')
     await expect(dragOverlay).toBeVisible({ timeout: 1000 })
 
-    await page.mouse.up()
+    // ESC로 취소 (DB 변경 방지)
+    await page.keyboard.press('Escape')
+    await expect(dragOverlay).toBeHidden({ timeout: 2000 })
   })
 
-  test('드래그 후 드롭 → 드래그 오버레이가 나타나고 사라진다', async ({ page }) => {
+  test('드래그 후 ESC → 오버레이 나타나고 사라진다', async ({ page }) => {
     const eventBlock = page.locator('[data-testid="event-block"]').first()
     const box = await eventBlock.boundingBox()
     if (!box) throw new Error('이벤트 블록을 찾을 수 없습니다')
 
-    // 콘텐츠 영역에서 드래그 시작 (8px 이상 이동)
     const startX = box.x + box.width / 2
     const startY = box.y + box.height / 2
 
@@ -65,12 +66,11 @@ test.describe('Schedule Event Click vs Drag (영역 분리)', () => {
     await page.mouse.move(startX, startY + 50, { steps: 10 })
     await page.waitForTimeout(300)
 
-    // 드래그 오버레이 확인
     const overlay = page.locator('[data-testid="drag-overlay"]')
     await expect(overlay).toBeVisible({ timeout: 2000 })
 
-    // 드롭
-    await page.mouse.up()
+    // ESC로 취소 (DB 변경 방지)
+    await page.keyboard.press('Escape')
     await page.waitForTimeout(500)
     await expect(overlay).toBeHidden({ timeout: 2000 })
   })
