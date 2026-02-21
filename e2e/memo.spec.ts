@@ -1,6 +1,11 @@
 import { test, expect } from '@playwright/test'
+import { cleanupE2EMemos } from './helpers/supabase'
 
 test.describe('메모 이벤트', () => {
+  test.afterAll(async () => {
+    await cleanupE2EMemos()
+  })
+
   test.beforeEach(async ({ page }) => {
     await page.goto('/schedule')
     await page.waitForLoadState('networkidle')
