@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useDraggable } from '@dnd-kit/core'
-import { AlertTriangle, Plus } from 'lucide-react'
+import { AlertTriangle, Check, Plus } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 import type { ScheduleEventWithStudent } from '@/lib/types/database'
@@ -21,10 +21,22 @@ const contentColors: Record<string, string> = {
   'HL': 'bg-purple-100 text-purple-900 dark:bg-purple-900 dark:text-purple-100',
 }
 
+/** Status-specific bar colors (override course colors) */
+const statusBarColors: Record<string, string> = {
+  completed: 'bg-emerald-500 dark:bg-emerald-600',
+  cancelled: 'bg-gray-300 dark:bg-gray-600',
+  no_show: 'bg-red-400 dark:bg-red-500',
+}
+
+/** Status-specific content colors (override course colors) */
+const statusContentColors: Record<string, string> = {
+  completed: 'bg-emerald-50 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-200',
+  cancelled: 'bg-gray-50 text-gray-400 dark:bg-gray-900 dark:text-gray-500',
+  no_show: 'bg-red-50 text-red-800 dark:bg-red-950 dark:text-red-200',
+}
+
 const statusStyles: Record<string, string> = {
-  completed: 'opacity-60',
-  cancelled: 'opacity-40 line-through',
-  no_show: 'opacity-40',
+  cancelled: 'line-through',
 }
 
 export function CalendarEventBlock({
@@ -55,14 +67,21 @@ export function CalendarEventBlock({
 
   const isMemo = event.event_type === 'memo' || (!event.student_id && event.title)
   const course = event.students?.ib_course ?? ''
+  const isCompleted = event.status === 'completed'
+  const isCancelled = event.status === 'cancelled'
+  const hasStatusColor = event.status in statusBarColors
+
   const barColor = isMemo
     ? 'bg-yellow-500 dark:bg-yellow-600'
-    : (barColors[course] ?? 'bg-gray-400 dark:bg-gray-500')
+    : hasStatusColor
+      ? statusBarColors[event.status]
+      : (barColors[course] ?? 'bg-gray-400 dark:bg-gray-500')
   const contentColor = isMemo
     ? 'bg-yellow-100 text-yellow-900 dark:bg-yellow-900 dark:text-yellow-100'
-    : (contentColors[course] ?? 'bg-gray-100 text-gray-900 dark:bg-gray-800 dark:text-gray-100')
+    : hasStatusColor
+      ? statusContentColors[event.status]
+      : (contentColors[course] ?? 'bg-gray-100 text-gray-900 dark:bg-gray-800 dark:text-gray-100')
   const statusClass = statusStyles[event.status] ?? ''
-  const isCancelled = event.status === 'cancelled'
   const showAddOverlay = isCancelled && onAddMakeup && isHovered
 
   return (
@@ -106,6 +125,9 @@ export function CalendarEventBlock({
           <div className="flex items-start gap-1 min-w-0">
             {hasConflict && (
               <AlertTriangle className="mt-0.5 h-3 w-3 shrink-0 text-red-600 dark:text-red-400" />
+            )}
+            {isCompleted && (
+              <Check className="mt-0.5 h-3 w-3 shrink-0 text-emerald-600 dark:text-emerald-400" />
             )}
             <span className="font-semibold break-words line-clamp-3">
               {isMemo ? event.title : event.students?.name_ko}
