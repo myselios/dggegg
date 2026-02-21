@@ -414,14 +414,6 @@ export function ThreeWeekCalendar({
                               setSelectedSlot(null)
                             }
                           }}
-                          onAddMakeup={(cancelledEvent) => {
-                            const cancelledStart = new Date(cancelledEvent.start_at)
-                            setSelectedSlot({
-                              date: cancelledStart,
-                              hour: cancelledStart.getHours(),
-                              minute: cancelledStart.getMinutes(),
-                            })
-                          }}
                         />
                       ))}
                     </DroppableCell>

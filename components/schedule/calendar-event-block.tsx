@@ -1,8 +1,7 @@
 'use client'
 
-import { useState } from 'react'
 import { useDraggable } from '@dnd-kit/core'
-import { AlertTriangle, Check, Plus } from 'lucide-react'
+import { AlertTriangle, Check } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 import type { ScheduleEventWithStudent } from '@/lib/types/database'
@@ -21,40 +20,23 @@ const contentColors: Record<string, string> = {
   'HL': 'bg-purple-100 text-purple-900 dark:bg-purple-900 dark:text-purple-100',
 }
 
-/** Status-specific bar colors (override course colors) */
-const statusBarColors: Record<string, string> = {
-  completed: 'bg-emerald-500 dark:bg-emerald-600',
-  cancelled: 'bg-gray-300 dark:bg-gray-600',
-  no_show: 'bg-red-400 dark:bg-red-500',
-}
-
-/** Status-specific content colors (override course colors) */
-const statusContentColors: Record<string, string> = {
-  completed: 'bg-emerald-50 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-200',
-  cancelled: 'bg-gray-50 text-gray-400 dark:bg-gray-900 dark:text-gray-500',
-  no_show: 'bg-red-50 text-red-800 dark:bg-red-950 dark:text-red-200',
-}
-
-const statusStyles: Record<string, string> = {
-  cancelled: 'line-through',
-}
+/** Completed status colors (override course colors) */
+const completedBarColor = 'bg-emerald-500 dark:bg-emerald-600'
+const completedContentColor = 'bg-emerald-50 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-200'
 
 export function CalendarEventBlock({
   event,
   onClick,
-  onAddMakeup,
   hasConflict = false,
   cellHeightPx,
   offsetMinutes = 0,
 }: {
   readonly event: ScheduleEventWithStudent
   readonly onClick: () => void
-  readonly onAddMakeup?: (event: ScheduleEventWithStudent) => void
   readonly hasConflict?: boolean
   readonly cellHeightPx: number
   readonly offsetMinutes?: number
 }) {
-  const [isHovered, setIsHovered] = useState(false)
   const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
     id: event.id,
     data: { event },
@@ -68,35 +50,28 @@ export function CalendarEventBlock({
   const isMemo = event.event_type === 'memo' || (!event.student_id && event.title)
   const course = event.students?.ib_course ?? ''
   const isCompleted = event.status === 'completed'
-  const isCancelled = event.status === 'cancelled'
-  const hasStatusColor = event.status in statusBarColors
 
   const barColor = isMemo
     ? 'bg-yellow-500 dark:bg-yellow-600'
-    : hasStatusColor
-      ? statusBarColors[event.status]
+    : isCompleted
+      ? completedBarColor
       : (barColors[course] ?? 'bg-gray-400 dark:bg-gray-500')
   const contentColor = isMemo
     ? 'bg-yellow-100 text-yellow-900 dark:bg-yellow-900 dark:text-yellow-100'
-    : hasStatusColor
-      ? statusContentColors[event.status]
+    : isCompleted
+      ? completedContentColor
       : (contentColors[course] ?? 'bg-gray-100 text-gray-900 dark:bg-gray-800 dark:text-gray-100')
-  const statusClass = statusStyles[event.status] ?? ''
-  const showAddOverlay = isCancelled && onAddMakeup && isHovered
 
   return (
     <div
       ref={setNodeRef}
       className={cn(
         'absolute left-0.5 right-0.5 flex rounded text-left text-xs transition-shadow hover:shadow-md overflow-hidden',
-        statusClass,
         isDragging && 'opacity-30',
         hasConflict && 'ring-2 ring-red-500 dark:ring-red-400'
       )}
       style={{ top: `${topPx}px`, height: `${heightPx}px` }}
       data-testid="event-block"
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
     >
       {/* Left color bar — CLICK zone */}
       <div
@@ -139,18 +114,6 @@ export function CalendarEventBlock({
         </div>
       </div>
 
-      {/* Add makeup overlay for cancelled events */}
-      {showAddOverlay && (
-        <div
-          className="absolute inset-0 z-20 flex items-center justify-center bg-black/20 rounded cursor-pointer hover:bg-black/30 transition-colors"
-          onClick={(e) => {
-            e.stopPropagation()
-            onAddMakeup(event)
-          }}
-        >
-          <Plus className="h-6 w-6 text-white drop-shadow-md" />
-        </div>
-      )}
     </div>
   )
 }

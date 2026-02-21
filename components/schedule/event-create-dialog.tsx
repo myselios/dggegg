@@ -82,13 +82,15 @@ export function EventCreateDialog({
       const endAt = new Date(startAt)
       endAt.setMinutes(endAt.getMinutes() + duration)
 
+      const isPast = endAt.getTime() < Date.now()
+
       const baseEvent = {
         student_id: eventType === 'lesson' ? studentId : null,
         title: eventType === 'memo' ? title : null,
         event_type: eventType,
         start_at: startAt.toISOString(),
         end_at: endAt.toISOString(),
-        status: 'scheduled' as const,
+        status: isPast ? 'completed' as const : 'scheduled' as const,
         template_type: eventType === 'lesson' ? (templateType || null) : null,
         recurrence_rule: null,
         recurrence_group_id: null,
