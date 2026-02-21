@@ -102,12 +102,12 @@ export function CalendarEventBlock({
         {...listeners}
         {...attributes}
       >
-        <div className="pointer-events-none">
-          <div className="flex items-center gap-1 min-w-0">
+        <div className="pointer-events-none h-full overflow-hidden">
+          <div className="flex items-start gap-1 min-w-0">
             {hasConflict && (
-              <AlertTriangle className="h-3 w-3 shrink-0 text-red-600 dark:text-red-400" />
+              <AlertTriangle className="mt-0.5 h-3 w-3 shrink-0 text-red-600 dark:text-red-400" />
             )}
-            <span className="font-semibold truncate">
+            <span className="font-semibold break-words line-clamp-3">
               {isMemo ? event.title : event.students?.name_ko}
             </span>
           </div>
