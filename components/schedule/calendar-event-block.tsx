@@ -105,7 +105,11 @@ export function CalendarEventBlock({
               <Check className="mt-0.5 h-3 w-3 shrink-0 text-emerald-600 dark:text-emerald-400" />
             )}
             <span className="font-semibold break-words line-clamp-3">
-              {isMemo ? event.title : event.students?.name_ko}
+              {isMemo
+                ? event.title
+                : event.title
+                  ? `${event.students?.name_ko}(${event.title})`
+                  : event.students?.name_ko}
             </span>
           </div>
           {event.template_type && (
