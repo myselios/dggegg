@@ -85,7 +85,7 @@ function parseInitialDate(dateStr?: string): Date {
 /** Grid columns CSS for each view mode */
 function getGridCols(mode: ViewMode): string {
   switch (mode) {
-    case '3week': return 'grid-cols-[64px_repeat(21,1fr)]'
+    case '3week': return 'grid-cols-[52px_repeat(21,1fr)]'
     case '1week': return 'grid-cols-[48px_repeat(7,1fr)]'
     case 'day': return 'grid-cols-[48px_1fr]'
   }
@@ -325,7 +325,7 @@ export function ThreeWeekCalendar({
         onDragCancel={handleDragCancel}
       >
         <div className="glass-card relative overflow-auto max-h-[calc(100vh-220px)] rounded-2xl border-none" data-testid="calendar-grid">
-          <div className={cn(viewMode === '3week' && 'min-w-[1200px]')}>
+          <div className={cn(viewMode === '3week' && 'min-w-[1800px]')}>
             {/* Day headers - sticky top */}
             <div className={cn('sticky top-0 z-30 grid border-b bg-white/70 dark:bg-white/5 backdrop-blur-lg', gridCols)}>
               <div className="sticky left-0 z-40 bg-background" />
