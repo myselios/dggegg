@@ -32,7 +32,7 @@ export function DroppableCell({
   return (
     <div
       className={cn(
-        'relative border-l cursor-pointer hover:bg-muted/50 transition-colors',
+        'relative border-l cursor-pointer hover:bg-muted/50 transition-colors overflow-hidden',
         compact ? 'h-12' : 'h-[120px]',
         isToday && 'bg-primary/5',
         isWeekBoundary && 'border-l-2 border-l-primary/30',

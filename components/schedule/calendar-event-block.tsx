@@ -88,6 +88,7 @@ export function CalendarEventBlock({
           'flex-1 min-w-0 px-2 py-1 cursor-grab active:cursor-grabbing',
           contentColor
         )}
+        style={{ touchAction: 'none' }}
         {...listeners}
         {...attributes}
       >
