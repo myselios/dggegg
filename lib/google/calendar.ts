@@ -109,15 +109,18 @@ export async function updateCalendarEvent(
   }
 }
 
+export type CalendarDeleteResult =
+  | { readonly success: true }
+  | { readonly success: false; readonly error: string }
+
 /**
  * Google Calendar 이벤트 삭제
- * @returns 성공 여부
  */
-export async function deleteCalendarEvent(googleEventId: string): Promise<boolean> {
+export async function deleteCalendarEvent(googleEventId: string): Promise<CalendarDeleteResult> {
   try {
     const auth = await getAuthenticatedClient()
     if (auth === null) {
-      return false
+      return { success: false, error: 'Google 연동이 설정되지 않았거나 토큰을 불러올 수 없습니다' }
     }
 
     const calendar = google.calendar({ version: 'v3', auth })
@@ -127,9 +130,10 @@ export async function deleteCalendarEvent(googleEventId: string): Promise<boolea
       eventId: googleEventId,
     })
 
-    return true
+    return { success: true }
   } catch (error) {
-    console.error(`${LOG_PREFIX} 이벤트 삭제 실패 (id: ${googleEventId}):`, error)
-    return false
+    const message = error instanceof Error ? error.message : String(error)
+    console.error(`${LOG_PREFIX} 이벤트 삭제 실패 (id: ${googleEventId}):`, message)
+    return { success: false, error: message }
   }
 }

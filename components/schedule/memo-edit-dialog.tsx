@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { format } from 'date-fns'
 import { ko } from 'date-fns/locale'
 import { Trash2 } from 'lucide-react'
+import { toast } from 'sonner'
 import { deleteScheduleEvent } from '@/app/actions/schedule'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
@@ -29,6 +30,9 @@ export function MemoEditDialog({
       if (!result.success) {
         alert(result.error)
         return
+      }
+      if (result.warning) {
+        toast.warning(result.warning)
       }
       onDeleted()
     } finally {

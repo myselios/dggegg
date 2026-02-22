@@ -94,6 +94,9 @@ export function LessonNotePanel({
       alert(result.error)
       return
     }
+    if (result.warning) {
+      toast.warning(result.warning)
+    }
     onUpdated()
   }
 

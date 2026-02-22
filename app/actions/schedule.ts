@@ -146,6 +146,7 @@ export async function deleteScheduleEvent(id: string): Promise<ActionResult<null
     const supabase = await createClient()
 
     // Google Calendar에서도 삭제
+    let calendarWarning: string | undefined
     const { data: event } = await supabase
       .from('schedule_events')
       .select('google_calendar_event_id')
@@ -153,7 +154,10 @@ export async function deleteScheduleEvent(id: string): Promise<ActionResult<null
       .single()
 
     if (event?.google_calendar_event_id) {
-      await deleteCalendarEvent(event.google_calendar_event_id)
+      const calResult = await deleteCalendarEvent(event.google_calendar_event_id)
+      if (!calResult.success) {
+        calendarWarning = `Google Calendar 삭제 실패: ${calResult.error}`
+      }
     }
 
     const { error } = await supabase
@@ -166,7 +170,7 @@ export async function deleteScheduleEvent(id: string): Promise<ActionResult<null
     }
 
     revalidatePath('/schedule')
-    return { success: true, data: null }
+    return { success: true, data: null, warning: calendarWarning }
   } catch {
     return { success: false, error: '수업 일정 삭제 중 오류가 발생했습니다' }
   }
