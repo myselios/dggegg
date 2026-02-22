@@ -7,6 +7,7 @@ import {
   Users,
   Calendar,
   FolderOpen,
+  Settings,
   LogOut,
   Rocket,
 } from 'lucide-react'
@@ -18,6 +19,7 @@ const iconMap = {
   Users,
   Calendar,
   FolderOpen,
+  Settings,
 } as const
 
 const navItems = [
@@ -25,6 +27,7 @@ const navItems = [
   { href: '/students', label: '학생 관리', icon: 'Users' as const },
   { href: '/schedule', label: '스케줄', icon: 'Calendar' as const },
   { href: '/materials', label: '자료 관리', icon: 'FolderOpen' as const },
+  { href: '/settings', label: '설정', icon: 'Settings' as const },
 ] as const
 
 export function Sidebar() {
