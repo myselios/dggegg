@@ -49,12 +49,13 @@ export type ScheduleEvent = {
   readonly color: string | null
   readonly title: string | null
   readonly event_type: 'lesson' | 'memo'
+  readonly google_calendar_event_id: string | null
   readonly created_at: string
   readonly updated_at: string
 }
 
-// event_type excluded: column not yet in production DB (migration 005 pending)
-export type ScheduleEventInsert = Omit<ScheduleEvent, 'id' | 'created_at' | 'updated_at' | 'event_type'>
+// event_type, google_calendar_event_id excluded from insert (managed by system)
+export type ScheduleEventInsert = Omit<ScheduleEvent, 'id' | 'created_at' | 'updated_at' | 'event_type' | 'google_calendar_event_id'>
 
 export type ScheduleEventUpdate = Partial<ScheduleEventInsert>
 
@@ -104,4 +105,16 @@ export type ScheduleEventWithStudent = ScheduleEvent & {
 
 export type LessonNoteWithEvent = LessonNote & {
   readonly schedule_events: Pick<ScheduleEvent, 'id' | 'start_at' | 'template_type'>
+}
+
+export type OAuthToken = {
+  readonly id: string
+  readonly provider: string
+  readonly access_token: string
+  readonly refresh_token: string
+  readonly token_type: string | null
+  readonly expires_at: string
+  readonly scope: string | null
+  readonly created_at: string
+  readonly updated_at: string
 }

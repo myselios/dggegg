@@ -24,11 +24,25 @@ function requireServerEnv(name: string): string {
   return value
 }
 
+// Optional server env var: returns undefined if not set (for optional features)
+function optionalServerEnv(name: string): string | undefined {
+  return process.env[name] || undefined
+}
+
 export const serverEnv = {
   get AUTH_PASSWORD() {
     return requireServerEnv('AUTH_PASSWORD')
   },
   get AUTH_SECRET() {
     return requireServerEnv('AUTH_SECRET')
+  },
+  get GOOGLE_CLIENT_ID() {
+    return optionalServerEnv('GOOGLE_CLIENT_ID')
+  },
+  get GOOGLE_CLIENT_SECRET() {
+    return optionalServerEnv('GOOGLE_CLIENT_SECRET')
+  },
+  get GOOGLE_REDIRECT_URI() {
+    return optionalServerEnv('GOOGLE_REDIRECT_URI')
   },
 } as const
