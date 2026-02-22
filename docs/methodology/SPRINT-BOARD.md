@@ -9,11 +9,36 @@
 ## 현재 상태
 
 - **현재 브랜치**: main
-- **마지막 커밋**: 7322a71 ([fix] 3주 뷰 주간 범위 헤더 정렬 수정)
+- **마지막 커밋**: 9319a51 ([feat] Google Calendar 동기화 기능 추가)
 - **마지막 빌드**: ✅ 통과 (2026-02-22)
 - **마지막 E2E**: ✅ 18 passed, 5 skipped (2026-02-22)
-- **DB 마이그레이션**: 005 적용 완료 (student_id nullable, title, event_type 추가)
-- **진행 중 작업**: 없음 — Sprint 4 완료
+- **DB 마이그레이션**: 006 대기 (google_calendar_event_id, oauth_tokens 테이블)
+- **진행 중 작업**: 없음 — Sprint 5 완료
+
+---
+
+## ✅ Sprint 5: Google Calendar 동기화
+- **상태**: ✅ Completed
+- **기간**: 2026-02-22
+- **목표**: 수업 생성/수정/삭제 시 Google Calendar 자동 동기화
+
+| # | 파일 | 변경 내용 | 커밋 |
+|---|------|----------|------|
+| 1 | `package.json` | googleapis 패키지 추가 | 1360e46 |
+| 2 | `supabase/migrations/006_google_calendar_sync.sql` | google_calendar_event_id 컬럼 + oauth_tokens 테이블 | 87aac48 |
+| 3 | `lib/types/database.ts`, `lib/env.ts` | 타입/환경변수 추가 | 9e83593 |
+| 4 | `lib/google/auth.ts` | Google OAuth 인증 모듈 | 162fb48 |
+| 5 | `lib/google/calendar.ts` | Calendar API 래퍼 | aecc4e3 |
+| 6 | `app/api/auth/google/callback/route.ts` | OAuth 콜백 핸들러 | eaf6c17 |
+| 7 | `app/actions/schedule.ts` | 수업 CRUD에 Calendar 동기화 통합 | aca35f8 |
+| 8 | `app/actions/google.ts`, `app/(authenticated)/settings/*`, `components/nav/sidebar.tsx` | 설정 페이지 UI | 619b5f4 |
+| 9 | Settings 페이지 Suspense 수정 | 빌드 에러 해결 | db60851 |
+
+### 사용을 위한 설정 필요
+1. Supabase에서 마이그레이션 006 SQL 실행
+2. Google Cloud Console에서 OAuth 클라이언트 생성 + Calendar API 활성화
+3. `.env.local`에 `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `GOOGLE_REDIRECT_URI` 추가
+4. 앱 설정 페이지에서 Google Calendar 연동 버튼 클릭
 
 ---
 
