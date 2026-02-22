@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback } from 'react'
 import { useSearchParams } from 'next/navigation'
-import { Settings, Link2, Unlink2, Calendar } from 'lucide-react'
+import { Settings, Link2, Unlink2, Calendar, RefreshCw } from 'lucide-react'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
@@ -10,6 +10,7 @@ import {
   checkGoogleConnection,
   getGoogleAuthUrl,
   disconnectGoogleAccount,
+  syncExistingEvents,
 } from '@/app/actions/google'
 
 type ConnectionState = 'loading' | 'connected' | 'disconnected'
@@ -18,6 +19,7 @@ export function SettingsContent() {
   const searchParams = useSearchParams()
   const [connectionState, setConnectionState] = useState<ConnectionState>('loading')
   const [isActing, setIsActing] = useState(false)
+  const [isSyncing, setIsSyncing] = useState(false)
 
   const refreshConnectionState = useCallback(async () => {
     const result = await checkGoogleConnection()
@@ -84,6 +86,26 @@ export function SettingsContent() {
     }
   }
 
+  const handleSyncExisting = async () => {
+    setIsSyncing(true)
+    try {
+      const result = await syncExistingEvents()
+      if (result.success) {
+        if (result.data === 0) {
+          toast.info('동기화할 수업이 없습니다. 모든 수업이 이미 동기화되어 있습니다.')
+        } else {
+          toast.success(`${result.data}건의 수업이 Google Calendar에 동기화되었습니다.`)
+        }
+      } else {
+        toast.error(result.error)
+      }
+    } catch {
+      toast.error('일괄 동기화 중 오류가 발생했습니다.')
+    } finally {
+      setIsSyncing(false)
+    }
+  }
+
   return (
     <div className="flex flex-col gap-8">
       {/* 헤더 */}
@@ -124,23 +146,35 @@ export function SettingsContent() {
             </div>
 
             {/* 액션 버튼 */}
-            <div className="shrink-0">
+            <div className="flex shrink-0 gap-2">
               {connectionState === 'loading' ? (
                 <div className="h-9 w-24 animate-pulse rounded-lg bg-muted" />
               ) : connectionState === 'connected' ? (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={handleDisconnect}
-                  disabled={isActing}
-                  className={cn(
-                    'gap-2 border-destructive/30 text-destructive',
-                    'hover:bg-destructive/10 hover:text-destructive'
-                  )}
-                >
-                  <Unlink2 className="size-3.5" />
-                  연동 해제
-                </Button>
+                <>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleSyncExisting}
+                    disabled={isSyncing}
+                    className="gap-2"
+                  >
+                    <RefreshCw className={cn('size-3.5', isSyncing && 'animate-spin')} />
+                    {isSyncing ? '동기화 중...' : '기존 수업 동기화'}
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleDisconnect}
+                    disabled={isActing}
+                    className={cn(
+                      'gap-2 border-destructive/30 text-destructive',
+                      'hover:bg-destructive/10 hover:text-destructive'
+                    )}
+                  >
+                    <Unlink2 className="size-3.5" />
+                    연동 해제
+                  </Button>
+                </>
               ) : (
                 <Button
                   size="sm"
