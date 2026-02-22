@@ -7,6 +7,7 @@ import { scheduleEventInsertSchema, scheduleEventUpdateSchema, recurringEventSch
 import type { ScheduleEventInsert, ScheduleEventUpdate, ScheduleEventWithStudent } from '@/lib/types/database'
 import type { ActionResult } from '@/lib/types/action-result'
 import { ZodError } from 'zod'
+import { createCalendarEvent, updateCalendarEvent, deleteCalendarEvent } from '@/lib/google/calendar'
 
 export async function getScheduleEvents(startDate: string, endDate: string) {
   const supabase = await createClient()
@@ -53,6 +54,15 @@ export async function createScheduleEvent(input: ScheduleEventInsert): Promise<A
     if (error) {
       console.error('[createScheduleEvent] Supabase error:', error.message, error.code, error.details)
       return { success: false, error: `일정 등록에 실패했습니다: ${error.message}` }
+    }
+
+    // Google Calendar 동기화 (실패해도 수업 생성은 유지)
+    const googleEventId = await createCalendarEvent(data)
+    if (googleEventId) {
+      await supabase
+        .from('schedule_events')
+        .update({ google_calendar_event_id: googleEventId })
+        .eq('id', data.id)
     }
 
     revalidatePath('/schedule')
@@ -112,6 +122,11 @@ export async function updateScheduleEvent(id: string, input: ScheduleEventUpdate
       return { success: false, error: `수업 일정 수정에 실패했습니다: ${error.message}` }
     }
 
+    // Google Calendar 동기화
+    if (data.google_calendar_event_id) {
+      await updateCalendarEvent(data.google_calendar_event_id, data)
+    }
+
     revalidatePath('/schedule')
     return { success: true, data }
   } catch (e) {
@@ -126,6 +141,18 @@ export async function deleteScheduleEvent(id: string): Promise<ActionResult<null
   try {
     await requireAuth()
     const supabase = await createClient()
+
+    // Google Calendar에서도 삭제
+    const { data: event } = await supabase
+      .from('schedule_events')
+      .select('google_calendar_event_id')
+      .eq('id', id)
+      .single()
+
+    if (event?.google_calendar_event_id) {
+      await deleteCalendarEvent(event.google_calendar_event_id)
+    }
+
     const { error } = await supabase
       .from('schedule_events')
       .delete()
