@@ -57,16 +57,19 @@ export async function createScheduleEvent(input: ScheduleEventInsert): Promise<A
     }
 
     // Google Calendar 동기화 (실패해도 수업 생성은 유지)
-    const googleEventId = await createCalendarEvent(data)
-    if (googleEventId) {
+    let calendarWarning: string | undefined
+    const calendarResult = await createCalendarEvent(data)
+    if (calendarResult.id !== null) {
       await supabase
         .from('schedule_events')
-        .update({ google_calendar_event_id: googleEventId })
+        .update({ google_calendar_event_id: calendarResult.id })
         .eq('id', data.id)
+    } else {
+      calendarWarning = `Google Calendar 동기화 실패: ${calendarResult.error}`
     }
 
     revalidatePath('/schedule')
-    return { success: true, data }
+    return { success: true, data, warning: calendarWarning }
   } catch (e) {
     if (e instanceof ZodError) {
       return { success: false, error: e.issues.map(issue => issue.message).join(', ') }

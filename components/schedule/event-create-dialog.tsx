@@ -4,6 +4,7 @@ import { useState, useMemo } from 'react'
 import { format } from 'date-fns'
 import { ko } from 'date-fns/locale'
 import { AlertTriangle } from 'lucide-react'
+import { toast } from 'sonner'
 import { useStudents } from '@/lib/hooks/use-students'
 import { createScheduleEvent } from '@/app/actions/schedule'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
@@ -100,6 +101,9 @@ export function EventCreateDialog({
       if (!result.success) {
         alert(result.error)
         return
+      }
+      if (result.warning) {
+        toast.warning(result.warning)
       }
       onCreated()
     } finally {

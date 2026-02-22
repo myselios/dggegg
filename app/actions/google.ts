@@ -63,11 +63,11 @@ export async function syncExistingEvents(): Promise<ActionResult<number>> {
 
     let synced = 0
     for (const event of events as ScheduleEventWithStudent[]) {
-      const googleEventId = await createCalendarEvent(event)
-      if (googleEventId) {
+      const result = await createCalendarEvent(event)
+      if (result.id) {
         await supabase
           .from('schedule_events')
-          .update({ google_calendar_event_id: googleEventId })
+          .update({ google_calendar_event_id: result.id })
           .eq('id', event.id)
         synced++
       }

@@ -4,6 +4,8 @@ import type { ScheduleEventWithStudent } from '@/lib/types/database'
 
 const TIMEZONE = 'Asia/Seoul'
 const LOG_PREFIX = '[Google Calendar]'
+// Google Calendar colorId: 1=Lavender, 7=Peacock, 9=Blueberry
+const DEFAULT_COLOR_ID = '9'
 
 /**
  * Google Calendar 이벤트 제목 생성
@@ -19,17 +21,21 @@ export function buildSummary(event: ScheduleEventWithStudent): string {
   return event.title ?? '일정'
 }
 
+export type CalendarSyncResult =
+  | { readonly id: string }
+  | { readonly id: null; readonly error: string }
+
 /**
  * Google Calendar에 이벤트 생성
- * @returns Google 이벤트 ID, 실패 시 null
+ * @returns 성공 시 { id }, 실패 시 { id: null, error }
  */
 export async function createCalendarEvent(
   event: ScheduleEventWithStudent
-): Promise<string | null> {
+): Promise<CalendarSyncResult> {
   try {
     const auth = await getAuthenticatedClient()
     if (auth === null) {
-      return null
+      return { id: null, error: 'Google 연동이 설정되지 않았거나 토큰을 불러올 수 없습니다' }
     }
 
     const calendar = google.calendar({ version: 'v3', auth })
@@ -39,6 +45,7 @@ export async function createCalendarEvent(
       calendarId: 'primary',
       requestBody: {
         summary,
+        colorId: DEFAULT_COLOR_ID,
         start: {
           dateTime: event.start_at,
           timeZone: TIMEZONE,
@@ -50,10 +57,14 @@ export async function createCalendarEvent(
       },
     })
 
-    return response.data.id ?? null
+    if (!response.data.id) {
+      return { id: null, error: 'Google에서 이벤트 ID를 반환하지 않았습니다' }
+    }
+    return { id: response.data.id }
   } catch (error) {
-    console.error(`${LOG_PREFIX} 이벤트 생성 실패:`, error)
-    return null
+    const message = error instanceof Error ? error.message : String(error)
+    console.error(`${LOG_PREFIX} 이벤트 생성 실패:`, message)
+    return { id: null, error: message }
   }
 }
 
@@ -79,6 +90,7 @@ export async function updateCalendarEvent(
       eventId: googleEventId,
       requestBody: {
         summary,
+        colorId: DEFAULT_COLOR_ID,
         start: {
           dateTime: event.start_at,
           timeZone: TIMEZONE,
