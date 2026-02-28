@@ -476,7 +476,7 @@ export function ThreeWeekCalendar({
         <MemoEditDialog
           event={selectedMemo}
           onClose={() => setSelectedMemo(null)}
-          onDeleted={() => {
+          onMutated={() => {
             setSelectedMemo(null)
             mutate()
           }}
