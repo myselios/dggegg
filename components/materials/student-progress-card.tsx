@@ -1,0 +1,129 @@
+'use client'
+
+import { useState, useEffect } from 'react'
+import { RefreshCw, BookOpen } from 'lucide-react'
+import { toast } from 'sonner'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { getStudentProgress, refreshStudentProgress } from '@/app/actions/materials'
+import type { SessionSummary } from '@/lib/types/database'
+
+type Props = {
+  readonly studentId: string
+  readonly studentName: string
+}
+
+type State =
+  | { readonly status: 'idle' }
+  | { readonly status: 'loading' }
+  | { readonly status: 'success'; readonly summaries: readonly SessionSummary[] }
+  | { readonly status: 'error'; readonly message: string }
+
+export function StudentProgressCard({ studentId, studentName }: Props) {
+  const [state, setState] = useState<State>({ status: 'loading' })
+
+  useEffect(() => {
+    let cancelled = false
+    getStudentProgress(studentId)
+      .then((result) => {
+        if (cancelled) return
+        if (result.success) {
+          setState({ status: 'success', summaries: result.data })
+        } else {
+          setState({ status: 'error', message: result.error })
+        }
+      })
+    return () => {
+      cancelled = true
+      setState({ status: 'loading' })
+    }
+  }, [studentId])
+
+  const handleRefresh = async () => {
+    setState({ status: 'loading' })
+    const result = await refreshStudentProgress(studentId)
+    if (result.success) {
+      setState({ status: 'success', summaries: result.data })
+      toast.success('진도현황이 업데이트되었습니다')
+    } else {
+      setState({ status: 'error', message: result.error })
+      toast.error(result.error)
+    }
+  }
+
+  return (
+    <div className="space-y-3">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <BookOpen className="size-4 text-primary" />
+          <span className="text-sm font-semibold">{studentName} — AI 진도현황</span>
+        </div>
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={handleRefresh}
+          disabled={state.status === 'loading'}
+          className="h-7 gap-1.5 px-2 text-xs"
+        >
+          <RefreshCw className={`size-3 ${state.status === 'loading' ? 'animate-spin' : ''}`} />
+          새로고침
+        </Button>
+      </div>
+
+      {state.status === 'loading' && <LoadingState />}
+      {state.status === 'error' && <ErrorState message={state.message} />}
+      {state.status === 'success' && state.summaries.length === 0 && <EmptyState />}
+      {state.status === 'success' && state.summaries.length > 0 && (
+        <SummaryList summaries={state.summaries} />
+      )}
+    </div>
+  )
+}
+
+function LoadingState() {
+  return (
+    <div className="flex flex-col items-center justify-center gap-2 py-8 text-muted-foreground">
+      <RefreshCw className="size-5 animate-spin" />
+      <span className="text-sm">AI 요약 생성 중...</span>
+    </div>
+  )
+}
+
+function ErrorState({ message }: { readonly message: string }) {
+  return (
+    <div className="glass-card rounded-xl p-4 text-sm text-destructive">
+      {message}
+    </div>
+  )
+}
+
+function EmptyState() {
+  return (
+    <div className="glass-card rounded-xl p-4 text-center text-sm text-muted-foreground">
+      아직 요약된 내용이 없습니다.
+    </div>
+  )
+}
+
+function SummaryList({ summaries }: { readonly summaries: readonly SessionSummary[] }) {
+  return (
+    <div className="space-y-2">
+      {summaries.map((item) => (
+        <SummaryItem key={item.session} item={item} />
+      ))}
+    </div>
+  )
+}
+
+function SummaryItem({ item }: { readonly item: SessionSummary }) {
+  return (
+    <div className="glass-card rounded-xl p-3 space-y-1.5">
+      <Badge variant="outline" className="text-[11px] font-semibold px-2 py-0">
+        {item.session}
+      </Badge>
+      <p className="text-sm text-foreground/80 leading-relaxed whitespace-pre-wrap">
+        {item.summary}
+      </p>
+    </div>
+  )
+}
