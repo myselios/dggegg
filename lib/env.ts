@@ -48,4 +48,7 @@ export const serverEnv = {
   get GEMINI_API_KEY() {
     return optionalServerEnv('GEMINI_API_KEY')
   },
+  get SUPABASE_SERVICE_ROLE_KEY() {
+    return optionalServerEnv('SUPABASE_SERVICE_ROLE_KEY')
+  },
 } as const

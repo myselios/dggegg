@@ -2,6 +2,7 @@
 
 import { requireAuth } from '@/lib/auth'
 import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 import type { ActionResult } from '@/lib/types/action-result'
 import type {
   Material,
@@ -91,9 +92,10 @@ export async function uploadMaterial(
     }
 
     const supabase = await createClient()
+    const adminClient = createAdminClient()
     const storagePath = `${session}/${file.name}`
 
-    const { error: uploadError } = await supabase.storage
+    const { error: uploadError } = await adminClient.storage
       .from(STORAGE_BUCKET)
       .upload(storagePath, file, { upsert: true })
 
@@ -101,7 +103,7 @@ export async function uploadMaterial(
       return { success: false, error: `파일 업로드 실패: ${uploadError.message}` }
     }
 
-    const { data: urlData } = supabase.storage
+    const { data: urlData } = adminClient.storage
       .from(STORAGE_BUCKET)
       .getPublicUrl(storagePath)
 
@@ -131,6 +133,7 @@ export async function deleteMaterial(id: string): Promise<ActionResult<void>> {
   try {
     await requireAuth()
     const supabase = await createClient()
+    const adminClient = createAdminClient()
 
     const { data, error: fetchError } = await supabase
       .from('materials')
@@ -144,7 +147,7 @@ export async function deleteMaterial(id: string): Promise<ActionResult<void>> {
 
     const storagePath = extractStoragePath(data.file_url)
 
-    const { error: storageError } = await supabase.storage
+    const { error: storageError } = await adminClient.storage
       .from(STORAGE_BUCKET)
       .remove([storagePath])
 
