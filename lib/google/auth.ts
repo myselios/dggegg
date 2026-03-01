@@ -3,6 +3,7 @@ import { serverEnv } from '@/lib/env'
 import { createClient } from '@/lib/supabase/server'
 
 const GOOGLE_CALENDAR_SCOPE = 'https://www.googleapis.com/auth/calendar'
+const GOOGLE_DOCS_SCOPE = 'https://www.googleapis.com/auth/documents.readonly'
 const TOKEN_EXPIRY_BUFFER_SECONDS = 60
 const PROVIDER = 'google'
 
@@ -29,7 +30,7 @@ export function getAuthUrl(): string | null {
   return client.generateAuthUrl({
     access_type: 'offline',
     prompt: 'consent',
-    scope: [GOOGLE_CALENDAR_SCOPE],
+    scope: [GOOGLE_CALENDAR_SCOPE, GOOGLE_DOCS_SCOPE],
   })
 }
 

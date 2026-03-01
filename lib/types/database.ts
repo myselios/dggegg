@@ -118,3 +118,37 @@ export type OAuthToken = {
   readonly created_at: string
   readonly updated_at: string
 }
+
+export type SessionKey = 'OT' | '1' | '2' | '3' | '4' | '5' | '6' | '7'
+
+export type Material = {
+  readonly id: string
+  readonly session: SessionKey
+  readonly file_name: string
+  readonly file_url: string
+  readonly created_at: string
+}
+
+export type MaterialInsert = Omit<Material, 'id' | 'created_at'>
+
+export type StudentDoc = {
+  readonly id: string
+  readonly student_id: string
+  readonly docs_url: string
+  readonly last_synced_at: string | null
+  readonly created_at: string
+}
+
+export type StudentDocInsert = Omit<StudentDoc, 'id' | 'created_at'>
+
+export type SessionSummary = {
+  readonly session: string
+  readonly summary: string
+}
+
+export type MaterialsCache = {
+  readonly id: string
+  readonly student_id: string
+  readonly summary_data: readonly SessionSummary[]
+  readonly cached_at: string
+}

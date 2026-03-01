@@ -1,0 +1,129 @@
+{
+  "project": "dggegg-materials",
+  "scale": "M",
+  "created_at": "2026-03-02T07:45:00Z",
+  "architecture_ref": "architecture.md",
+  "waves": [
+    {
+      "wave_id": 1,
+      "description": "기반 레이어 — DB, 타입, 환경 변수",
+      "tasks": [
+        {
+          "task_id": "T-001",
+          "story_id": "S1,S2,S3",
+          "title": "DB 마이그레이션 (007_materials.sql)",
+          "description": "materials, student_docs, materials_cache 테이블 생성 + RLS 정책",
+          "files": ["supabase/migrations/007_materials.sql"],
+          "layer": "infrastructure",
+          "complexity": "S",
+          "depends_on": [],
+          "acceptance_criteria": ["3개 테이블 생성", "RLS 정책 설정"]
+        },
+        {
+          "task_id": "T-002",
+          "story_id": "S1,S2,S3",
+          "title": "타입 정의 추가 (database.ts + env.ts)",
+          "description": "Material, StudentDoc, MaterialsCache 타입 추가. env.ts에 GEMINI_API_KEY 추가",
+          "files": ["lib/types/database.ts", "lib/env.ts"],
+          "layer": "infrastructure",
+          "complexity": "S",
+          "depends_on": [],
+          "acceptance_criteria": ["타입 정의 추가", "env 변수 추가"]
+        }
+      ]
+    },
+    {
+      "wave_id": 2,
+      "description": "인프라 레이어 — Google APIs, Server Actions",
+      "tasks": [
+        {
+          "task_id": "T-003",
+          "story_id": "S3",
+          "title": "lib/google/docs.ts + lib/google/gemini.ts",
+          "description": "Google Docs API 래퍼 + Gemini AI 요약 모듈",
+          "files": ["lib/google/docs.ts", "lib/google/gemini.ts"],
+          "layer": "infrastructure",
+          "complexity": "M",
+          "depends_on": ["T-002"],
+          "acceptance_criteria": ["Docs API 콘텐츠 읽기", "회차별 섹션 파싱", "Gemini 요약"]
+        },
+        {
+          "task_id": "T-004",
+          "story_id": "S1,S2,S3,S4",
+          "title": "app/actions/materials.ts + auth.ts 스코프 추가",
+          "description": "교재 CRUD, 학생 Docs 관리, AI 진도현황 Server Actions. auth.ts에 documents.readonly 스코프 추가",
+          "files": ["app/actions/materials.ts", "lib/google/auth.ts"],
+          "layer": "application",
+          "complexity": "L",
+          "depends_on": ["T-001", "T-003"],
+          "acceptance_criteria": ["uploadMaterial", "getMaterials", "deleteMaterial", "saveStudentDocsUrl", "getStudentProgress", "refreshStudentProgress"]
+        }
+      ]
+    },
+    {
+      "wave_id": 3,
+      "description": "프레젠테이션 레이어 — UI 컴포넌트",
+      "tasks": [
+        {
+          "task_id": "T-005",
+          "story_id": "S1,S4",
+          "title": "수업교재 UI (LessonMaterialsSection + UploadMaterialDialog)",
+          "description": "OT+1~7회차 카드 그리드 + 업로드 다이얼로그 + 링크 복사 버튼",
+          "files": [
+            "components/materials/lesson-materials-section.tsx",
+            "components/materials/upload-material-dialog.tsx"
+          ],
+          "layer": "presentation",
+          "complexity": "M",
+          "depends_on": ["T-004"],
+          "acceptance_criteria": ["8개 슬롯 카드", "파일 업로드", "링크 복사 토스트"]
+        },
+        {
+          "task_id": "T-006",
+          "story_id": "S2,S3",
+          "title": "학생자료 UI (StudentDocsSection + StudentProgressCard)",
+          "description": "학생 선택 + Docs URL 등록 + 회차별 AI 요약 카드",
+          "files": [
+            "components/materials/student-docs-section.tsx",
+            "components/materials/student-progress-card.tsx"
+          ],
+          "layer": "presentation",
+          "complexity": "M",
+          "depends_on": ["T-004"],
+          "acceptance_criteria": ["학생 선택 드롭다운", "Docs URL 입력", "AI 요약 카드"]
+        }
+      ]
+    },
+    {
+      "wave_id": 4,
+      "description": "메인 페이지 + E2E 테스트",
+      "tasks": [
+        {
+          "task_id": "T-007",
+          "story_id": "S1,S2,S3,S4",
+          "title": "Materials 메인 페이지",
+          "description": "app/(authenticated)/materials/page.tsx — 탭 UI로 수업교재/학생자료 통합",
+          "files": ["app/(authenticated)/materials/page.tsx"],
+          "layer": "presentation",
+          "complexity": "S",
+          "depends_on": ["T-005", "T-006"],
+          "acceptance_criteria": ["탭 전환", "기존 플레이스홀더 교체"]
+        },
+        {
+          "task_id": "T-008",
+          "story_id": "S1,S2",
+          "title": "E2E 테스트 (materials.spec.ts)",
+          "description": "교재 업로드 플로우 + 학생 Docs 등록 플로우 E2E 테스트",
+          "files": ["e2e/materials.spec.ts"],
+          "layer": "test",
+          "complexity": "M",
+          "depends_on": ["T-007"],
+          "acceptance_criteria": ["교재 페이지 접근 가능", "업로드 UI 표시", "학생자료 탭 표시"]
+        }
+      ]
+    }
+  ],
+  "total_tasks": 8,
+  "total_waves": 4,
+  "estimated_loops": 15
+}
