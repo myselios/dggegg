@@ -45,4 +45,7 @@ export const serverEnv = {
   get GOOGLE_REDIRECT_URI() {
     return optionalServerEnv('GOOGLE_REDIRECT_URI')
   },
+  get GEMINI_API_KEY() {
+    return optionalServerEnv('GEMINI_API_KEY')
+  },
 } as const
