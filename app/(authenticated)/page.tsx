@@ -85,6 +85,9 @@ export default function DashboardPage() {
 
   return (
     <div className="flex flex-col gap-8">
+      {/* Lesson Stats */}
+      <LessonStats />
+
       {/* Welcome Section */}
       <div className="glass-card flex items-center justify-between rounded-2xl p-5">
         <div className="flex items-center gap-3">
@@ -139,9 +142,6 @@ export default function DashboardPage() {
 
       {/* Weekly Schedule */}
       <WeeklySchedule />
-
-      {/* Lesson Stats */}
-      <LessonStats />
 
       {/* Main Content Grid */}
       <div className="grid gap-6 lg:grid-cols-2">
