@@ -6,7 +6,6 @@ import {
   Calendar,
   CheckCircle2,
   AlertTriangle,
-  BookOpen,
 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { autoCompletePastEvents } from '@/app/actions/schedule'
@@ -25,13 +24,6 @@ type DashboardStats = {
   readonly incomplete: number
 }
 
-function useGreeting(): string {
-  const hour = new Date().getHours()
-  if (hour < 12) return '좋은 아침이에요'
-  if (hour < 18) return '좋은 오후예요'
-  return '좋은 저녁이에요'
-}
-
 const STAT_CARDS = [
   { key: 'total', label: '오늘 수업', icon: Calendar, style: STAT_STYLES.info },
   { key: 'completed', label: '완료', icon: CheckCircle2, style: STAT_STYLES.success },
@@ -41,7 +33,6 @@ const STAT_CARDS = [
 export const dynamic = 'force-dynamic'
 
 export default function DashboardPage() {
-  const greeting = useGreeting()
   const [stats, setStats] = useState<DashboardStats>({
     total: 0,
     completed: 0,
@@ -87,23 +78,6 @@ export default function DashboardPage() {
     <div className="flex flex-col gap-8">
       {/* Lesson Stats */}
       <LessonStats />
-
-      {/* Welcome Section */}
-      <div className="glass-card flex items-center justify-between rounded-2xl p-5">
-        <div className="flex items-center gap-3">
-          <div className="flex size-11 items-center justify-center rounded-xl bg-gradient-to-br from-primary/25 to-primary/5">
-            <BookOpen className="size-5 text-primary" />
-          </div>
-          <div>
-            <h2 className="text-xl font-bold tracking-tight">
-              {greeting}
-            </h2>
-            <p className="text-xs text-muted-foreground">
-              오늘 하루도 좋은 수업 되세요.
-            </p>
-          </div>
-        </div>
-      </div>
 
       {/* Stats Cards */}
       <div className="grid gap-4 sm:grid-cols-3">

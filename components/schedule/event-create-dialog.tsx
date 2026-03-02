@@ -59,7 +59,7 @@ export function EventCreateDialog({
 
   const [startHour, setStartHour] = useState(hour)
   const [startMinute, setStartMinute] = useState(minute)
-  const [duration, setDuration] = useState(60)
+  const [duration, setDuration] = useState(50)
   const [submitting, setSubmitting] = useState(false)
   const [eventType, setEventType] = useState<'lesson' | 'memo'>('lesson')
 
