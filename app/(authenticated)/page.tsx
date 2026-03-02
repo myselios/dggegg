@@ -17,6 +17,7 @@ import { TodayLessons } from '@/components/dashboard/today-lessons'
 import { RecentConsultations } from '@/components/dashboard/recent-consultations'
 import { IncompleteLessons } from '@/components/dashboard/incomplete-lessons'
 import { WeeklySchedule } from '@/components/dashboard/weekly-schedule'
+import { LessonStats } from '@/components/dashboard/lesson-stats'
 
 type DashboardStats = {
   readonly total: number
@@ -138,6 +139,9 @@ export default function DashboardPage() {
 
       {/* Weekly Schedule */}
       <WeeklySchedule />
+
+      {/* Lesson Stats */}
+      <LessonStats />
 
       {/* Main Content Grid */}
       <div className="grid gap-6 lg:grid-cols-2">
