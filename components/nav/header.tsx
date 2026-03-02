@@ -25,7 +25,7 @@ function getPageTitle(pathname: string): string {
     return `${parentTitle} > 상세`
   }
 
-  return 'Rocket Tutor'
+  return '리아쌤 Tutor'
 }
 
 function formatDate(date: Date): string {

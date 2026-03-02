@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 })
 
 export const metadata: Metadata = {
-  title: "Rocket Tutor OS",
+  title: "리아쌤 Tutor OS",
   description: "IB 전문 1인 강사 통합 운영 시스템",
 }
 

@@ -39,7 +39,7 @@ export default function LoginPage() {
         <Card className="rounded-2xl border-white/25 bg-white/60 shadow-2xl shadow-indigo-500/10 backdrop-blur-2xl dark:border-white/8 dark:bg-white/5 dark:shadow-black/30">
           <CardHeader className="pb-2 text-center">
             <CardTitle className="text-2xl font-bold tracking-tight">
-              Rocket Tutor OS
+              리아쌤 Tutor OS
             </CardTitle>
             <CardDescription className="text-muted-foreground mt-1 text-sm">
               학습 관리 시스템에 접속하려면 비밀번호를 입력하세요
@@ -110,7 +110,7 @@ export default function LoginPage() {
 
         {/* Footer text */}
         <p className="text-muted-foreground mt-6 text-center text-xs">
-          Rocket Tutor OS v0.1
+          리아쌤 Tutor OS v0.1
         </p>
       </div>
     </div>
