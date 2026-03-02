@@ -16,21 +16,14 @@ import { cn } from '@/lib/utils'
 export type StudentFilters = {
   readonly school: string
   readonly course: string
-  readonly status: string
 }
 
-const EMPTY_FILTERS: StudentFilters = { school: '', course: '', status: '' }
+const EMPTY_FILTERS: StudentFilters = { school: '', course: '' }
 
 const COURSE_OPTIONS = [
   { value: 'Ab initio', label: 'Ab initio' },
   { value: 'SL', label: 'SL' },
   { value: 'HL', label: 'HL' },
-] as const
-
-const STATUS_OPTIONS = [
-  { value: 'active', label: '수업 중' },
-  { value: 'paused', label: '일시 중지' },
-  { value: 'ended', label: '종료' },
 ] as const
 
 function countActiveFilters(filters: StudentFilters): number {
@@ -110,25 +103,6 @@ export function StudentToolbar({
           </SelectTrigger>
           <SelectContent>
             {COURSE_OPTIONS.map((opt) => (
-              <SelectItem key={opt.value} value={opt.value}>
-                {opt.label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-
-        <Select
-          value={filters.status || undefined}
-          onValueChange={(v) => onFiltersChange({ ...filters, status: v })}
-        >
-          <SelectTrigger
-            size="sm"
-            className={cn(filters.status && 'border-primary text-primary')}
-          >
-            <SelectValue placeholder="상태" />
-          </SelectTrigger>
-          <SelectContent>
-            {STATUS_OPTIONS.map((opt) => (
               <SelectItem key={opt.value} value={opt.value}>
                 {opt.label}
               </SelectItem>
