@@ -40,7 +40,7 @@ export function Sidebar() {
         <div className="flex size-8 items-center justify-center rounded-lg bg-primary">
           <Rocket className="size-4 text-primary-foreground" />
         </div>
-        <h1 className="text-base font-bold tracking-tight">리아쌤 Tutor</h1>
+        <h1 className="text-base font-bold tracking-tight">리아쌤</h1>
       </Link>
 
       {/* Navigation */}
