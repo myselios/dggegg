@@ -152,3 +152,22 @@ export type MaterialsCache = {
   readonly summary_data: readonly SessionSummary[]
   readonly cached_at: string
 }
+
+export type TemplateCategory = 'first_consult' | 'after_lesson' | 're_enrollment' | 'other'
+
+export type MessageTemplate = {
+  readonly id: string
+  readonly category: TemplateCategory
+  readonly title: string
+  readonly content: string
+  readonly created_at: string
+  readonly updated_at: string
+}
+
+export type MessageTemplateInsert = {
+  readonly category: TemplateCategory
+  readonly title: string
+  readonly content: string
+}
+
+export type MessageTemplateUpdate = Partial<MessageTemplateInsert>
