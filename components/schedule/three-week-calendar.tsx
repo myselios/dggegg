@@ -326,9 +326,9 @@ export function ThreeWeekCalendar({
         <div ref={gridRef} className="glass-card relative overflow-auto max-h-[calc(100vh-220px)] flex-1 rounded-2xl border-none" data-testid="calendar-grid">
           <div>
             {/* Day headers - sticky top */}
-            <div className={cn('sticky top-0 z-30 grid bg-white/70 dark:bg-white/5 backdrop-blur-lg', gridCols)}>
+            <div className={cn('sticky top-0 z-30 grid bg-white/95 dark:bg-black/60 backdrop-blur-xl border-b border-border/50 shadow-sm', gridCols)}>
               {/* Time column spacer */}
-              <div className="sticky left-0 z-40 bg-white/70 dark:bg-white/5 backdrop-blur-lg" />
+              <div className="sticky left-0 z-40 bg-white/95 dark:bg-black/60 backdrop-blur-xl" />
 
               {/* Day name + date row */}
               {allDays.map((day, i) => (
