@@ -16,6 +16,51 @@
   },
   "stories": [
     {
+      "id": "S5",
+      "title": "회차별 교재 링크 필드 추가",
+      "description": "As a 리아쌤, I want 수업교재 각 회차 카드에 파일 외에 링크(URL)도 저장하고 싶다 so that 구글 드라이브 등 링크를 복사해서 학생에게 전달할 수 있다",
+      "acceptance_criteria": [
+        "materials 테이블에 link_url (nullable text) 컬럼을 추가하는 마이그레이션 010_materials_link.sql을 생성한다",
+        "Material 타입에 link_url: string | null 필드가 추가된다",
+        "각 회차 카드에 '링크 등록' 버튼이 표시되며 클릭 시 URL 입력 다이얼로그가 열린다",
+        "링크가 등록된 카드는 복사 버튼이 표시되고, 클릭 시 link_url이 클립보드에 복사된다",
+        "링크 삭제 버튼 클릭 시 link_url이 null로 업데이트된다",
+        "빈 문자열이나 유효하지 않은 URL 입력 시 저장 버튼이 disabled 상태가 된다",
+        "파일과 링크는 독립적으로 관리된다 (파일 없이 링크만 있어도 됨)"
+      ],
+      "priority": 1,
+      "dependencies": []
+    },
+    {
+      "id": "S6",
+      "title": "테스트링크 섹션 추가",
+      "description": "As a 리아쌤, I want 수업교재 탭 안에 테스트링크 섹션을 추가하고 싶다 so that OT/1~7회차별 구글폼 등 테스트 링크를 관리하고 학생에게 전달할 수 있다",
+      "acceptance_criteria": [
+        "test_links 테이블을 생성하는 마이그레이션 011_test_links.sql을 생성한다 (id, session SessionKey, url text, label text nullable, created_at)",
+        "TestLink 타입이 lib/types/database.ts에 추가된다",
+        "수업교재 탭 하단에 '테스트링크' 제목의 별도 섹션이 추가된다",
+        "테스트링크 섹션도 OT + 1~7회차 슬롯 구조로 표시된다",
+        "각 슬롯에 링크 URL 등록/수정/삭제 기능이 있다",
+        "링크 복사 버튼 클릭 시 URL이 클립보드에 복사되고 toast로 '링크가 복사되었습니다'가 표시된다",
+        "app/actions/test-links.ts 서버 액션 파일을 생성한다 (getTestLinks, upsertTestLink, deleteTestLink)"
+      ],
+      "priority": 1,
+      "dependencies": ["S5"]
+    },
+    {
+      "id": "S7",
+      "title": "테스트링크/교재링크 라벨 관리",
+      "description": "As a 리아쌤, I want 각 링크에 설명 라벨을 달고 싶다 so that 어떤 링크인지 한눈에 파악할 수 있다",
+      "acceptance_criteria": [
+        "링크 등록/수정 다이얼로그에 선택적 라벨(label) 입력 필드가 있다",
+        "라벨이 있으면 카드에 라벨 텍스트가 표시된다",
+        "라벨이 없으면 URL 도메인 앞부분을 truncate해서 표시한다",
+        "materials 테이블의 link_label (nullable text) 컬럼 추가가 010 마이그레이션에 포함된다"
+      ],
+      "priority": 2,
+      "dependencies": ["S5", "S6"]
+    },
+    {
       "id": "S1",
       "title": "템플릿 목록 조회",
       "description": "As a 리아쌤, I want 카테고리 탭으로 템플릿 목록을 볼 수 있도록 so that 원하는 템플릿을 빠르게 찾을 수 있다",

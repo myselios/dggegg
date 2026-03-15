@@ -124,12 +124,34 @@ export type SessionKey = 'OT' | '1' | '2' | '3' | '4' | '5' | '6' | '7'
 export type Material = {
   readonly id: string
   readonly session: SessionKey
-  readonly file_name: string
-  readonly file_url: string
+  readonly file_name: string | null
+  readonly file_url: string | null
+  readonly link_url: string | null
+  readonly link_label: string | null
   readonly created_at: string
 }
 
-export type MaterialInsert = Omit<Material, 'id' | 'created_at'>
+export type MaterialInsert = {
+  readonly session: SessionKey
+  readonly file_name?: string | null
+  readonly file_url?: string | null
+  readonly link_url?: string | null
+  readonly link_label?: string | null
+}
+
+export type TestLink = {
+  readonly id: string
+  readonly session: SessionKey
+  readonly url: string
+  readonly label: string | null
+  readonly created_at: string
+}
+
+export type TestLinkInsert = {
+  readonly session: SessionKey
+  readonly url: string
+  readonly label?: string | null
+}
 
 export type StudentDoc = {
   readonly id: string

@@ -1,7 +1,9 @@
 import { createClient } from '@/lib/supabase/server'
 import { getMaterials } from '@/app/actions/materials'
+import { getTestLinks } from '@/app/actions/test-links'
 import { LessonMaterialsSection } from '@/components/materials/lesson-materials-section'
 import { StudentDocsSection } from '@/components/materials/student-docs-section'
+import { TestLinksSection } from '@/components/materials/test-links-section'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import type { Student } from '@/lib/types/database'
 
@@ -19,12 +21,14 @@ async function fetchStudents(): Promise<Student[]> {
 }
 
 export default async function MaterialsPage() {
-  const [materialsResult, students] = await Promise.all([
+  const [materialsResult, testLinksResult, students] = await Promise.all([
     getMaterials(),
+    getTestLinks(),
     fetchStudents(),
   ])
 
   const materials = materialsResult.success ? materialsResult.data : []
+  const testLinks = testLinksResult.success ? testLinksResult.data : []
 
   return (
     <div className="flex flex-col gap-6">
@@ -39,7 +43,10 @@ export default async function MaterialsPage() {
           </TabsTrigger>
         </TabsList>
         <TabsContent value="lesson">
-          <LessonMaterialsSection initialMaterials={materials} />
+          <div className="flex flex-col gap-8">
+            <LessonMaterialsSection initialMaterials={materials} />
+            <TestLinksSection initialLinks={testLinks} />
+          </div>
         </TabsContent>
         <TabsContent value="student">
           <StudentDocsSection students={students} />

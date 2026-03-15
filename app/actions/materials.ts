@@ -129,6 +129,59 @@ export async function uploadMaterial(
   }
 }
 
+export async function saveMaterialLink(
+  session: SessionKey,
+  linkUrl: string,
+  linkLabel?: string
+): Promise<ActionResult<Material>> {
+  try {
+    await requireAuth()
+    if (!linkUrl.trim()) {
+      return { success: false, error: 'URL을 입력해주세요' }
+    }
+    try {
+      new URL(linkUrl)
+    } catch {
+      return { success: false, error: '유효한 URL이 아닙니다' }
+    }
+
+    const supabase = await createClient()
+    const { data, error } = await supabase
+      .from('materials')
+      .upsert(
+        { session, link_url: linkUrl, link_label: linkLabel ?? null },
+        { onConflict: 'session' }
+      )
+      .select()
+      .single()
+
+    if (error) {
+      return { success: false, error: `링크 저장 실패: ${error.message}` }
+    }
+    return { success: true, data: data as Material }
+  } catch {
+    return { success: false, error: '링크 저장 중 오류가 발생했습니다' }
+  }
+}
+
+export async function deleteMaterialLink(session: SessionKey): Promise<ActionResult<void>> {
+  try {
+    await requireAuth()
+    const supabase = await createClient()
+    const { error } = await supabase
+      .from('materials')
+      .update({ link_url: null, link_label: null })
+      .eq('session', session)
+
+    if (error) {
+      return { success: false, error: `링크 삭제 실패: ${error.message}` }
+    }
+    return { success: true, data: undefined }
+  } catch {
+    return { success: false, error: '링크 삭제 중 오류가 발생했습니다' }
+  }
+}
+
 export async function deleteMaterial(id: string): Promise<ActionResult<void>> {
   try {
     await requireAuth()

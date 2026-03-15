@@ -23,14 +23,11 @@ export function WeeklyMemoPanel({ baseDate }: { readonly baseDate: Date }) {
   // Load memo when week changes
   useEffect(() => {
     let cancelled = false
-    setContent('')
-    setSaved(true)
 
     getWeeklyMemo(weekKey).then((result) => {
       if (cancelled) return
-      if (result.success && result.data) {
-        setContent(result.data.content)
-      }
+      setContent(result.success && result.data ? result.data.content : '')
+      setSaved(true)
       lastSavedKey.current = weekKey
     })
 
