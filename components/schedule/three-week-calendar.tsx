@@ -25,10 +25,11 @@ import { DroppableCell } from './droppable-cell'
 import { EventCreateDialog } from './event-create-dialog'
 import { LessonNotePanel } from './lesson-note-panel'
 import { MemoEditDialog } from './memo-edit-dialog'
+import { WeeklyMemoPanel } from './weekly-memo-panel'
 import { Button } from '@/components/ui/button'
 import type { ScheduleEventWithStudent } from '@/lib/types/database'
 
-const HOURS = Array.from({ length: 16 }, (_, i) => i + 8) // 08:00 ~ 23:00
+const HOURS = Array.from({ length: 17 }, (_, i) => i + 7) // 07:00 ~ 23:00
 const MINUTES_10 = [0, 10, 20, 30, 40, 50] as const
 const CELL_HEIGHT_COMPACT = 48  // h-12
 const CELL_HEIGHT_EXPANDED = 120 // h-[120px]
@@ -107,7 +108,7 @@ export function ThreeWeekCalendar({
   const [mobileView, setMobileView] = useState<'1week' | 'day'>('1week')
   const gridRef = useRef<HTMLDivElement>(null)
 
-  const viewMode: ViewMode = isMobile ? mobileView : '3week'
+  const viewMode: ViewMode = isMobile ? mobileView : '1week'
 
   // Compute date range based on view mode
   const { start, end } = useMemo(() => {
@@ -135,17 +136,15 @@ export function ThreeWeekCalendar({
     end.toISOString()
   )
 
-  // Auto-scroll to today's column on mount
+  // Auto-scroll to current hour on mount
   useEffect(() => {
-    if (viewMode !== '3week' || !gridRef.current) return
-    const todayIdx = allDays.findIndex((d) => isToday(d))
-    if (todayIdx < 0) return
-    const container = gridRef.current
-    const timeColWidth = 52
-    const dayColWidth = (container.scrollWidth - timeColWidth) / allDays.length
-    const scrollTarget = timeColWidth + todayIdx * dayColWidth - container.clientWidth / 2 + dayColWidth * 3.5
-    container.scrollLeft = Math.max(0, scrollTarget)
-  }, [viewMode, allDays])
+    if (!gridRef.current) return
+    const currentHour = new Date().getHours()
+    const hourIndex = Math.max(0, currentHour - 7) // HOURS starts at 07
+    const rowHeight = isCompact ? CELL_HEIGHT_COMPACT : CELL_HEIGHT_EXPANDED
+    const scrollTarget = hourIndex * rowHeight - 80
+    gridRef.current.scrollTop = Math.max(0, scrollTarget)
+  }, [viewMode, isCompact])
 
   // Conflict detection: find all events that overlap with at least one other
   const conflictingIds = useMemo(
@@ -314,6 +313,8 @@ export function ThreeWeekCalendar({
         </div>
       </div>
 
+      {/* Calendar grid + weekly memo side by side (desktop only) */}
+      <div className="flex gap-3 items-start">
       {/* Calendar grid with DnD */}
       <DndContext
         sensors={sensors}
@@ -322,25 +323,12 @@ export function ThreeWeekCalendar({
         onDragEnd={handleDragEnd}
         onDragCancel={handleDragCancel}
       >
-        <div ref={gridRef} className="glass-card relative overflow-auto max-h-[calc(100vh-220px)] rounded-2xl border-none" data-testid="calendar-grid">
-          <div className={cn(viewMode === '3week' && 'min-w-[1800px]')}>
-            {/* Day headers - sticky top (with week range labels for 3week) */}
+        <div ref={gridRef} className="glass-card relative overflow-auto max-h-[calc(100vh-220px)] flex-1 rounded-2xl border-none" data-testid="calendar-grid">
+          <div>
+            {/* Day headers - sticky top */}
             <div className={cn('sticky top-0 z-30 grid bg-white/70 dark:bg-white/5 backdrop-blur-lg', gridCols)}>
               {/* Time column spacer */}
-              <div className="sticky left-0 z-40 bg-white/70 dark:bg-white/5 backdrop-blur-lg row-span-2" />
-
-              {/* Week range row (3week only) */}
-              {viewMode === '3week' && weeks.map((week, wi) => (
-                <div
-                  key={wi}
-                  className={cn(
-                    'col-span-7 py-1.5 text-center text-xs font-semibold text-muted-foreground border-b border-border/30',
-                    wi > 0 && 'border-l-2 border-l-primary/30'
-                  )}
-                >
-                  {format(week[0], 'M월 d일')} — {format(week[6], 'M월 d일')}
-                </div>
-              ))}
+              <div className="sticky left-0 z-40 bg-white/70 dark:bg-white/5 backdrop-blur-lg" />
 
               {/* Day name + date row */}
               {allDays.map((day, i) => (
@@ -348,8 +336,7 @@ export function ThreeWeekCalendar({
                   key={i}
                   className={cn(
                     'border-l border-b px-1 py-1.5 text-center',
-                    isToday(day) && 'bg-primary/10 font-bold',
-                    viewMode === '3week' && i % 7 === 0 && i > 0 && 'border-l-2 border-l-primary/30'
+                    isToday(day) && 'bg-primary/10 font-bold'
                   )}
                 >
                   <div className="text-[10px] leading-none text-muted-foreground">{format(day, 'EEE', { locale: ko })}</div>
@@ -405,7 +392,7 @@ export function ThreeWeekCalendar({
                       key={dayIdx}
                       id={currentCellId}
                       isToday={isToday(day)}
-                      isWeekBoundary={viewMode === '3week' && dayIdx % 7 === 0 && dayIdx > 0}
+                      isWeekBoundary={false}
                       conflictHalfId={dragConflictCellId}
                       compact={isCompact}
                       onClick={() => {
@@ -443,6 +430,10 @@ export function ThreeWeekCalendar({
           {activeEvent ? <div data-testid="drag-overlay"><CalendarEventBlockOverlay event={activeEvent} /></div> : null}
         </DragOverlay>
       </DndContext>
+
+      {/* Weekly memo panel — desktop only */}
+      {!isMobile && <WeeklyMemoPanel baseDate={baseDate} />}
+      </div>
 
       {/* Event create dialog */}
       {selectedSlot && (

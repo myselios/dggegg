@@ -171,3 +171,11 @@ export type MessageTemplateInsert = {
 }
 
 export type MessageTemplateUpdate = Partial<MessageTemplateInsert>
+
+export type WeeklyMemo = {
+  readonly id: string
+  readonly week_key: string
+  readonly content: string
+  readonly created_at: string
+  readonly updated_at: string
+}
