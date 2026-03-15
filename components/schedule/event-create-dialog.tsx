@@ -16,7 +16,7 @@ import { formatTime } from '@/lib/utils/date'
 import type { ScheduleEventWithStudent } from '@/lib/types/database'
 
 const TEMPLATE_TYPES = ['IO', 'Writing', 'Reading', 'Listening', 'Speaking'] as const
-const HOURS = Array.from({ length: 15 }, (_, i) => i + 8) // 8 ~ 22
+const HOURS = Array.from({ length: 16 }, (_, i) => i + 7) // 7 ~ 22
 const MINUTES_10 = [0, 10, 20, 30, 40, 50] as const
 const DURATION_OPTIONS = [30, 40, 50, 60, 90, 120] as const
 

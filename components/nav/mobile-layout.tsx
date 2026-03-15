@@ -17,19 +17,16 @@ export function MobileLayout({
   const handleClose = useCallback(() => setSidebarOpen(false), [])
 
   if (!isMobile) {
-    // Desktop: fixed sidebar
+    // Desktop: top navigation only, no sidebar
     return (
-      <div className="flex h-screen">
-        <Sidebar />
-        <div className="flex flex-1 flex-col overflow-hidden glass-mesh">
-          <Header />
-          <main className="flex-1 overflow-y-auto p-6">{children}</main>
-        </div>
+      <div className="flex h-screen flex-col glass-mesh">
+        <Header />
+        <main className="flex-1 overflow-y-auto p-6">{children}</main>
       </div>
     )
   }
 
-  // Mobile: overlay drawer sidebar
+  // Mobile: header with hamburger + overlay sidebar drawer
   return (
     <div className="flex h-screen flex-col glass-mesh">
       <Header showMenuButton onMenuClick={handleMenuClick} />

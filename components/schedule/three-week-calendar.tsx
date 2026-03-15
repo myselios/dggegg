@@ -339,7 +339,10 @@ export function ThreeWeekCalendar({
                     isToday(day) && 'bg-primary/10 font-bold'
                   )}
                 >
-                  <div className="text-[10px] leading-none text-muted-foreground">{format(day, 'EEE', { locale: ko })}</div>
+                  <div className={cn(
+                    'text-[10px] leading-none',
+                    day.getDay() === 0 ? 'text-red-500 font-semibold' : day.getDay() === 6 ? 'text-blue-500 font-semibold' : 'text-muted-foreground'
+                  )}>{format(day, 'EEE', { locale: ko })}</div>
                   <div className={cn(
                     'mt-0.5 text-sm font-semibold leading-none',
                     isToday(day) && 'rounded-full bg-primary text-primary-foreground mx-auto w-6 h-6 flex items-center justify-center text-xs'

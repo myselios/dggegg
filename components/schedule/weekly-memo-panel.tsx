@@ -72,7 +72,7 @@ export function WeeklyMemoPanel({ baseDate }: { readonly baseDate: Date }) {
   })()
 
   return (
-    <div className="glass-card flex flex-col rounded-2xl p-3 gap-2 w-52 shrink-0 self-start sticky top-0">
+    <div className="glass-card flex flex-col rounded-2xl p-3 gap-2 w-72 shrink-0 self-start sticky top-0">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-1.5 text-sm font-semibold">
           <NotebookPen className="w-4 h-4 text-primary" />
@@ -94,7 +94,7 @@ export function WeeklyMemoPanel({ baseDate }: { readonly baseDate: Date }) {
       <div className="text-[10px] text-muted-foreground font-medium px-0.5">{weekLabel}</div>
 
       <textarea
-        className="flex-1 w-full min-h-[300px] resize-none bg-transparent text-sm leading-relaxed outline-none placeholder:text-muted-foreground/50"
+        className="flex-1 w-full min-h-[500px] resize-none bg-transparent text-base leading-relaxed outline-none placeholder:text-muted-foreground/50"
         placeholder="이번 주 메모를 자유롭게 적어보세요…"
         value={content}
         onChange={(e) => handleChange(e.target.value)}
