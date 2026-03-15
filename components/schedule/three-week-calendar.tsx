@@ -336,7 +336,7 @@ export function ThreeWeekCalendar({
                   key={i}
                   className={cn(
                     'border-l border-b px-1 py-1.5 text-center',
-                    isToday(day) && 'bg-primary/10 font-bold'
+                    isToday(day) ? 'bg-primary/15 font-bold border-t-2 border-t-primary' : 'border-t-2 border-t-transparent'
                   )}
                 >
                   <div className={cn(

@@ -34,7 +34,7 @@ export function DroppableCell({
       className={cn(
         'relative border-l cursor-pointer hover:bg-muted/50 transition-colors',
         compact ? 'h-12' : 'h-[120px]',
-        isToday && 'bg-primary/5',
+        isToday && 'bg-primary/10',
         isWeekBoundary && 'border-l-2 border-l-primary/30',
       )}
       data-testid="droppable-cell"
