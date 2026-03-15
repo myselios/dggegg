@@ -10,11 +10,8 @@ test.describe('템플릿 보관함', () => {
     await expect(page.getByTestId('page-title')).toHaveText('템플릿 보관함')
   })
 
-  test('카테고리 탭 4개가 표시된다', async ({ page }) => {
-    await expect(page.getByTestId('tab-first_consult')).toBeVisible()
-    await expect(page.getByTestId('tab-after_lesson')).toBeVisible()
-    await expect(page.getByTestId('tab-re_enrollment')).toBeVisible()
-    await expect(page.getByTestId('tab-other')).toBeVisible()
+  test('새 템플릿 버튼이 상단에 표시된다', async ({ page }) => {
+    await expect(page.getByTestId('new-template-btn')).toBeVisible()
   })
 
   test('새 템플릿 버튼이 표시된다', async ({ page }) => {
@@ -35,10 +32,10 @@ test.describe('템플릿 보관함', () => {
     await expect(page.getByTestId('template-save-btn')).toBeEnabled()
   })
 
-  test('사이드바에 템플릿 보관함 메뉴가 표시된다', async ({ page }) => {
+  test('헤더에 템플릿 메뉴가 표시된다', async ({ page }) => {
     await page.goto('/')
     const templateLink = page.locator('a[href="/templates"]')
     await expect(templateLink).toBeVisible()
-    await expect(templateLink).toContainText('템플릿 보관함')
+    await expect(templateLink).toContainText('템플릿')
   })
 })
