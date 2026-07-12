@@ -8,22 +8,15 @@ import type { Student, StudentInsert, StudentUpdate } from '@/lib/types/database
 import type { ActionResult } from '@/lib/types/action-result'
 import { ZodError } from 'zod'
 
-export async function getStudents(): Promise<ActionResult<Student[]>> {
-  try {
-    const supabase = await createClient()
-    const { data, error } = await supabase
-      .from('students')
-      .select('id, name_ko, school, ib_course, grade, status')
-      .order('name_ko')
+export async function getStudents() {
+  const supabase = await createClient()
+  const { data, error } = await supabase
+    .from('students')
+    .select('*')
+    .order('name_ko')
 
-    if (error) {
-      return { success: false, error: `Supabase: ${error.message}` }
-    }
-    return { success: true, data: (data ?? []) as unknown as Student[] }
-  } catch (e) {
-    const msg = e instanceof Error ? e.message : String(e)
-    return { success: false, error: `Server: ${msg}` }
-  }
+  if (error) throw new Error(error.message)
+  return data
 }
 
 export async function getStudent(id: string) {
