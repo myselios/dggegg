@@ -15,7 +15,8 @@
 | 카테고리 | 대상 | 조치 |
 |---------|------|-----|
 | 🗑️ **미사용 스크립트** | `fetch-footer.mjs`, `fetch-footer2.mjs`, `fetch-footer3.mjs`, `fetch-footer4.mjs`, `screenshot-local-footer.mjs` | Phase 1.1 삭제 |
-| 🗑️ **미사용 루트 파일** | `proxy.ts` (어디에서도 import 안 됨), `prd.backup.json` (구 프로젝트 스냅샷) | Phase 1.2 삭제 |
+| 🗑️ **아카이브 대상** | `prd.backup.json` (구 프로젝트 스냅샷 → `docs/archive/`로 이동) | Phase 1.2 이동 |
+| ⚠️ **오탐 정정** | `proxy.ts` — Next.js 16의 신규 middleware 명명 규칙(구 `middleware.ts`)으로 **인증 게이트 담당**. 삭제 금지 | 유지 |
 | 🗑️ **미사용 shadcn 컴포넌트** | `components/ui/{calendar,command,dropdown-menu,popover,sonner}.tsx` (총 954줄) | Phase 1.3 삭제 |
 | 📦 **미사용 의존성** | `react-day-picker`, `cmdk`, `next-themes` (전부 위 5개 wrapper에만 딸린 종속) | Phase 2.1 제거 |
 | 🧹 **빈 디렉토리** | `.ai-auto/wave-results/` (내용물 없음) | Phase 1.2 함께 정리 |
@@ -112,56 +113,44 @@ EOF
 
 ---
 
-### Task 1.2: 루트 정리 — proxy.ts, prd.backup.json, 빈 디렉토리
+### Task 1.2: 루트 정리 — prd.backup.json 아카이브 + 빈 디렉토리
+
+> ⚠️ **정정:** `proxy.ts`는 Next.js 16 신규 middleware 파일(구 `middleware.ts`). 로그인 인증 게이트를 담당하므로 **삭제하지 않음**.
 
 **Files:**
-- Delete: `proxy.ts`, `prd.backup.json`
-- Delete: `.ai-auto/wave-results/` (빈 디렉토리)
+- Move: `prd.backup.json` → `docs/archive/prd-2026-03-13.json`
+- Delete: `.ai-auto/wave-results/` (빈 디렉토리, 상위 `.ai-auto`도 비면 함께)
 
-**Step 1: proxy.ts 미참조 재확인**
+**Step 1: 아카이브 디렉토리 생성 + 이동**
 
 Run:
 ```bash
-grep -rn "from ['\"].*proxy['\"]" app components lib --include="*.ts" --include="*.tsx"
-grep -rn "middleware" next.config.ts app/layout.tsx 2>/dev/null
+mkdir -p docs/archive
+git mv prd.backup.json docs/archive/prd-2026-03-13.json
 ```
-Expected: 결과 없음(현재 middleware 미도입).
 
-**Step 2: prd.backup.json — 사용자 확인 필요**
-
-이 파일은 이전 프로젝트(`dggegg-materials`)의 PRD 스냅샷. 현재 `prd.json`은 별개 프로젝트(`message-template-library`)를 담고 있음.
-
-**결정 사항 사용자에게 확인:**
-- (A) 삭제 — 현재 로켓튜터 OS와 무관
-- (B) `docs/archive/prd-2026-03-13.json`으로 이동 — 히스토리 보존
-
-사용자가 (A)를 선택했다면 아래 진행. (B)면 `mv`로 이동 후 커밋.
-
-**Step 3: 삭제**
+**Step 2: 빈 디렉토리 정리**
 
 Run:
 ```bash
-rm proxy.ts prd.backup.json
 rmdir .ai-auto/wave-results 2>/dev/null || true
-# .ai-auto 자체가 비었다면 함께 정리
 rmdir .ai-auto 2>/dev/null || true
 ```
 
-**Step 4: 검증**
+**Step 3: 검증**
 
 Run: `npx tsc --noEmit && npm run build`
 Expected: 성공.
 
-**Step 5: 커밋**
+**Step 4: 커밋**
 
 ```bash
 git add -A
 git commit -m "$(cat <<'EOF'
-[chore] 미사용 루트 파일 및 빈 디렉토리 제거
+[chore] 이전 프로젝트 PRD 아카이브 및 빈 디렉토리 정리
 
-- proxy.ts: 미도입 middleware 초안, import 참조 없음
-- prd.backup.json: 이전 프로젝트 PRD 스냅샷, 현재 프로젝트와 무관
-- .ai-auto/wave-results: 빈 디렉토리
+- prd.backup.json → docs/archive/prd-2026-03-13.json (히스토리 보존)
+- .ai-auto/wave-results 빈 디렉토리 제거
 
 Co-Authored-By: Claude <noreply@anthropic.com>
 EOF
