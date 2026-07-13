@@ -15,7 +15,7 @@ import {
 } from '@/components/ui/select'
 import { Separator } from '@/components/ui/separator'
 import { createClient } from '@/lib/supabase/client'
-import { saveStudentDocsUrl, deleteStudentDocsUrl } from '@/app/actions/materials'
+import { saveStudentDocsUrl, deleteStudentDocsUrl } from '@/app/actions/student-materials'
 import { StudentProgressCard } from './student-progress-card'
 import type { Student, StudentDoc } from '@/lib/types/database'
 

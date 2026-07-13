@@ -5,7 +5,7 @@ import { RefreshCw, BookOpen } from 'lucide-react'
 import { toast } from 'sonner'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { getStudentProgress, refreshStudentProgress } from '@/app/actions/materials'
+import { getStudentProgress, refreshStudentProgress } from '@/app/actions/student-materials'
 import type { SessionSummary } from '@/lib/types/database'
 
 type Props = {
