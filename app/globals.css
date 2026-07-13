@@ -48,38 +48,39 @@
 }
 
 :root {
-  --radius: 0.75rem;
-  --background: oklch(0.97 0.008 270);
-  --foreground: oklch(0.13 0.02 260);
-  --card: oklch(1 0 0 / 72%);
-  --card-foreground: oklch(0.13 0.02 260);
-  --popover: oklch(1 0 0 / 85%);
-  --popover-foreground: oklch(0.13 0.02 260);
-  --primary: oklch(0.5 0.19 265);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.955 0.015 265);
-  --secondary-foreground: oklch(0.25 0.06 265);
-  --muted: oklch(0.955 0.008 265);
-  --muted-foreground: oklch(0.46 0.03 265);
-  --accent: oklch(0.955 0.02 265);
-  --accent-foreground: oklch(0.25 0.06 265);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.88 0.02 265 / 50%);
-  --input: oklch(0.91 0.01 265);
-  --ring: oklch(0.5 0.19 265);
-  --chart-1: oklch(0.5 0.19 265);
-  --chart-2: oklch(0.6 0.15 170);
-  --chart-3: oklch(0.65 0.2 40);
-  --chart-4: oklch(0.7 0.15 310);
-  --chart-5: oklch(0.55 0.15 140);
-  --sidebar: oklch(0.98 0.006 265 / 70%);
-  --sidebar-foreground: oklch(0.13 0.02 260);
-  --sidebar-primary: oklch(0.5 0.19 265);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.94 0.025 265);
-  --sidebar-accent-foreground: oklch(0.25 0.06 265);
-  --sidebar-border: oklch(0.88 0.02 265 / 40%);
-  --sidebar-ring: oklch(0.5 0.19 265);
+  /* 토스 스타일: 쿨그레이 배경 + 불투명 흰 카드 + 토스 블루 액센트 */
+  --radius: 0.875rem;
+  --background: oklch(0.965 0.004 255);
+  --foreground: oklch(0.17 0.015 260);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.17 0.015 260);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.17 0.015 260);
+  --primary: oklch(0.62 0.19 253);
+  --primary-foreground: oklch(0.99 0 0);
+  --secondary: oklch(0.96 0.006 255);
+  --secondary-foreground: oklch(0.3 0.04 255);
+  --muted: oklch(0.965 0.004 255);
+  --muted-foreground: oklch(0.58 0.02 255);
+  --accent: oklch(0.95 0.015 253);
+  --accent-foreground: oklch(0.4 0.12 253);
+  --destructive: oklch(0.63 0.21 18);
+  --border: oklch(0.92 0.004 255);
+  --input: oklch(0.9 0.006 255);
+  --ring: oklch(0.62 0.19 253);
+  --chart-1: oklch(0.62 0.19 253);
+  --chart-2: oklch(0.68 0.14 170);
+  --chart-3: oklch(0.72 0.18 55);
+  --chart-4: oklch(0.62 0.18 310);
+  --chart-5: oklch(0.6 0.15 140);
+  --sidebar: oklch(1 0 0);
+  --sidebar-foreground: oklch(0.17 0.015 260);
+  --sidebar-primary: oklch(0.62 0.19 253);
+  --sidebar-primary-foreground: oklch(0.99 0 0);
+  --sidebar-accent: oklch(0.95 0.015 253);
+  --sidebar-accent-foreground: oklch(0.4 0.12 253);
+  --sidebar-border: oklch(0.92 0.004 255);
+  --sidebar-ring: oklch(0.62 0.19 253);
 }
 
 .dark {
@@ -128,12 +129,7 @@
 /* Glassmorphism mesh gradient background */
 @layer base {
   .glass-mesh {
-    position: relative;
-    background:
-      radial-gradient(ellipse 60% 50% at 10% 20%, oklch(0.85 0.08 280 / 30%), transparent),
-      radial-gradient(ellipse 50% 60% at 80% 10%, oklch(0.88 0.06 265 / 25%), transparent),
-      radial-gradient(ellipse 40% 50% at 50% 80%, oklch(0.90 0.05 200 / 15%), transparent),
-      var(--background);
+    background: var(--background);
   }
   .dark .glass-mesh {
     background:
@@ -147,14 +143,11 @@
 /* Glass card utility */
 @layer utilities {
   .glass-card {
-    background: oklch(1 0 0 / 65%);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    border: 1px solid oklch(1 0 0 / 25%);
+    background: var(--card);
+    border: 1px solid var(--border);
     box-shadow:
       0 1px 2px oklch(0 0 0 / 4%),
-      0 4px 16px oklch(0 0 0 / 3%),
-      inset 0 1px 0 oklch(1 0 0 / 40%);
+      0 6px 20px oklch(0.17 0.03 260 / 5%);
   }
   .dark .glass-card {
     background: oklch(1 0 0 / 5%);
@@ -165,10 +158,8 @@
       inset 0 1px 0 oklch(1 0 0 / 5%);
   }
   .glass-subtle {
-    background: oklch(1 0 0 / 45%);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border: 1px solid oklch(1 0 0 / 18%);
+    background: var(--card);
+    border: 1px solid var(--border);
   }
   .dark .glass-subtle {
     background: oklch(1 0 0 / 3%);

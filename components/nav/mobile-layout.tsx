@@ -2,6 +2,7 @@
 
 import { useIsMobile } from '@/lib/hooks/use-mobile'
 import { Header } from './header'
+import { Sidebar } from './sidebar'
 import { BottomTabBar } from './bottom-tab-bar'
 
 export function MobileLayout({
@@ -12,18 +13,18 @@ export function MobileLayout({
   const isMobile = useIsMobile()
 
   if (!isMobile) {
-    // Desktop: top navigation only, no sidebar
+    // Desktop: left sidebar navigation
     return (
-      <div className="flex h-screen flex-col glass-mesh">
-        <Header />
-        <main className="flex-1 overflow-y-auto p-6">{children}</main>
+      <div className="flex h-screen bg-background">
+        <Sidebar />
+        <main className="flex-1 overflow-y-auto p-8">{children}</main>
       </div>
     )
   }
 
   // Mobile: header + fixed bottom tab bar (no hamburger drawer)
   return (
-    <div className="flex h-screen flex-col glass-mesh">
+    <div className="flex h-screen flex-col bg-background">
       <Header />
       <main className="flex-1 overflow-y-auto p-4 pb-[calc(4.5rem+env(safe-area-inset-bottom))]">
         {children}
