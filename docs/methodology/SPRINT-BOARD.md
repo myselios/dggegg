@@ -8,12 +8,41 @@
 
 ## 현재 상태
 
-- **현재 브랜치**: main
-- **마지막 커밋**: 9319a51 ([feat] Google Calendar 동기화 기능 추가)
-- **마지막 빌드**: ✅ 통과 (2026-02-22)
-- **마지막 E2E**: ✅ 18 passed, 5 skipped (2026-02-22)
-- **DB 마이그레이션**: 006 대기 (google_calendar_event_id, oauth_tokens 테이블)
-- **진행 중 작업**: 없음 — Sprint 5 완료
+- **현재 브랜치**: refactor/cleanup-2026-07-13 (main으로 머지 예정)
+- **마지막 커밋**: 8b00a4e ([refactor] SessionSlot 서브 컴포넌트 분리)
+- **마지막 빌드**: ✅ 통과 (2026-07-13)
+- **마지막 E2E**: ⚠️ 로컬 auth 환경 이슈로 실행 불가 (baseline에서도 동일 실패, 코드 변경과 무관)
+- **DB 마이그레이션**: 011 (test_links)까지 반영
+- **진행 중 작업**: 없음 — Sprint 6 (정리·리팩토링) 완료
+
+---
+
+## ✅ Sprint 6: 코드베이스 정리 및 리팩토링
+- **상태**: ✅ Completed
+- **기간**: 2026-07-13
+- **목표**: 미사용 코드 제거 + 400줄 초과 대형 파일 관심사 분리
+- **결과**: 파일 12개 삭제, npm 3개 제거, 대형 파일 5개 분리 → **전체 ~718줄 감소** (11,182→10,464), 400줄 초과 파일 0건
+
+| # | 파일 | 변경 내용 | 커밋 |
+|---|------|----------|------|
+| 1 | `docs/plans/2026-07-13-cleanup-refactor-plan.md` | 정리 계획서 | f227b19, 1a6bb6f |
+| 2 | `prd.backup.json` → `docs/archive/prd-2026-03-13.json` | 이전 프로젝트 PRD 아카이브 + 빈 디렉토리 정리 | 20fac96 |
+| 3 | `package.json` (Playwright 1.58→1.61.1) | Ubuntu 26.04 chromium 지원 | 33340ea |
+| 4 | `components/ui/{calendar,command,dropdown-menu,popover,sonner}.tsx` | 미사용 shadcn wrapper 5개 삭제 (790줄) | aefae83 |
+| 5 | `package.json` (react-day-picker, cmdk, next-themes) | 딸린 미사용 npm 3개 제거 | 83120a8 |
+| 6 | `components/schedule/three-week-calendar.tsx` + `lib/utils/calendar-grid.ts` + `hooks/use-calendar-dnd.ts` | 481→309줄 (pure 함수 + DnD 훅 분리) | 4b96b35 |
+| 7 | `components/students/student-csv-import-dialog.tsx` + `lib/utils/csv-parser.ts` | 425→297줄 (CSV 파서 분리) | d149d93 |
+| 8 | `app/actions/materials.ts` + `app/actions/student-materials.ts` | 360→198+166줄 (도메인 분리) | 3eac5eb |
+| 9 | `components/dashboard/lesson-stats.tsx` + `lib/utils/lesson-stats.ts` + `lib/hooks/use-lesson-stats.ts` | 339→191줄 (집계 로직 + 컴포지트 훅 분리) | 0276f7d |
+| 10 | `components/materials/lesson-materials-section.tsx` + `components/materials/session-slot.tsx` | 323→189줄 (서브 컴포넌트 분리) | 8b00a4e |
+
+### 신규 헬퍼 위치 (다음 세션 참고)
+- `lib/utils/calendar-grid.ts` — 캘린더 셀 id 인코딩, 시간 겹침, 뷰모드 그리드 CSS
+- `lib/utils/csv-parser.ts` — 학생 CSV 파서 pure 로직
+- `lib/utils/lesson-stats.ts` — 수업 통계 집계 pure 함수
+- `lib/hooks/use-lesson-stats.ts` — 대시보드 lesson-stats 컴포지트 훅
+- `components/schedule/hooks/use-calendar-dnd.ts` — 캘린더 DnD 상태·핸들러 훅
+- `app/actions/student-materials.ts` — 학생별 Google Docs 진도 관리 action
 
 ---
 
