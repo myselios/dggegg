@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+# pre-push — Push 전 필수 검증 게이트 (CLAUDE.md Step 1~3의 결정적 강제판)
+# 모델/세션과 무관하게 push 시점에 물리적으로 실행된다.
+set -uo pipefail
+
+echo "🔒 pre-push 게이트 시작 (tsc → lint → build)"
+
+echo "▶ Step 1/3: TypeScript 컴파일 검증"
+if ! npx tsc --noEmit; then
+  echo "❌ tsc 실패 — push 차단. 타입 에러를 먼저 해결하세요."
+  exit 1
+fi
+
+echo "▶ Step 2/3: ESLint 검증"
+if ! npm run lint; then
+  echo "❌ lint 실패 — push 차단."
+  exit 1
+fi
+
+echo "▶ Step 3/3: 프로덕션 빌드 검증"
+if ! npm run build; then
+  echo "❌ build 실패 — push 차단."
+  exit 1
+fi
+
+# Step 4 (E2E): 로컬 auth E2E가 baseline에서도 실패하는 알려진 이슈로 경고만.
+# 이슈 해결 후 아래 주석을 해제해 게이트로 승격할 것.
+# if ! npm run test:e2e; then echo "❌ E2E 실패 — push 차단."; exit 1; fi
+echo "⚠️  Step 4(E2E)는 알려진 로컬 auth 이슈로 게이트에서 제외 상태 (CLAUDE.md '알려진 환경 제약' 참조)"
+
+echo "✅ pre-push 게이트 통과"
+exit 0
