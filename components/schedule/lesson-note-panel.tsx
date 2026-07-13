@@ -15,6 +15,7 @@ import { Separator } from '@/components/ui/separator'
 import { getLessonNote, upsertLessonNote, getPreviousLessonNote } from '@/app/actions/lesson-notes'
 import { createScoreRecord } from '@/app/actions/scores'
 import { updateScheduleEvent, deleteScheduleEvent } from '@/app/actions/schedule'
+import { LessonReportButton } from '@/components/reports/lesson-report-button'
 import type { ScheduleEventWithStudent, LessonNote } from '@/lib/types/database'
 
 const ASSESSMENT_TYPES = ['IO mock', 'Writing', 'Listening', 'Reading', 'Quiz', 'Exam'] as const
@@ -31,9 +32,17 @@ export function LessonNotePanel({
   const [existingNote, setExistingNote] = useState<LessonNote | null>(null)
   const [previousNote, setPreviousNote] = useState<string | null>(null)
   const [showScore, setShowScore] = useState(false)
+  const [content, setContent] = useState('')
+  const [homework, setHomework] = useState('')
+  const [nextGoal, setNextGoal] = useState('')
 
   useEffect(() => {
-    getLessonNote(event.id).then(setExistingNote)
+    getLessonNote(event.id).then((note) => {
+      setExistingNote(note)
+      setContent(note?.content ?? '')
+      setHomework(note?.homework ?? '')
+      setNextGoal(note?.next_goal ?? '')
+    })
     if (event.student_id) {
       getPreviousLessonNote(event.student_id, event.start_at).then((note) => {
         if (note) setPreviousNote(note.content ?? null)
@@ -130,7 +139,8 @@ export function LessonNotePanel({
             <Textarea
               name="content"
               placeholder="오늘 수업 내용..."
-              defaultValue={existingNote?.content ?? ''}
+              value={content}
+              onChange={(e) => setContent(e.target.value)}
               rows={4}
               required
             />
@@ -141,7 +151,8 @@ export function LessonNotePanel({
             <Textarea
               name="homework"
               placeholder="숙제 내용..."
-              defaultValue={existingNote?.homework ?? ''}
+              value={homework}
+              onChange={(e) => setHomework(e.target.value)}
               rows={2}
             />
           </div>
@@ -151,7 +162,8 @@ export function LessonNotePanel({
             <Textarea
               name="next_goal"
               placeholder="다음 수업 목표..."
-              defaultValue={existingNote?.next_goal ?? ''}
+              value={nextGoal}
+              onChange={(e) => setNextGoal(e.target.value)}
               rows={2}
             />
           </div>
@@ -183,6 +195,20 @@ export function LessonNotePanel({
                 <Input name="score_comment" placeholder="선택 사항" />
               </div>
             </div>
+          )}
+
+          {event.student_id && event.students && (
+            <>
+              <Separator />
+              <LessonReportButton
+                studentId={event.student_id}
+                studentName={event.students.name_ko}
+                lessonDate={new Date(event.start_at)}
+                content={content}
+                homework={homework}
+                nextGoal={nextGoal}
+              />
+            </>
           )}
 
           <div className="flex gap-2">
