@@ -10,7 +10,7 @@ import {
   MessageSquare,
   Settings,
   LogOut,
-  Rocket,
+  GraduationCap,
   Menu,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
@@ -27,7 +27,7 @@ const iconMap = {
 } as const
 
 const navItems = [
-  { href: '/', label: 'Dashboard', icon: 'LayoutDashboard' as const },
+  { href: '/', label: '대시보드', icon: 'LayoutDashboard' as const },
   { href: '/students', label: '학생 관리', icon: 'Users' as const },
   { href: '/schedule', label: '스케줄', icon: 'Calendar' as const },
   { href: '/materials', label: '자료', icon: 'FolderOpen' as const },
@@ -45,13 +45,13 @@ export function Header({
   const pathname = usePathname()
 
   return (
-    <header className="sticky top-0 z-30 flex h-14 items-center gap-4 border-b border-white/15 bg-white/70 px-4 backdrop-blur-xl dark:bg-black/40 md:px-6">
+    <header className="border-border bg-card sticky top-0 z-30 flex h-14 items-center gap-4 border-b px-4 md:px-6">
       {/* Logo */}
-      <Link href="/" className="flex items-center gap-2 shrink-0 transition-opacity hover:opacity-80">
-        <div className="flex size-7 items-center justify-center rounded-lg bg-primary">
-          <Rocket className="size-3.5 text-primary-foreground" />
+      <Link href="/" className="flex shrink-0 items-center gap-2 transition-opacity hover:opacity-80">
+        <div className="bg-primary flex size-7 items-center justify-center rounded-lg">
+          <GraduationCap className="text-primary-foreground size-4" />
         </div>
-        <span className="text-sm font-bold tracking-tight hidden sm:inline">리아쌤</span>
+        <span className="text-sm font-extrabold tracking-tight">리아쌤 OS</span>
       </Link>
 
       {/* Mobile menu button */}
