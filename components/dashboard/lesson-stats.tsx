@@ -1,6 +1,5 @@
 'use client'
 
-import { useMemo } from 'react'
 import {
   BarChart,
   Bar,
@@ -13,125 +12,11 @@ import {
   ResponsiveContainer,
 } from 'recharts'
 import type { TooltipContentProps } from 'recharts'
-import {
-  startOfWeek,
-  endOfWeek,
-  startOfMonth,
-  endOfDay,
-  subWeeks,
-  addDays,
-  format,
-  isSameDay,
-} from 'date-fns'
-import { ko } from 'date-fns/locale'
 import { Clock, TrendingDown, TrendingUp, Minus } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { cn } from '@/lib/utils'
-import { useScheduleEvents } from '@/lib/hooks/use-schedule'
-import type { ScheduleEventWithStudent } from '@/lib/types/database'
-
-// ─── Pure helpers ────────────────────────────────────────────────────────────
-
-function calcHours(startAt: string, endAt: string): number {
-  return (new Date(endAt).getTime() - new Date(startAt).getTime()) / 3_600_000
-}
-
-function round1(n: number): number {
-  return Math.round(n * 10) / 10
-}
-
-function filterLessons(
-  events: readonly ScheduleEventWithStudent[],
-): readonly ScheduleEventWithStudent[] {
-  return events.filter((e) => e.event_type === 'lesson' && e.status === 'completed')
-}
-
-// ─── Chart data builders ─────────────────────────────────────────────────────
-
-type WeekPoint = { readonly week: string; readonly hours: number }
-type DayPoint = { readonly day: string; readonly hours: number }
-
-const WEEKDAYS = ['월', '화', '수', '목', '금', '토', '일'] as const
-
-function buildWeeklyData(
-  lessons: readonly ScheduleEventWithStudent[],
-  today: Date,
-): readonly WeekPoint[] {
-  return Array.from({ length: 8 }, (_, i) => {
-    const offset = 8 - i
-    const wStart = startOfWeek(subWeeks(today, offset), { weekStartsOn: 1 })
-    const wEnd = endOfWeek(subWeeks(today, offset), { weekStartsOn: 1 })
-    const hours = lessons
-      .filter((e) => {
-        const d = new Date(e.start_at)
-        return d >= wStart && d <= wEnd
-      })
-      .reduce((sum, e) => sum + calcHours(e.start_at, e.end_at), 0)
-    return { week: format(wStart, 'M/d', { locale: ko }), hours: round1(hours) }
-  })
-}
-
-function buildDailyData(
-  lessons: readonly ScheduleEventWithStudent[],
-  lastWeekStart: Date,
-): readonly DayPoint[] {
-  return WEEKDAYS.map((label, i) => {
-    const date = addDays(lastWeekStart, i)
-    const hours = lessons
-      .filter((e) => isSameDay(new Date(e.start_at), date))
-      .reduce((sum, e) => sum + calcHours(e.start_at, e.end_at), 0)
-    return { day: label, hours: round1(hours) }
-  })
-}
-
-// ─── Summary stats ────────────────────────────────────────────────────────────
-
-type Summary = {
-  readonly lastWeekHours: number
-  readonly lastWeekCount: number
-  readonly prevWeekHours: number
-  readonly thisMonthHours: number
-}
-
-function computeSummary(
-  lessons: readonly ScheduleEventWithStudent[],
-  today: Date,
-  lastWeekStart: Date,
-  lastWeekEnd: Date,
-): Summary {
-  const prevWeekStart = startOfWeek(subWeeks(today, 2), { weekStartsOn: 1 })
-  const prevWeekEnd = endOfWeek(subWeeks(today, 2), { weekStartsOn: 1 })
-  const thisMonthStart = startOfMonth(today)
-
-  let lastWeekHours = 0
-  let lastWeekCount = 0
-  let prevWeekHours = 0
-  let thisMonthHours = 0
-
-  for (const e of lessons) {
-    const d = new Date(e.start_at)
-    const h = calcHours(e.start_at, e.end_at)
-    if (d >= lastWeekStart && d <= lastWeekEnd) {
-      lastWeekHours += h
-      lastWeekCount += 1
-    }
-    if (d >= prevWeekStart && d <= prevWeekEnd) {
-      prevWeekHours += h
-    }
-    if (d >= thisMonthStart) {
-      thisMonthHours += h
-    }
-  }
-
-  return {
-    lastWeekHours: round1(lastWeekHours),
-    lastWeekCount,
-    prevWeekHours: round1(prevWeekHours),
-    thisMonthHours: round1(thisMonthHours),
-  }
-}
-
-// ─── Sub-components ───────────────────────────────────────────────────────────
+import { useLessonStats } from '@/lib/hooks/use-lesson-stats'
+import { round1, type DayPoint, type WeekPoint } from '@/lib/utils/lesson-stats'
 
 function TrendBadge({ current, prev }: { readonly current: number; readonly prev: number }) {
   const diff = round1(current - prev)
@@ -171,41 +56,8 @@ function DayTooltip({ active, payload, label }: TooltipContentProps<number, stri
   )
 }
 
-// ─── Main component ────────────────────────────────────────────────────────────
-
 export function LessonStats() {
-  const today = useMemo(() => new Date(), [])
-
-  const lastWeekStart = useMemo(
-    () => startOfWeek(subWeeks(today, 1), { weekStartsOn: 1 }),
-    [today],
-  )
-  const lastWeekEnd = useMemo(
-    () => endOfWeek(subWeeks(today, 1), { weekStartsOn: 1 }),
-    [today],
-  )
-
-  // Single wide fetch: 8 weeks ago → today (covers all stats)
-  const fetchStart = useMemo(
-    () => startOfWeek(subWeeks(today, 8), { weekStartsOn: 1 }).toISOString(),
-    [today],
-  )
-  const fetchEnd = useMemo(() => endOfDay(today).toISOString(), [today])
-
-  const { data: events } = useScheduleEvents(fetchStart, fetchEnd)
-
-  const lessons = useMemo(() => filterLessons(events ?? []), [events])
-  const summary = useMemo(
-    () => computeSummary(lessons, today, lastWeekStart, lastWeekEnd),
-    [lessons, today, lastWeekStart, lastWeekEnd],
-  )
-  const weeklyData = useMemo(() => buildWeeklyData(lessons, today), [lessons, today])
-  const dailyData = useMemo(
-    () => buildDailyData(lessons, lastWeekStart),
-    [lessons, lastWeekStart],
-  )
-
-  const lastWeekLabel = `${format(lastWeekStart, 'M/d')} ~ ${format(lastWeekEnd, 'M/d')}`
+  const { summary, weeklyData, dailyData, lastWeekLabel } = useLessonStats()
 
   return (
     <Card className="glass-card rounded-2xl border-none">
