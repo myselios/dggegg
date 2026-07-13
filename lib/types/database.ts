@@ -32,10 +32,14 @@ export type Enrollment = {
   readonly lesson_type: string
   readonly notes: string | null
   readonly status: 'active' | 'paused' | 'ended'
+  readonly total_sessions: number | null
+  readonly payment_note: string | null
   readonly created_at: string
 }
 
 export type EnrollmentInsert = Omit<Enrollment, 'id' | 'created_at'>
+
+export type EnrollmentUpdate = Partial<EnrollmentInsert>
 
 export type ScheduleEvent = {
   readonly id: string

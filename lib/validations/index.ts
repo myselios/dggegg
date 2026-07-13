@@ -4,3 +4,4 @@ export { scheduleEventInsertSchema, scheduleEventUpdateSchema, recurringEventSch
 export { lessonNoteInsertSchema } from './lesson-notes'
 export { scoreRecordInsertSchema } from './scores'
 export { consultationLogInsertSchema } from './consultations'
+export { enrollmentInsertSchema, enrollmentUpdateSchema } from './enrollments'

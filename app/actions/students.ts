@@ -6,7 +6,9 @@ import { requireAuth } from '@/lib/auth'
 import { studentInsertSchema, studentUpdateSchema } from '@/lib/validations'
 import type { Student, StudentInsert, StudentUpdate } from '@/lib/types/database'
 import type { ActionResult } from '@/lib/types/action-result'
-import { ZodError } from 'zod'
+import { ZodError, z } from 'zod'
+
+const studentStatusSchema = z.enum(['active', 'paused', 'ended'])
 
 export async function getStudents() {
   const supabase = await createClient()
@@ -115,6 +117,39 @@ export async function createStudentsBatch(
       return { success: false, error: e.issues.map((issue) => issue.message).join(', ') }
     }
     return { success: false, error: '학생 일괄 등록 중 오류가 발생했습니다' }
+  }
+}
+
+export async function bulkUpdateStudentStatus(
+  ids: readonly string[],
+  status: 'active' | 'paused' | 'ended'
+): Promise<ActionResult<number>> {
+  try {
+    await requireAuth()
+
+    if (ids.length === 0) {
+      return { success: false, error: '변경할 학생을 선택해주세요' }
+    }
+
+    const validatedStatus = studentStatusSchema.parse(status)
+    const supabase = await createClient()
+    const { data, error } = await supabase
+      .from('students')
+      .update({ status: validatedStatus })
+      .in('id', ids)
+      .select('id')
+
+    if (error) {
+      return { success: false, error: '학생 상태 일괄 변경에 실패했습니다' }
+    }
+
+    revalidatePath('/students')
+    return { success: true, data: data.length }
+  } catch (e) {
+    if (e instanceof ZodError) {
+      return { success: false, error: e.issues.map((issue) => issue.message).join(', ') }
+    }
+    return { success: false, error: '학생 상태 일괄 변경 중 오류가 발생했습니다' }
   }
 }
 
