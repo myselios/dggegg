@@ -24,6 +24,9 @@ const COURSE_OPTIONS = [
   { value: 'Ab initio', label: 'Ab initio' },
   { value: 'SL', label: 'SL' },
   { value: 'HL', label: 'HL' },
+  { value: 'IGCSE', label: 'IGCSE' },
+  { value: 'MYP', label: 'MYP' },
+  { value: '기타', label: '기타' },
 ] as const
 
 function countActiveFilters(filters: StudentFilters): number {

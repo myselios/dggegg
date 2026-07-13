@@ -10,7 +10,10 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
 import { StudentDeleteDialog } from './student-delete-dialog'
+import { STUDENT_STATUS } from '@/lib/constants/status-styles'
+import { cn } from '@/lib/utils'
 import type { Student } from '@/lib/types/database'
 
 export function StudentProfile({ student }: { readonly student: Student }) {
@@ -18,6 +21,7 @@ export function StudentProfile({ student }: { readonly student: Student }) {
   const [isEditing, setIsEditing] = useState(false)
 
   async function handleUpdate(formData: FormData) {
+    const weaknessRaw = formData.get('weakness_areas') as string
     const result = await updateStudent(student.id, {
       name_ko: formData.get('name_ko') as string,
       grade: (formData.get('grade') as string) || null,
@@ -25,7 +29,9 @@ export function StudentProfile({ student }: { readonly student: Student }) {
       residence: (formData.get('residence') as string) || null,
       ib_course: (formData.get('ib_course') as Student['ib_course']) || null,
       current_score: Number(formData.get('current_score')) || null,
+      weakness_areas: weaknessRaw ? weaknessRaw.split(',').map((t) => t.trim()).filter(Boolean) : null,
       contact_parent: (formData.get('contact_parent') as string) || null,
+      status: formData.get('status') as Student['status'],
       memo: (formData.get('memo') as string) || null,
     })
     if (!result.success) {
@@ -60,6 +66,7 @@ export function StudentProfile({ student }: { readonly student: Student }) {
             <InfoRow label="학년" value={student.grade} />
             <InfoRow label="거주지" value={student.residence} />
             <InfoRow label="IB 과정" value={student.ib_course} />
+            <StatusRow status={student.status} />
           </CardContent>
         </Card>
         <Card className="glass-card border-none rounded-2xl">
@@ -74,6 +81,7 @@ export function StudentProfile({ student }: { readonly student: Student }) {
           <CardContent className="grid gap-3">
             <InfoRow label="현재 점수" value={student.current_score?.toString()} />
             <InfoRow label="학부모 연락처" value={student.contact_parent} />
+            <WeaknessAreasRow areas={student.weakness_areas} />
             {student.memo && <InfoRow label="메모" value={student.memo} />}
           </CardContent>
         </Card>
@@ -124,6 +132,25 @@ export function StudentProfile({ student }: { readonly student: Student }) {
             </Select>
           </div>
           <Field label="현재 점수" name="current_score" type="number" defaultValue={student.current_score?.toString() ?? ''} />
+          <div className="flex flex-col gap-2">
+            <Label>상태</Label>
+            <Select name="status" defaultValue={student.status}>
+              <SelectTrigger><SelectValue placeholder="선택" /></SelectTrigger>
+              <SelectContent>
+                {Object.entries(STUDENT_STATUS).map(([value, config]) => (
+                  <SelectItem key={value} value={value}>{config.label}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="flex flex-col gap-2 md:col-span-2">
+            <Label>취약 영역 (콤마 구분)</Label>
+            <Input
+              name="weakness_areas"
+              placeholder="함수, 미적분"
+              defaultValue={student.weakness_areas?.join(', ') ?? ''}
+            />
+          </div>
           <div className="flex flex-col gap-2 md:col-span-2">
             <Label>메모</Label>
             <Textarea name="memo" defaultValue={student.memo ?? ''} />
@@ -139,6 +166,34 @@ function InfoRow({ label, value }: { readonly label: string; readonly value: str
     <div className="flex items-center justify-between rounded-lg border border-border/30 px-3 py-2 text-sm">
       <span className="text-muted-foreground">{label}</span>
       <span className="font-medium">{value ?? '-'}</span>
+    </div>
+  )
+}
+
+function StatusRow({ status }: { readonly status: Student['status'] }) {
+  const config = STUDENT_STATUS[status] ?? STUDENT_STATUS.active
+  return (
+    <div className="flex items-center justify-between rounded-lg border border-border/30 px-3 py-2 text-sm">
+      <span className="text-muted-foreground">상태</span>
+      <Badge variant="outline" className={cn('text-[10px] px-1.5 py-0', config.badge)}>
+        {config.label}
+      </Badge>
+    </div>
+  )
+}
+
+function WeaknessAreasRow({ areas }: { readonly areas: string[] | null }) {
+  if (!areas || areas.length === 0) {
+    return <InfoRow label="취약 영역" value={null} />
+  }
+  return (
+    <div className="flex items-center justify-between rounded-lg border border-border/30 px-3 py-2 text-sm">
+      <span className="text-muted-foreground">취약 영역</span>
+      <div className="flex flex-wrap justify-end gap-1">
+        {areas.map((area) => (
+          <Badge key={area} variant="outline" className="text-[10px] px-1.5 py-0">{area}</Badge>
+        ))}
+      </div>
     </div>
   )
 }

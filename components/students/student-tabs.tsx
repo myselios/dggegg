@@ -8,6 +8,8 @@ import { StudentProfile } from './student-profile'
 import { ConsultationLogTab } from './consultation-log-tab'
 import { LessonHistoryTab } from './lesson-history-tab'
 import { ScoreTab } from './score-tab'
+import { StudentMaterialsTab } from './student-materials-tab'
+import { EnrollmentSection } from './enrollment-section'
 import { STUDENT_STATUS } from '@/lib/constants/status-styles'
 import { cn } from '@/lib/utils'
 import type { Student } from '@/lib/types/database'
@@ -52,6 +54,7 @@ export function StudentTabs({ student }: { readonly student: Student }) {
           <TabsTrigger value="scores">성적 추이</TabsTrigger>
           <TabsTrigger value="consultations">상담 로그</TabsTrigger>
           <TabsTrigger value="materials">자료</TabsTrigger>
+          <TabsTrigger value="enrollment">수강권</TabsTrigger>
         </TabsList>
 
         <TabsContent value="profile">
@@ -67,13 +70,10 @@ export function StudentTabs({ student }: { readonly student: Student }) {
           <ConsultationLogTab studentId={student.id} />
         </TabsContent>
         <TabsContent value="materials">
-          <div className="flex flex-col items-center justify-center py-12 text-center">
-            <div className="flex size-10 items-center justify-center rounded-full bg-muted">
-              <User className="size-5 text-muted-foreground/50" />
-            </div>
-            <p className="mt-3 text-sm font-medium text-muted-foreground">자료가 없습니다</p>
-            <p className="mt-1 text-xs text-muted-foreground/60">학생 관련 자료가 여기에 표시됩니다</p>
-          </div>
+          <StudentMaterialsTab studentId={student.id} studentName={student.name_ko} />
+        </TabsContent>
+        <TabsContent value="enrollment">
+          <EnrollmentSection studentId={student.id} />
         </TabsContent>
       </Tabs>
     </div>
