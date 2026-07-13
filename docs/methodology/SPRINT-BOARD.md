@@ -8,12 +8,37 @@
 
 ## 현재 상태
 
-- **현재 브랜치**: refactor/cleanup-2026-07-13 (main으로 머지 예정)
-- **마지막 커밋**: 8b00a4e ([refactor] SessionSlot 서브 컴포넌트 분리)
-- **마지막 빌드**: ✅ 통과 (2026-07-13)
+- **현재 브랜치**: main
+- **마지막 커밋**: 4be8779 ([feat] 대시보드 bento grid 리디자인)
+- **마지막 빌드**: ✅ 통과 (2026-07-13, Sprint 7 전체)
 - **마지막 E2E**: ⚠️ 로컬 auth 환경 이슈로 실행 불가 (baseline에서도 동일 실패, 코드 변경과 무관)
-- **DB 마이그레이션**: 011 (test_links)까지 반영
-- **진행 중 작업**: 없음 — Sprint 6 (정리·리팩토링) 완료
+- **DB 마이그레이션**: 012 (enrollment total_sessions/payment_note)까지 작성 — **⚠️ 012는 프로덕션 Supabase SQL Editor에서 수동 적용 필요**
+- **진행 중 작업**: 없음 — Sprint 7 (스프레드시트 대체 + 1인 강사 특화) 완료
+
+---
+
+## ✅ Sprint 7: 스프레드시트 대체 UX + 1인 강사 특화 기능
+- **상태**: ✅ Completed
+- **기간**: 2026-07-13
+- **목표**: "시트가 더 편하다"는 주 사용자를 위해 입력 비용 제거 + 시트가 못 주는 가치 추가 (근거: `docs/plans/2026-07-13-product-improvement-proposal.md`)
+- **범위 제외**: 다크모드 (사용자 결정)
+
+| # | 기능 | 커밋 |
+|---|------|------|
+| 1 | 탭 전환 지연 해소 — force-dynamic 제거·정적 셸화 + loading 스켈레톤 + 대시보드 병렬 로드 | 99f4870 |
+| 2 | 학생 일괄 상태 변경 + Enrollment 백엔드 (migration 012) | 3cd62fe |
+| 3 | 반복 수업 생성 UI (기존 createRecurringEvents 연결, B13 일부) | df1e24e |
+| 4 | 학생 표 모드 — 시트형 테이블·정렬·일괄 변경·CSV 내보내기 | 86b43f9 |
+| 5 | 대시보드 원탭 수업 마감 (완료✓ + 인라인 노트·점수) | 2692fab |
+| 6 | 학부모 리포트 원클릭 복사 (템플릿 치환 → 클립보드) | 84c2cbc |
+| 7 | 모바일 하단 탭 바 + PWA 설치 (manifest·아이콘) | 83bcde5 |
+| 8 | 수강권(회차·정산) UI — B14 완료 | 9f7248d |
+| 9 | 학생 상세 잔손질 — 자료 탭 연결·수강권 탭·필터/상태/취약영역 편집 | c67522b |
+| 10 | 대시보드 bento grid 리디자인 (카운트업·hover lift) | 4be8779 |
+
+### Sprint 7 참고
+- E2E spec 6개 신규 작성(recurring-events, student-table, quick-complete, lesson-report, enrollment 등) — 로컬 auth 이슈로 미실행, 이슈 해결 후 일괄 실행 필요
+- `.githooks/pre-push`가 tsc/lint/build를 push 시점에 강제 (73e4fae)
 
 ---
 
@@ -188,8 +213,8 @@
 | # | 기능 | 담당 | 상태 |
 |---|------|------|------|
 | B12 | 월간 뷰 전환 | frontend-dev | ⬜ 미시작 |
-| B13 | 반복 수업 일괄 수정 | frontend-dev + backend-dev | ⬜ 미시작 |
-| B14 | Enrollment 관리 UI | frontend-dev + backend-dev | ⬜ 미시작 |
+| B13 | 반복 수업 일괄 수정 | frontend-dev + backend-dev | 🔶 부분 완료 (생성 UI는 Sprint 7에서 완료, 일괄 수정 미구현) |
+| B14 | Enrollment 관리 UI | frontend-dev + backend-dev | ✅ 완료 (Sprint 7) |
 
 ---
 
