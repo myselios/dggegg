@@ -1,27 +1,46 @@
 'use client'
 
 import { useDraggable } from '@dnd-kit/core'
-import { AlertTriangle, Check } from 'lucide-react'
+import { AlertTriangle, Check, Ban } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 import type { ScheduleEventWithStudent } from '@/lib/types/database'
 
-/** Left border color by course */
-const borderColors: Record<string, string> = {
-  'Ab initio': 'border-l-green-500 dark:border-l-green-400',
-  'SL': 'border-l-blue-500 dark:border-l-blue-400',
-  'HL': 'border-l-purple-500 dark:border-l-purple-400',
+type BlockStyle = {
+  readonly border: string
+  readonly content: string
 }
 
-/** Content area background + text */
-const contentColors: Record<string, string> = {
-  'Ab initio': 'bg-green-100/80 text-green-900 dark:bg-green-900/60 dark:text-green-100',
-  'SL': 'bg-blue-100/80 text-blue-900 dark:bg-blue-900/60 dark:text-blue-100',
-  'HL': 'bg-purple-100/80 text-purple-900 dark:bg-purple-900/60 dark:text-purple-100',
+/** Status-driven visual language: 예정=블루, 완료=초록, 취소/노쇼=회색, 메모=앰버 */
+const SCHEDULED_STYLE: BlockStyle = {
+  border: 'border-l-primary',
+  content: 'bg-accent text-accent-foreground',
+}
+const COMPLETED_STYLE: BlockStyle = {
+  border: 'border-l-emerald-500',
+  content: 'bg-emerald-50 text-emerald-800',
+}
+const INACTIVE_STYLE: BlockStyle = {
+  border: 'border-l-slate-400',
+  content: 'bg-slate-100 text-slate-500',
+}
+const MEMO_STYLE: BlockStyle = {
+  border: 'border-l-amber-500',
+  content: 'bg-amber-100 text-amber-900',
 }
 
-const completedBorderColor = 'border-l-emerald-500 dark:border-l-emerald-400'
-const completedContentColor = 'bg-emerald-50/80 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-200'
+function resolveStyle(event: Pick<ScheduleEventWithStudent, 'event_type' | 'student_id' | 'title' | 'status'>): BlockStyle {
+  const isMemo = event.event_type === 'memo' || (!event.student_id && event.title)
+  if (isMemo) return MEMO_STYLE
+  if (event.status === 'cancelled' || event.status === 'no_show') return INACTIVE_STYLE
+  if (event.status === 'completed') return COMPLETED_STYLE
+  return SCHEDULED_STYLE
+}
+
+const statusLabel: Record<string, string> = {
+  cancelled: '취소',
+  no_show: '노쇼',
+}
 
 export function CalendarEventBlock({
   event,
@@ -47,30 +66,21 @@ export function CalendarEventBlock({
   const topPx = offsetMinutes * pxPerMinute
 
   const isMemo = event.event_type === 'memo' || (!event.student_id && event.title)
-  const course = event.students?.ib_course ?? ''
   const isCompleted = event.status === 'completed'
-
-  const borderColor = isMemo
-    ? 'border-l-yellow-500 dark:border-l-yellow-400'
-    : isCompleted
-      ? completedBorderColor
-      : (borderColors[course] ?? 'border-l-gray-400 dark:border-l-gray-500')
-  const contentColor = isMemo
-    ? 'bg-yellow-100/80 text-yellow-900 dark:bg-yellow-900/60 dark:text-yellow-100'
-    : isCompleted
-      ? completedContentColor
-      : (contentColors[course] ?? 'bg-gray-100/80 text-gray-900 dark:bg-gray-800/60 dark:text-gray-100')
+  const isInactive = event.status === 'cancelled' || event.status === 'no_show'
+  const style = resolveStyle(event)
 
   return (
     <div
       ref={setNodeRef}
       className={cn(
-        'absolute left-0.5 right-0.5 flex rounded-sm text-left text-xs overflow-hidden border-l-[3px]',
-        borderColor,
-        contentColor,
+        'absolute left-0.5 right-0.5 flex rounded-md text-left text-xs overflow-hidden border-l-[3px] shadow-sm',
+        style.border,
+        style.content,
         'transition-shadow hover:shadow-md',
         isDragging && 'opacity-30',
-        hasConflict && 'ring-2 ring-red-500 dark:ring-red-400'
+        isInactive && 'opacity-75',
+        hasConflict && 'ring-2 ring-red-500'
       )}
       style={{ top: `${topPx}px`, height: `${heightPx}px` }}
       data-testid="event-block"
@@ -78,7 +88,7 @@ export function CalendarEventBlock({
       {/* LEFT: Click zone → opens popup */}
       <div
         data-testid="event-click-bar"
-        className="flex-1 min-w-0 cursor-pointer px-1 py-0.5"
+        className="flex-1 min-w-0 cursor-pointer px-1.5 py-0.5"
         onClick={(e) => {
           e.stopPropagation()
           onClick()
@@ -87,12 +97,18 @@ export function CalendarEventBlock({
         <div className="pointer-events-none h-full overflow-hidden">
           <div className="flex items-start gap-0.5 min-w-0">
             {hasConflict && (
-              <AlertTriangle className="mt-0.5 size-2.5 shrink-0 text-red-600 dark:text-red-400" />
+              <AlertTriangle className="mt-0.5 size-2.5 shrink-0 text-red-600" />
             )}
             {isCompleted && (
-              <Check className="mt-0.5 size-2.5 shrink-0 text-emerald-600 dark:text-emerald-400" />
+              <Check className="mt-0.5 size-2.5 shrink-0 text-emerald-600" />
             )}
-            <span className="font-semibold break-words line-clamp-3 leading-tight text-[11px]">
+            {isInactive && (
+              <Ban className="mt-0.5 size-2.5 shrink-0 text-slate-500" />
+            )}
+            <span className={cn(
+              'font-semibold break-words line-clamp-3 leading-tight text-[11px]',
+              isInactive && 'line-through decoration-slate-400'
+            )}>
               {isMemo
                 ? event.title
                 : event.title
@@ -100,15 +116,17 @@ export function CalendarEventBlock({
                   : event.students?.name_ko}
             </span>
           </div>
-          {event.template_type && (
+          {isInactive ? (
+            <div className="text-[9px] leading-tight opacity-70">{statusLabel[event.status]}</div>
+          ) : event.template_type ? (
             <div className="text-[9px] leading-tight opacity-60">{event.template_type}</div>
-          )}
+          ) : null}
         </div>
       </div>
 
       {/* RIGHT: Drag handle */}
       <div
-        className="flex w-4 shrink-0 cursor-grab items-center justify-center border-l border-black/5 text-current/20 hover:text-current/50 active:cursor-grabbing dark:border-white/10"
+        className="flex w-4 shrink-0 cursor-grab items-center justify-center border-l border-black/5 text-current/20 hover:text-current/50 active:cursor-grabbing"
         style={{ touchAction: 'none' }}
         {...listeners}
         {...attributes}
@@ -133,18 +151,12 @@ export function CalendarEventBlockOverlay({
   readonly event: ScheduleEventWithStudent
 }) {
   const isMemo = event.event_type === 'memo' || (!event.student_id && event.title)
-  const course = event.students?.ib_course ?? ''
-  const borderColor = isMemo
-    ? 'border-l-yellow-500'
-    : (borderColors[course] ?? 'border-l-gray-400')
-  const contentColor = isMemo
-    ? 'bg-yellow-100 text-yellow-900 dark:bg-yellow-900 dark:text-yellow-100'
-    : (contentColors[course] ?? 'bg-gray-100 text-gray-900 dark:bg-gray-800 dark:text-gray-100')
+  const style = resolveStyle(event)
 
   return (
     <div className={cn(
-      'flex w-40 rounded-sm text-left text-xs shadow-lg rotate-2 overflow-hidden border-l-[3px]',
-      borderColor, contentColor
+      'flex w-40 rounded-md text-left text-xs shadow-lg rotate-2 overflow-hidden border-l-[3px]',
+      style.border, style.content
     )}>
       <div className="flex-1 px-1.5 py-1">
         <div className="font-semibold truncate">

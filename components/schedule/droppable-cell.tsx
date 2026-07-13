@@ -32,9 +32,9 @@ export function DroppableCell({
   return (
     <div
       className={cn(
-        'relative border-l cursor-pointer hover:bg-muted/50 transition-colors',
+        'relative border-l border-border/70 cursor-pointer hover:bg-accent/40 transition-colors',
         compact ? 'h-12' : 'h-[120px]',
-        isToday && 'bg-primary/10',
+        isToday && 'bg-primary/[0.06]',
         isWeekBoundary && 'border-l-2 border-l-primary/30',
       )}
       data-testid="droppable-cell"
@@ -46,8 +46,8 @@ export function DroppableCell({
         className={cn(
           'absolute inset-x-0 top-0 pointer-events-none transition-colors',
           compact ? 'h-[24px]' : 'h-[60px]',
-          isOverTop && !topConflict && 'bg-primary/20 ring-2 ring-primary/40 ring-inset',
-          isOverTop && topConflict && 'bg-red-100 ring-2 ring-red-400 ring-inset dark:bg-red-950/50 dark:ring-red-500'
+          isOverTop && !topConflict && 'bg-primary/15 ring-2 ring-primary/50 ring-inset',
+          isOverTop && topConflict && 'bg-red-100 ring-2 ring-red-400 ring-inset'
         )}
       />
       <div
@@ -55,8 +55,8 @@ export function DroppableCell({
         className={cn(
           'absolute inset-x-0 pointer-events-none transition-colors',
           compact ? 'top-[24px] h-[24px]' : 'top-[60px] h-[60px]',
-          isOverBot && !botConflict && 'bg-primary/20 ring-2 ring-primary/40 ring-inset',
-          isOverBot && botConflict && 'bg-red-100 ring-2 ring-red-400 ring-inset dark:bg-red-950/50 dark:ring-red-500'
+          isOverBot && !botConflict && 'bg-primary/15 ring-2 ring-primary/50 ring-inset',
+          isOverBot && botConflict && 'bg-red-100 ring-2 ring-red-400 ring-inset'
         )}
       />
 

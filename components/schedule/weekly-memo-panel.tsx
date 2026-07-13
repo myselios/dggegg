@@ -79,7 +79,7 @@ export function WeeklyMemoPanel({ baseDate }: { readonly baseDate: Date }) {
           {saving ? (
             <span className="animate-pulse">저장 중…</span>
           ) : saved ? (
-            <span className="flex items-center gap-0.5 text-green-500">
+            <span className="flex items-center gap-0.5 text-emerald-600">
               <Check className="w-3 h-3" /> 저장됨
             </span>
           ) : (

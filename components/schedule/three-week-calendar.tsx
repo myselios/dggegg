@@ -151,12 +151,12 @@ export function ThreeWeekCalendar({
         onDragEnd={dnd.onDragEnd}
         onDragCancel={dnd.onDragCancel}
       >
-        <div ref={gridRef} className="glass-card relative overflow-auto max-h-[calc(100vh-220px)] flex-1 rounded-2xl border-none" data-testid="calendar-grid">
+        <div ref={gridRef} className="glass-card relative overflow-auto max-h-[calc(100vh-220px)] flex-1 rounded-2xl" data-testid="calendar-grid">
           <div>
             {/* Day headers - sticky top */}
-            <div className={cn('sticky top-0 z-30 grid bg-white/95 dark:bg-black/60 backdrop-blur-xl border-b border-border/50 shadow-sm', gridCols)}>
+            <div className={cn('sticky top-0 z-30 grid bg-card border-b border-border shadow-sm', gridCols)}>
               {/* Time column spacer */}
-              <div className="sticky left-0 z-40 bg-white/95 dark:bg-black/60 backdrop-blur-xl" />
+              <div className="sticky left-0 z-40 bg-card" />
 
               {/* Day name + date row */}
               {allDays.map((day, i) => (
@@ -164,12 +164,12 @@ export function ThreeWeekCalendar({
                   key={i}
                   className={cn(
                     'border-l border-b px-1 py-1.5 text-center',
-                    isToday(day) ? 'bg-primary/15 font-bold border-t-2 border-t-primary' : 'border-t-2 border-t-transparent'
+                    isToday(day) ? 'bg-primary/[0.08] font-bold border-t-2 border-t-primary' : 'border-t-2 border-t-transparent'
                   )}
                 >
                   <div className={cn(
                     'text-[10px] leading-none',
-                    day.getDay() === 0 ? 'text-red-500 font-semibold' : day.getDay() === 6 ? 'text-blue-500 font-semibold' : 'text-muted-foreground'
+                    day.getDay() === 0 ? 'text-destructive font-semibold' : day.getDay() === 6 ? 'text-primary font-semibold' : 'text-muted-foreground'
                   )}>{format(day, 'EEE', { locale: ko })}</div>
                   <div className={cn(
                     'mt-0.5 text-sm font-semibold leading-none',

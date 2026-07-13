@@ -178,9 +178,9 @@ export function EventCreateDialog({
 
   return (
     <Dialog open onOpenChange={onClose}>
-      <DialogContent className="max-w-md">
+      <DialogContent className="max-w-md rounded-2xl p-6 gap-5">
         <DialogHeader>
-          <DialogTitle className="text-base font-semibold tracking-tight">
+          <DialogTitle className="text-lg font-bold tracking-tight">
             수업 추가 — {format(date, 'M월 d일 (EEE)', { locale: ko })}
           </DialogTitle>
         </DialogHeader>
@@ -190,7 +190,6 @@ export function EventCreateDialog({
             <Button
               type="button"
               variant={eventType === 'lesson' ? 'default' : 'outline'}
-              size="sm"
               onClick={() => setEventType('lesson')}
               className="flex-1"
             >
@@ -199,7 +198,6 @@ export function EventCreateDialog({
             <Button
               type="button"
               variant={eventType === 'memo' ? 'default' : 'outline'}
-              size="sm"
               onClick={() => setEventType('memo')}
               className="flex-1"
             >
@@ -282,14 +280,14 @@ export function EventCreateDialog({
 
           {/* Conflict warning */}
           {conflicts.length > 0 && (
-            <div className="flex items-start gap-2 rounded-md border border-amber-300 bg-amber-50 p-3 dark:border-amber-700 dark:bg-amber-950/50">
-              <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-amber-600 dark:text-amber-400" />
+            <div className="flex items-start gap-2 rounded-xl border-2 border-amber-400 bg-amber-50 p-3.5 shadow-sm" data-testid="time-conflict-warning">
+              <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-amber-600" />
               <div className="flex flex-col gap-1 text-sm">
-                <span className="font-medium text-amber-800 dark:text-amber-300">
+                <span className="font-bold text-amber-800">
                   시간 충돌 ({conflicts.length}건)
                 </span>
                 {conflicts.map((c) => (
-                  <span key={c.id} className="text-amber-700 dark:text-amber-400">
+                  <span key={c.id} className="text-amber-700">
                     {c.students?.name_ko} {formatTime(c.start_at)}-{formatTime(c.end_at)}
                   </span>
                 ))}
@@ -327,7 +325,7 @@ export function EventCreateDialog({
               />
             </>
           )}
-          <Button type="submit" className="w-full" disabled={submitting}>
+          <Button type="submit" size="lg" className="w-full font-bold" disabled={submitting}>
             {submitting
               ? '추가 중...'
               : eventType === 'memo'

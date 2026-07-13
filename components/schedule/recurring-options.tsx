@@ -1,6 +1,7 @@
 'use client'
 
 import { Repeat } from 'lucide-react'
+import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -35,8 +36,11 @@ export function RecurringOptions({
   minDate,
 }: Props) {
   return (
-    <div className="flex flex-col gap-3 rounded-md border border-input p-3">
-      <label className="flex cursor-pointer items-center gap-2 text-sm font-medium">
+    <div className={cn(
+      'flex flex-col gap-3 rounded-xl border p-3.5 transition-colors',
+      isRecurring ? 'border-primary/40 bg-accent/40' : 'border-border bg-muted/30'
+    )}>
+      <label className="flex cursor-pointer items-center gap-2 text-sm font-semibold">
         <input
           type="checkbox"
           checked={isRecurring}
@@ -44,7 +48,7 @@ export function RecurringOptions({
           className="h-4 w-4 rounded border-input accent-primary"
           data-testid="recurring-checkbox"
         />
-        <Repeat className="h-4 w-4 text-muted-foreground" />
+        <Repeat className="h-4 w-4 text-primary" />
         매주 반복
       </label>
 

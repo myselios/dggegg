@@ -66,10 +66,10 @@ export function MemoEditDialog({
 
   return (
     <Dialog open onOpenChange={onClose}>
-      <DialogContent className="max-w-sm">
+      <DialogContent className="max-w-sm rounded-2xl p-6 gap-5">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2 text-base font-semibold tracking-tight">
-            <span className="inline-block size-3 rounded-sm bg-yellow-500" />
+          <DialogTitle className="flex items-center gap-2 text-lg font-bold tracking-tight">
+            <span className="inline-block size-3 rounded-sm bg-amber-500" />
             {isEditing ? '메모 수정' : (event.title ?? '메모')}
           </DialogTitle>
         </DialogHeader>
@@ -89,7 +89,8 @@ export function MemoEditDialog({
             />
             <div className="flex gap-2">
               <Button
-                className="flex-1"
+                size="lg"
+                className="flex-1 font-bold"
                 onClick={handleSave}
                 disabled={saving || !editTitle.trim()}
               >
