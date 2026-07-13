@@ -40,10 +40,10 @@ export function ScoreTab({ studentId }: { readonly studentId: string }) {
             <CardContent className="flex items-center justify-between p-4">
               <div className="flex items-center gap-3">
                 <span className="text-xs text-muted-foreground tabular-nums">{format(new Date(score.date), 'M/d')}</span>
-                <Badge variant="outline" className="text-[10px]">{score.assessment_type}</Badge>
+                <Badge variant="outline" className="rounded-full px-2 py-0.5 text-[11px] font-semibold">{score.assessment_type}</Badge>
               </div>
               <div className="flex items-baseline gap-1">
-                <span className="text-lg font-bold tabular-nums">{score.score}</span>
+                <span className="text-xl font-bold tabular-nums text-primary">{score.score}</span>
                 <span className="text-xs text-muted-foreground">/ {score.max_score}</span>
               </div>
             </CardContent>

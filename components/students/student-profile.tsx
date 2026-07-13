@@ -79,7 +79,7 @@ export function StudentProfile({ student }: { readonly student: Student }) {
             </CardTitle>
           </CardHeader>
           <CardContent className="grid gap-3">
-            <InfoRow label="현재 점수" value={student.current_score?.toString()} />
+            <ScoreRow score={student.current_score} />
             <InfoRow label="학부모 연락처" value={student.contact_parent} />
             <WeaknessAreasRow areas={student.weakness_areas} />
             {student.memo && <InfoRow label="메모" value={student.memo} />}
@@ -163,9 +163,18 @@ export function StudentProfile({ student }: { readonly student: Student }) {
 
 function InfoRow({ label, value }: { readonly label: string; readonly value: string | null | undefined }) {
   return (
-    <div className="flex items-center justify-between rounded-lg border border-border/30 px-3 py-2 text-sm">
+    <div className="flex items-center justify-between rounded-lg border border-border/60 bg-muted/20 px-3.5 py-2.5 text-sm">
       <span className="text-muted-foreground">{label}</span>
-      <span className="font-medium">{value ?? '-'}</span>
+      <span className="font-semibold">{value ?? '-'}</span>
+    </div>
+  )
+}
+
+function ScoreRow({ score }: { readonly score: number | null }) {
+  return (
+    <div className="flex items-center justify-between rounded-lg border border-border/60 bg-muted/20 px-3.5 py-2.5 text-sm">
+      <span className="text-muted-foreground">현재 점수</span>
+      <span className="text-lg font-bold tabular-nums text-primary">{score ?? '-'}</span>
     </div>
   )
 }
@@ -173,9 +182,9 @@ function InfoRow({ label, value }: { readonly label: string; readonly value: str
 function StatusRow({ status }: { readonly status: Student['status'] }) {
   const config = STUDENT_STATUS[status] ?? STUDENT_STATUS.active
   return (
-    <div className="flex items-center justify-between rounded-lg border border-border/30 px-3 py-2 text-sm">
+    <div className="flex items-center justify-between rounded-lg border border-border/60 bg-muted/20 px-3.5 py-2.5 text-sm">
       <span className="text-muted-foreground">상태</span>
-      <Badge variant="outline" className={cn('text-[10px] px-1.5 py-0', config.badge)}>
+      <Badge variant="outline" className={cn('rounded-full text-xs px-2 py-0.5 font-semibold', config.badge)}>
         {config.label}
       </Badge>
     </div>
@@ -187,11 +196,11 @@ function WeaknessAreasRow({ areas }: { readonly areas: string[] | null }) {
     return <InfoRow label="취약 영역" value={null} />
   }
   return (
-    <div className="flex items-center justify-between rounded-lg border border-border/30 px-3 py-2 text-sm">
+    <div className="flex items-center justify-between rounded-lg border border-border/60 bg-muted/20 px-3.5 py-2.5 text-sm">
       <span className="text-muted-foreground">취약 영역</span>
       <div className="flex flex-wrap justify-end gap-1">
         {areas.map((area) => (
-          <Badge key={area} variant="outline" className="text-[10px] px-1.5 py-0">{area}</Badge>
+          <Badge key={area} variant="outline" className="rounded-full text-[10px] px-2 py-0.5">{area}</Badge>
         ))}
       </div>
     </div>

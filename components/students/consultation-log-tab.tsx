@@ -122,7 +122,7 @@ export function ConsultationLogTab({ studentId }: { readonly studentId: string }
                   <div className="flex items-center gap-2">
                     <Badge
                       variant="outline"
-                      className={cn('text-[10px]', typeConfig.badge)}
+                      className={cn('rounded-full px-2 py-0.5 text-[11px] font-semibold', typeConfig.badge)}
                     >
                       {typeConfig.label}
                     </Badge>

@@ -29,21 +29,21 @@ export function StudentTabs({ student }: { readonly student: Student }) {
         </Link>
       </div>
 
-      <div className="flex items-center gap-3">
-        <div className="flex size-10 items-center justify-center rounded-xl bg-primary/10">
-          <User className="size-5 text-primary" />
+      <div className="flex items-center gap-4">
+        <div className="flex size-12 items-center justify-center rounded-2xl bg-primary/10">
+          <User className="size-6 text-primary" />
         </div>
         <div>
-          <h2 className="text-xl font-bold tracking-tight">{student.name_ko}</h2>
-          <div className="flex items-center gap-2 mt-0.5">
-            <span className="text-xs text-muted-foreground">{student.school}</span>
+          <div className="flex items-center gap-2.5">
+            <h2 className="text-2xl font-bold tracking-tight">{student.name_ko}</h2>
             <Badge
               variant="outline"
-              className={cn('text-[10px] px-1.5 py-0', statusConfig.badge)}
+              className={cn('rounded-full px-2.5 py-0.5 text-xs font-semibold', statusConfig.badge)}
             >
               {statusConfig.label}
             </Badge>
           </div>
+          <span className="text-sm text-muted-foreground">{student.school}</span>
         </div>
       </div>
 

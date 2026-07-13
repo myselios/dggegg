@@ -88,14 +88,14 @@ export function EnrollmentCard({ enrollment, completedSessions, onUpdate, onDele
         <div className="flex items-start justify-between">
           <div className="flex flex-col gap-1">
             <div className="flex items-center gap-2">
-              <span className="text-sm font-medium">{enrollment.lesson_type}</span>
-              <Badge variant="outline" className={cn('text-[10px] px-1.5 py-0', statusConfig.badge)}>
+              <span className="text-sm font-semibold">{enrollment.lesson_type}</span>
+              <Badge variant="outline" className={cn('rounded-full text-[11px] px-2 py-0.5 font-semibold', statusConfig.badge)}>
                 {statusConfig.label}
               </Badge>
               {alertLevel === 'urgent' && (
                 <Badge
                   variant="outline"
-                  className="text-[10px] px-1.5 py-0 border-amber-200 text-amber-700 bg-amber-50"
+                  className="rounded-full text-[11px] px-2 py-0.5 font-semibold border-amber-200 text-amber-700 bg-amber-50"
                   data-testid="payment-alert-badge"
                 >
                   정산 임박
@@ -104,7 +104,7 @@ export function EnrollmentCard({ enrollment, completedSessions, onUpdate, onDele
               {alertLevel === 'due' && (
                 <Badge
                   variant="outline"
-                  className="text-[10px] px-1.5 py-0 border-red-200 text-red-700 bg-red-50"
+                  className="rounded-full text-[11px] px-2 py-0.5 font-semibold border-red-200 text-red-700 bg-red-50"
                   data-testid="payment-alert-badge"
                 >
                   정산 필요
@@ -134,17 +134,20 @@ export function EnrollmentCard({ enrollment, completedSessions, onUpdate, onDele
         </div>
 
         {completedSessions !== null && (
-          <div className="flex flex-col gap-1.5" data-testid="enrollment-progress">
-            <div className="flex items-center justify-between text-xs text-muted-foreground">
-              <span>
+          <div className="flex flex-col gap-2" data-testid="enrollment-progress">
+            <div className="flex items-end justify-between">
+              <span className="text-sm text-muted-foreground">
+                <span className="text-xl font-bold tabular-nums text-foreground">{completedSessions}</span>
                 {enrollment.total_sessions !== null
-                  ? `${completedSessions} / ${enrollment.total_sessions}회 진행`
-                  : `${completedSessions}회 진행 (무제한)`}
+                  ? ` / ${enrollment.total_sessions}회 진행`
+                  : `회 진행 (무제한)`}
               </span>
-              {progressPercent !== null && <span className="tabular-nums">{progressPercent}%</span>}
+              {progressPercent !== null && (
+                <span className="text-sm font-semibold tabular-nums text-primary">{progressPercent}%</span>
+              )}
             </div>
             {progressPercent !== null && (
-              <div className="h-2 w-full overflow-hidden rounded-full bg-muted">
+              <div className="h-2.5 w-full overflow-hidden rounded-full bg-muted">
                 <div
                   className={cn(
                     'h-full rounded-full transition-all',

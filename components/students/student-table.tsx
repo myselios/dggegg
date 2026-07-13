@@ -43,28 +43,31 @@ function SortableHeader({
   label,
   active,
   direction,
+  align = 'left',
   onClick,
 }: {
   readonly label: string
   readonly active: boolean
   readonly direction: SortDirection
+  readonly align?: 'left' | 'right'
   readonly onClick: () => void
 }) {
   const Icon = active ? (direction === 'asc' ? ArrowUp : ArrowDown) : ArrowUpDown
 
   return (
-    <th className="px-3 py-2.5 text-left font-medium">
+    <th className={cn('px-3 py-3', align === 'right' ? 'text-right' : 'text-left')}>
       <button
         type="button"
         onClick={onClick}
         className={cn(
-          'flex items-center gap-1 transition-colors hover:text-foreground',
-          active ? 'text-foreground' : 'text-muted-foreground',
+          'inline-flex items-center gap-1 text-xs font-semibold tracking-wide text-muted-foreground transition-colors hover:text-foreground',
+          align === 'right' && 'flex-row-reverse',
+          active && 'text-foreground',
         )}
         data-testid={`sort-header-${label}`}
       >
         {label}
-        <Icon className="size-3" />
+        <Icon className={cn('size-3', active ? 'text-primary' : 'text-muted-foreground/60')} />
       </button>
     </th>
   )
@@ -139,11 +142,14 @@ export function StudentTable({ students }: { readonly students: readonly Student
         />
       )}
 
-      <div className="overflow-x-auto rounded-xl border" data-testid="student-table-container">
+      <div
+        className="overflow-hidden overflow-x-auto rounded-xl border bg-card shadow-sm"
+        data-testid="student-table-container"
+      >
         <table className="w-full min-w-[720px] text-sm">
           <thead>
-            <tr className="border-b bg-muted/50">
-              <th className="w-10 px-3 py-2.5 text-left">
+            <tr className="border-b bg-muted/40">
+              <th className="w-10 px-3 py-3 text-left">
                 <input
                   type="checkbox"
                   checked={allSelected}
@@ -162,6 +168,7 @@ export function StudentTable({ students }: { readonly students: readonly Student
                   label={col.label}
                   active={sortColumn === col.key}
                   direction={sortDirection}
+                  align={col.key === 'current_score' ? 'right' : 'left'}
                   onClick={() => handleSort(col.key)}
                 />
               ))}

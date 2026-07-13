@@ -6,7 +6,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { cn } from '@/lib/utils'
-import { IB_COURSE_STYLES } from '@/lib/constants/status-styles'
+import { IB_COURSE_STYLES, STUDENT_STATUS } from '@/lib/constants/status-styles'
 import { StudentDeleteDialog } from './student-delete-dialog'
 import type { Student } from '@/lib/types/database'
 
@@ -37,14 +37,17 @@ export function StudentCard({ student }: { readonly student: Student }) {
   const avatarColor = getAvatarColor(student.name_ko)
   const initials = getInitials(student.name_ko)
   const course = student.ib_course ? IB_COURSE_STYLES[student.ib_course] : null
+  const status = STUDENT_STATUS[student.status]
 
   return (
     <div className="group/card relative">
       <Card
         className={cn(
-          'glass-card border-none py-0 rounded-xl transition-all duration-200 cursor-pointer',
+          'glass-card overflow-hidden border-none border-l-4 py-0 rounded-xl transition-all duration-200 cursor-pointer',
           'hover:-translate-y-0.5 hover:shadow-lg hover:shadow-primary/8',
+          !student.color && 'border-l-transparent',
         )}
+        style={student.color ? { borderLeftColor: student.color } : undefined}
         onClick={() => router.push(`/students/${student.id}`)}
       >
         <CardContent className="flex items-start gap-3 p-3.5">
@@ -61,7 +64,7 @@ export function StudentCard({ student }: { readonly student: Student }) {
                 <Badge
                   variant="outline"
                   className={cn(
-                    'shrink-0 border px-2 py-0 text-[10px] font-semibold tracking-wide',
+                    'shrink-0 rounded-full border px-2 py-0 text-[10px] font-semibold tracking-wide',
                     course.className,
                   )}
                 >
@@ -79,6 +82,13 @@ export function StudentCard({ student }: { readonly student: Student }) {
                 </span>
               )}
             </div>
+
+            <Badge
+              variant="outline"
+              className={cn('w-fit rounded-full border px-2 py-0 text-[10px] font-semibold', status.badge)}
+            >
+              {status.label}
+            </Badge>
           </div>
         </CardContent>
       </Card>

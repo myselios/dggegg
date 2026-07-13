@@ -22,13 +22,13 @@ export function StudentTableRow({
   return (
     <tr
       className={cn(
-        'cursor-pointer border-b last:border-0 transition-colors hover:bg-muted/40',
-        selected && 'bg-primary/5',
+        'cursor-pointer border-b last:border-0 transition-colors hover:bg-accent/40',
+        selected && 'bg-primary/8',
       )}
       onClick={onRowClick}
       data-testid="student-table-row"
     >
-      <td className="px-3 py-2.5" onClick={(e) => e.stopPropagation()}>
+      <td className="px-3 py-3.5" onClick={(e) => e.stopPropagation()}>
         <input
           type="checkbox"
           checked={selected}
@@ -38,23 +38,29 @@ export function StudentTableRow({
           data-testid="student-row-checkbox"
         />
       </td>
-      <td className="px-3 py-2.5 font-medium">{student.name_ko}</td>
-      <td className="px-3 py-2.5 text-muted-foreground">{student.school}</td>
-      <td className="px-3 py-2.5 text-muted-foreground">{student.grade ?? '-'}</td>
-      <td className="px-3 py-2.5">
+      <td className="px-3 py-3.5 font-semibold">{student.name_ko}</td>
+      <td className="px-3 py-3.5 text-muted-foreground">{student.school}</td>
+      <td className="px-3 py-3.5 text-muted-foreground">{student.grade ?? '-'}</td>
+      <td className="px-3 py-3.5">
         {course ? (
-          <Badge variant="outline" className={cn('border px-2 py-0 text-[10px] font-semibold', course.className)}>
+          <Badge
+            variant="outline"
+            className={cn('rounded-full border px-2.5 py-0.5 text-[11px] font-semibold', course.className)}
+          >
             {course.label}
           </Badge>
         ) : (
           <span className="text-muted-foreground">-</span>
         )}
       </td>
-      <td className="px-3 py-2.5 text-muted-foreground">
-        {student.current_score != null ? student.current_score : '-'}
+      <td className="px-3 py-3.5 text-right font-medium tabular-nums">
+        {student.current_score != null ? student.current_score : <span className="text-muted-foreground">-</span>}
       </td>
-      <td className="px-3 py-2.5">
-        <Badge variant="outline" className={cn('border px-2 py-0 text-[10px] font-semibold', status.badge)}>
+      <td className="px-3 py-3.5">
+        <Badge
+          variant="outline"
+          className={cn('rounded-full border px-2.5 py-0.5 text-[11px] font-semibold', status.badge)}
+        >
           {status.label}
         </Badge>
       </td>

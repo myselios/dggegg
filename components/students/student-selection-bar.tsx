@@ -25,21 +25,24 @@ export function StudentSelectionBar({
 }) {
   return (
     <div
-      className="flex flex-wrap items-center gap-2 rounded-xl border bg-muted/50 px-3 py-2"
+      className="flex flex-wrap items-center gap-2.5 rounded-xl border border-primary/20 border-l-4 border-l-primary bg-primary/5 px-4 py-2.5"
       data-testid="student-selection-bar"
     >
-      <Badge variant="secondary" className="text-xs" data-testid="student-selection-count">
+      <Badge
+        className="rounded-full bg-primary px-2.5 py-0.5 text-xs font-semibold text-primary-foreground"
+        data-testid="student-selection-count"
+      >
         {count}명 선택
       </Badge>
 
-      <span className="text-xs text-muted-foreground">상태 변경:</span>
+      <span className="text-xs font-medium text-muted-foreground">상태 변경:</span>
       {BULK_STATUS_OPTIONS.map((opt) => (
         <Button
           key={opt.value}
           type="button"
           variant="outline"
           size="sm"
-          className="h-7 px-2.5 text-xs"
+          className="h-8 border-primary/25 bg-card px-3 text-xs font-medium hover:bg-primary/10"
           disabled={disabled}
           onClick={() => onStatusChange(opt.value)}
           data-testid={`bulk-status-${opt.value}`}
@@ -52,7 +55,7 @@ export function StudentSelectionBar({
         type="button"
         variant="ghost"
         size="sm"
-        className="ml-auto h-7 gap-1 px-2 text-xs text-muted-foreground"
+        className="ml-auto h-8 gap-1 px-2.5 text-xs text-muted-foreground hover:text-foreground"
         onClick={onClear}
         data-testid="student-selection-clear"
       >
