@@ -6,12 +6,13 @@ import { ko } from 'date-fns/locale'
 import { AlertTriangle } from 'lucide-react'
 import { toast } from 'sonner'
 import { useStudents } from '@/lib/hooks/use-students'
-import { createScheduleEvent } from '@/app/actions/schedule'
+import { createScheduleEvent, createRecurringEvents } from '@/app/actions/schedule'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { RecurringOptions, DEFAULT_REPEAT_COUNT, type RecurringEndMode } from '@/components/schedule/recurring-options'
 import { formatTime } from '@/lib/utils/date'
 import type { ScheduleEventWithStudent } from '@/lib/types/database'
 
@@ -39,6 +40,28 @@ function findConflicts(
   })
 }
 
+const MIN_RECURRING_COUNT = 1
+const MAX_RECURRING_COUNT = 52
+
+function parseDateOnly(dateStr: string): Date | null {
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(dateStr)
+  if (!match) return null
+  const [, year, month, day] = match
+  return new Date(Number(year), Number(month) - 1, Number(day))
+}
+
+function calculateRepeatCountFromEndDate(startDate: Date, endDateStr: string): number {
+  const endDateOnly = parseDateOnly(endDateStr)
+  if (!endDateOnly) return MIN_RECURRING_COUNT
+
+  const startDateOnly = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate())
+  const diffDays = Math.round((endDateOnly.getTime() - startDateOnly.getTime()) / (24 * 60 * 60 * 1000))
+  if (diffDays < 0) return MIN_RECURRING_COUNT
+
+  const weeklyOccurrences = Math.floor(diffDays / 7) + 1
+  return Math.min(Math.max(weeklyOccurrences, MIN_RECURRING_COUNT), MAX_RECURRING_COUNT)
+}
+
 export function EventCreateDialog({
   date,
   hour,
@@ -62,11 +85,47 @@ export function EventCreateDialog({
   const [duration, setDuration] = useState(50)
   const [submitting, setSubmitting] = useState(false)
   const [eventType, setEventType] = useState<'lesson' | 'memo'>('lesson')
+  const [isRecurring, setIsRecurring] = useState(false)
+  const [recurringEndMode, setRecurringEndMode] = useState<RecurringEndMode>('count')
+  const [repeatCount, setRepeatCount] = useState(DEFAULT_REPEAT_COUNT)
+  const [recurringEndDate, setRecurringEndDate] = useState('')
 
   const conflicts = useMemo(
     () => findConflicts(date, { hour: startHour, minute: startMinute }, duration, existingEvents),
     [date, startHour, startMinute, duration, existingEvents]
   )
+
+  async function submitRecurringLesson(
+    studentId: string | null,
+    lessonMemo: string | null,
+    templateType: string,
+    startAt: Date,
+    endAt: Date,
+    isPast: boolean
+  ): Promise<boolean> {
+    const count =
+      recurringEndMode === 'count'
+        ? repeatCount
+        : calculateRepeatCountFromEndDate(startAt, recurringEndDate)
+
+    const baseEvent = {
+      student_id: studentId,
+      title: lessonMemo,
+      start_at: startAt.toISOString(),
+      end_at: endAt.toISOString(),
+      status: isPast ? 'completed' as const : 'scheduled' as const,
+      template_type: templateType || null,
+      recurrence_rule: null,
+      color: null,
+    }
+    const result = await createRecurringEvents(baseEvent, count)
+    if (!result.success) {
+      alert(result.error)
+      return false
+    }
+    toast.success(`반복 수업 ${result.data.length}회가 등록되었습니다`)
+    return true
+  }
 
   async function handleSubmit(formData: FormData) {
     if (submitting) return
@@ -84,6 +143,12 @@ export function EventCreateDialog({
       endAt.setMinutes(endAt.getMinutes() + duration)
 
       const isPast = endAt.getTime() < Date.now()
+
+      if (eventType === 'lesson' && isRecurring) {
+        const succeeded = await submitRecurringLesson(studentId, lessonMemo, templateType, startAt, endAt, isPast)
+        if (succeeded) onCreated()
+        return
+      }
 
       const baseEvent = {
         student_id: eventType === 'lesson' ? studentId : null,
@@ -249,10 +314,27 @@ export function EventCreateDialog({
                 <Label>메모</Label>
                 <Input name="lesson_memo" placeholder="예: 1, 보충 등" />
               </div>
+              <RecurringOptions
+                isRecurring={isRecurring}
+                onIsRecurringChange={setIsRecurring}
+                endMode={recurringEndMode}
+                onEndModeChange={setRecurringEndMode}
+                repeatCount={repeatCount}
+                onRepeatCountChange={setRepeatCount}
+                endDate={recurringEndDate}
+                onEndDateChange={setRecurringEndDate}
+                minDate={format(date, 'yyyy-MM-dd')}
+              />
             </>
           )}
           <Button type="submit" className="w-full" disabled={submitting}>
-            {submitting ? '추가 중...' : eventType === 'lesson' ? '수업 추가' : '메모 추가'}
+            {submitting
+              ? '추가 중...'
+              : eventType === 'memo'
+                ? '메모 추가'
+                : isRecurring
+                  ? '반복 수업 추가'
+                  : '수업 추가'}
           </Button>
         </form>
       </DialogContent>
