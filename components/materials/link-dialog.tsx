@@ -60,24 +60,30 @@ export function LinkDialog({ open, title, initialUrl = '', initialLabel = '', on
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
         </DialogHeader>
-        <div className="flex flex-col gap-4 py-2">
+        <div className="flex flex-col gap-5 py-2">
           <div className="flex flex-col gap-1.5">
-            <Label htmlFor="link-url">URL <span className="text-destructive">*</span></Label>
+            <Label htmlFor="link-url" className="text-sm font-semibold text-foreground">
+              URL <span className="text-destructive">*</span>
+            </Label>
             <Input
               id="link-url"
               type="url"
               placeholder="https://forms.gle/..."
               value={url}
               onChange={(e) => setUrl(e.target.value)}
+              className="h-11"
             />
           </div>
           <div className="flex flex-col gap-1.5">
-            <Label htmlFor="link-label">라벨 <span className="text-xs text-muted-foreground">(선택)</span></Label>
+            <Label htmlFor="link-label" className="text-sm font-semibold text-foreground">
+              라벨 <span className="text-xs font-normal text-muted-foreground">(선택)</span>
+            </Label>
             <Input
               id="link-label"
               placeholder="예) 1회차 단어 테스트"
               value={label}
               onChange={(e) => setLabel(e.target.value)}
+              className="h-11"
             />
           </div>
         </div>

@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { ClipboardCopy } from 'lucide-react'
+import { ClipboardCopy, FileText } from 'lucide-react'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
@@ -76,8 +76,8 @@ export function LessonReportButton({
           학부모 리포트 복사
         </Button>
       </PopoverTrigger>
-      <PopoverContent align="start" data-testid="lesson-report-popover">
-        <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground/60">
+      <PopoverContent align="start" className="glass-card rounded-2xl p-3" data-testid="lesson-report-popover">
+        <p className="px-1 text-xs font-semibold tracking-wide text-muted-foreground">
           템플릿 선택
         </p>
         <Separator className="my-2" />
@@ -88,10 +88,11 @@ export function LessonReportButton({
             <Button
               type="button"
               variant="ghost"
-              className="justify-start"
+              className="h-9 justify-start gap-2 rounded-lg text-sm hover:bg-muted"
               onClick={() => handleCopy(DEFAULT_LESSON_REPORT_TEMPLATE)}
               data-testid="lesson-report-template-default"
             >
+              <FileText className="size-3.5 text-primary" />
               기본 리포트 템플릿
             </Button>
           </div>
@@ -102,10 +103,11 @@ export function LessonReportButton({
                 key={template.id}
                 type="button"
                 variant="ghost"
-                className="justify-start"
+                className="h-9 justify-start gap-2 rounded-lg text-sm hover:bg-muted"
                 onClick={() => handleCopy(template.content)}
                 data-testid="lesson-report-template-item"
               >
+                <FileText className="size-3.5 text-primary" />
                 {template.title}
               </Button>
             ))}

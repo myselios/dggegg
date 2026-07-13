@@ -5,6 +5,7 @@ import { toast } from 'sonner'
 import { Link2, Trash2, ExternalLink, FlaskConical } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import { cn } from '@/lib/utils'
 import { upsertTestLink, deleteTestLink } from '@/app/actions/test-links'
 import { LinkDialog } from './link-dialog'
 import type { TestLink, SessionKey } from '@/lib/types/database'
@@ -78,12 +79,12 @@ export function TestLinksSection({ initialLinks }: Props) {
     <>
       <div className="flex flex-col gap-3">
         <div className="flex items-center gap-2">
-          <FlaskConical className="size-4 text-muted-foreground" />
-          <h3 className="text-sm font-semibold">테스트링크</h3>
+          <FlaskConical className="size-4 text-primary" />
+          <h3 className="text-sm font-bold text-foreground">테스트링크</h3>
           <span className="text-xs text-muted-foreground">구글폼 등 테스트 링크를 회차별로 관리합니다</span>
         </div>
 
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+        <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
           {SESSIONS.map(({ key, label }) => {
             const link = linkBySession(key)
             return (
@@ -124,50 +125,55 @@ type SlotProps = {
 
 function TestLinkSlot({ sessionKey, label, link, onAdd, onCopy, onDelete }: SlotProps) {
   return (
-    <div className="glass-card rounded-2xl p-4 flex flex-col gap-3">
+    <div className="glass-card flex flex-col gap-3 rounded-2xl p-4 transition-shadow hover:shadow-md">
       <div className="flex items-center justify-between gap-2">
-        <span className="text-sm font-semibold">{label}</span>
-        {link ? (
-          <Badge variant="secondary" className="text-[10px] px-1.5 py-0">
-            등록됨
-          </Badge>
-        ) : (
-          <Badge variant="outline" className="text-[10px] px-1.5 py-0 text-muted-foreground">
-            없음
-          </Badge>
-        )}
+        <span className="text-sm font-bold text-foreground">{label}</span>
+        <Badge
+          variant="outline"
+          className={cn(
+            'px-2 py-0 text-[10px] font-semibold',
+            link
+              ? 'border-emerald-200 bg-emerald-50 text-emerald-700'
+              : 'border-border text-muted-foreground'
+          )}
+        >
+          {link ? '등록됨' : '없음'}
+        </Badge>
       </div>
 
       {link ? (
         <div className="flex flex-col gap-2">
-          <span className="truncate text-xs text-foreground" title={link.url}>
-            {link.label || shortenUrl(link.url)}
-          </span>
+          <div className="flex items-center gap-1.5 rounded-lg bg-muted/60 px-2.5 py-2">
+            <FlaskConical className="size-3.5 shrink-0 text-primary" />
+            <span className="truncate text-xs font-medium text-foreground" title={link.url}>
+              {link.label || shortenUrl(link.url)}
+            </span>
+          </div>
           <div className="flex gap-1">
-            <Button variant="outline" size="sm" className="h-7 px-2 text-xs flex-1"
+            <Button variant="outline" size="sm" className="h-8 flex-1 px-2 text-xs"
               onClick={() => onCopy(link.url)}>
               <Link2 className="mr-1 size-3" />
               복사
             </Button>
-            <Button asChild variant="outline" size="sm" className="h-7 px-2 text-xs">
+            <Button asChild variant="outline" size="sm" className="h-8 px-2 text-xs">
               <a href={link.url} target="_blank" rel="noopener noreferrer">
                 <ExternalLink className="size-3" />
               </a>
             </Button>
             <Button variant="ghost" size="sm"
-              className="h-7 px-2 text-xs text-muted-foreground hover:text-destructive"
+              className="h-8 px-2 text-xs text-muted-foreground hover:text-destructive"
               onClick={() => onDelete(sessionKey)}>
               <Trash2 className="size-3" />
             </Button>
           </div>
-          <Button variant="ghost" size="sm" className="h-6 text-xs text-muted-foreground"
+          <Button variant="ghost" size="sm" className="h-7 text-xs text-muted-foreground"
             onClick={onAdd}>
             수정
           </Button>
         </div>
       ) : (
         <Button variant="ghost" size="sm"
-          className="h-7 w-full text-xs text-muted-foreground border border-dashed"
+          className="h-8 w-full border border-dashed text-xs text-muted-foreground"
           onClick={onAdd}>
           <Link2 className="mr-1 size-3" />
           링크 등록

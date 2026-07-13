@@ -3,6 +3,7 @@
 import { Download, ExternalLink, FileText, Link2, Trash2, Upload } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import { cn } from '@/lib/utils'
 import type { Material, SessionKey } from '@/lib/types/database'
 
 type SessionSlotProps = {
@@ -42,50 +43,53 @@ export function SessionSlot({
   const hasFile = material !== null && material.file_url !== null
   const hasLink = material !== null && material.link_url !== null
   const isDeleting = material !== null && deletingId === material.id
+  const isRegistered = hasFile || hasLink
 
   return (
-    <div className="glass-card rounded-2xl p-4 flex flex-col gap-3">
+    <div className="glass-card flex flex-col gap-3 rounded-2xl p-4 transition-shadow hover:shadow-md">
       <div className="flex items-center justify-between gap-2">
-        <span className="text-sm font-semibold">{label}</span>
-        {hasFile || hasLink ? (
-          <Badge variant="secondary" className="text-[10px] px-1.5 py-0">
-            등록됨
-          </Badge>
-        ) : (
-          <Badge variant="outline" className="text-[10px] px-1.5 py-0 text-muted-foreground">
-            없음
-          </Badge>
-        )}
+        <span className="text-sm font-bold text-foreground">{label}</span>
+        <Badge
+          variant="outline"
+          className={cn(
+            'px-2 py-0 text-[10px] font-semibold',
+            isRegistered
+              ? 'border-emerald-200 bg-emerald-50 text-emerald-700'
+              : 'border-border text-muted-foreground'
+          )}
+        >
+          {isRegistered ? '등록됨' : '없음'}
+        </Badge>
       </div>
 
       {/* 파일 영역 */}
       {hasFile && material ? (
         <div className="flex flex-col gap-2">
-          <div className="flex items-start gap-1.5">
-            <FileText className="mt-0.5 size-3.5 shrink-0 text-muted-foreground" />
-            <span className="truncate text-xs text-foreground leading-relaxed" title={material.file_name ?? ''}>
+          <div className="flex items-center gap-1.5 rounded-lg bg-muted/60 px-2.5 py-2">
+            <FileText className="size-3.5 shrink-0 text-primary" />
+            <span className="truncate text-xs font-medium text-foreground" title={material.file_name ?? ''}>
               {material.file_name}
             </span>
           </div>
           <div className="flex flex-wrap items-center gap-1">
-            <Button asChild variant="outline" size="sm" className="h-7 px-2 text-xs">
+            <Button asChild variant="outline" size="sm" className="h-8 px-2 text-xs">
               <a href={material.file_url!} target="_blank" rel="noopener noreferrer" download>
                 <Download className="mr-1 size-3" />
                 다운로드
               </a>
             </Button>
-            <Button variant="outline" size="sm" className="h-7 px-2 text-xs"
+            <Button variant="outline" size="sm" className="h-8 px-2 text-xs"
               onClick={() => onCopyFileUrl(material.file_url!)}>
               <Link2 className="mr-1 size-3" />
               복사
             </Button>
             <Button variant="outline" size="sm"
-              className="h-7 px-2 text-xs text-muted-foreground hover:text-destructive hover:border-destructive"
+              className="h-8 px-2 text-xs text-muted-foreground hover:text-destructive hover:border-destructive"
               disabled={isDeleting}
               onClick={() => onDeleteFile(material)}>
               <Trash2 className="size-3" />
             </Button>
-            <Button variant="ghost" size="sm" className="h-7 px-2 text-xs text-muted-foreground"
+            <Button variant="ghost" size="sm" className="h-8 px-2 text-xs text-muted-foreground"
               onClick={onUpload}>
               <Upload className="mr-1 size-3" />
               교체
@@ -93,40 +97,40 @@ export function SessionSlot({
           </div>
         </div>
       ) : (
-        <Button variant="outline" size="sm" className="h-7 w-full text-xs" onClick={onUpload}>
+        <Button variant="outline" size="sm" className="h-8 w-full border-dashed text-xs" onClick={onUpload}>
           <Upload className="mr-1 size-3" />
           파일 업로드
         </Button>
       )}
 
       {/* 링크 영역 */}
-      <div className="border-t pt-2 flex flex-col gap-1.5">
-        <span className="text-[10px] text-muted-foreground font-medium">링크</span>
+      <div className="flex flex-col gap-1.5 border-t border-border pt-2.5">
+        <span className="text-[10px] font-semibold text-muted-foreground">링크</span>
         {hasLink && material ? (
-          <div className="flex flex-col gap-1">
+          <div className="flex flex-col gap-1.5">
             <span className="truncate text-xs text-foreground" title={material.link_url!}>
               {material.link_label || shortenUrl(material.link_url!)}
             </span>
             <div className="flex gap-1">
-              <Button variant="outline" size="sm" className="h-7 px-2 text-xs flex-1"
+              <Button variant="outline" size="sm" className="h-8 flex-1 px-2 text-xs"
                 onClick={() => onCopyLinkUrl(material.link_url!)}>
                 <Link2 className="mr-1 size-3" />
                 복사
               </Button>
-              <Button asChild variant="outline" size="sm" className="h-7 px-2 text-xs">
+              <Button asChild variant="outline" size="sm" className="h-8 px-2 text-xs">
                 <a href={material.link_url!} target="_blank" rel="noopener noreferrer">
                   <ExternalLink className="size-3" />
                 </a>
               </Button>
               <Button variant="ghost" size="sm"
-                className="h-7 px-2 text-xs text-muted-foreground hover:text-destructive"
+                className="h-8 px-2 text-xs text-muted-foreground hover:text-destructive"
                 onClick={() => onDeleteLink(sessionKey)}>
                 <Trash2 className="size-3" />
               </Button>
             </div>
           </div>
         ) : (
-          <Button variant="ghost" size="sm" className="h-7 w-full text-xs text-muted-foreground border border-dashed"
+          <Button variant="ghost" size="sm" className="h-8 w-full border border-dashed text-xs text-muted-foreground"
             onClick={onAddLink}>
             <Link2 className="mr-1 size-3" />
             링크 등록

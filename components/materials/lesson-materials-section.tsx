@@ -146,7 +146,7 @@ export function LessonMaterialsSection({ initialMaterials }: Props) {
 
   return (
     <>
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+      <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
         {SESSIONS.map(({ key, label }) => {
           const material = materialBySession(key)
           return (

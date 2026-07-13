@@ -56,14 +56,14 @@ export function StudentProgressCard({ studentId, studentName }: Props) {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <BookOpen className="size-4 text-primary" />
-          <span className="text-sm font-semibold">{studentName} — AI 진도현황</span>
+          <span className="text-sm font-bold text-foreground">{studentName} — AI 진도현황</span>
         </div>
         <Button
           variant="ghost"
           size="sm"
           onClick={handleRefresh}
           disabled={state.status === 'loading'}
-          className="h-7 gap-1.5 px-2 text-xs"
+          className="h-8 gap-1.5 px-2 text-xs"
         >
           <RefreshCw className={`size-3 ${state.status === 'loading' ? 'animate-spin' : ''}`} />
           새로고침
@@ -82,8 +82,8 @@ export function StudentProgressCard({ studentId, studentName }: Props) {
 
 function LoadingState() {
   return (
-    <div className="flex flex-col items-center justify-center gap-2 py-8 text-muted-foreground">
-      <RefreshCw className="size-5 animate-spin" />
+    <div className="glass-card flex flex-col items-center justify-center gap-2 rounded-2xl py-10 text-muted-foreground">
+      <RefreshCw className="size-5 animate-spin text-primary" />
       <span className="text-sm">AI 요약 생성 중...</span>
     </div>
   )
@@ -91,7 +91,7 @@ function LoadingState() {
 
 function ErrorState({ message }: { readonly message: string }) {
   return (
-    <div className="glass-card rounded-xl p-4 text-sm text-destructive">
+    <div className="glass-card rounded-2xl border border-destructive/20 bg-destructive/5 p-4 text-sm text-destructive">
       {message}
     </div>
   )
@@ -99,7 +99,7 @@ function ErrorState({ message }: { readonly message: string }) {
 
 function EmptyState() {
   return (
-    <div className="glass-card rounded-xl p-4 text-center text-sm text-muted-foreground">
+    <div className="glass-card rounded-2xl p-6 text-center text-sm text-muted-foreground">
       아직 요약된 내용이 없습니다.
     </div>
   )
@@ -107,7 +107,7 @@ function EmptyState() {
 
 function SummaryList({ summaries }: { readonly summaries: readonly SessionSummary[] }) {
   return (
-    <div className="space-y-2">
+    <div className="space-y-2.5">
       {summaries.map((item) => (
         <SummaryItem key={item.session} item={item} />
       ))}
@@ -117,11 +117,14 @@ function SummaryList({ summaries }: { readonly summaries: readonly SessionSummar
 
 function SummaryItem({ item }: { readonly item: SessionSummary }) {
   return (
-    <div className="glass-card rounded-xl p-3 space-y-1.5">
-      <Badge variant="outline" className="text-[11px] font-semibold px-2 py-0">
+    <div className="glass-card space-y-2 rounded-2xl p-4">
+      <Badge
+        variant="outline"
+        className="border-primary/20 bg-primary/5 px-2 py-0 text-[11px] font-semibold text-primary"
+      >
         {item.session}
       </Badge>
-      <p className="text-sm text-foreground/80 leading-relaxed whitespace-pre-wrap">
+      <p className="text-sm leading-relaxed whitespace-pre-wrap text-foreground/80">
         {item.summary}
       </p>
     </div>

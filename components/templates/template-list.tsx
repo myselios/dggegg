@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Plus } from 'lucide-react'
+import { NotebookPen, Plus } from 'lucide-react'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { TemplateCard } from './template-card'
@@ -71,14 +71,15 @@ export function TemplateList({ initialTemplates }: Props) {
 
       {templates.length === 0 ? (
         <div
-          className="flex flex-col items-center justify-center py-16 text-center text-muted-foreground"
+          className="glass-card flex flex-col items-center justify-center gap-2 rounded-2xl py-16 text-center text-muted-foreground"
           data-testid="empty-state"
         >
+          <NotebookPen className="size-6 text-muted-foreground/60" />
           <p className="text-sm">아직 템플릿이 없어요.</p>
           <p className="text-sm">새 템플릿을 추가해보세요.</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
+        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3">
           {templates.map((template) => (
             <TemplateCard
               key={template.id}

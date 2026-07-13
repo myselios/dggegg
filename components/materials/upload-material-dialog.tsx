@@ -94,21 +94,24 @@ export function UploadMaterialDialog({
           )}
 
           <div className="flex flex-col gap-2">
-            <Label htmlFor="material-file">
+            <Label htmlFor="material-file" className="text-sm font-semibold text-foreground">
               파일 선택{' '}
-              <span className="text-xs text-muted-foreground font-normal">
+              <span className="text-xs font-normal text-muted-foreground">
                 (PDF, PPT, PPTX · 최대 50MB)
               </span>
             </Label>
 
             <div
-              className="flex cursor-pointer items-center gap-3 rounded-lg border border-dashed border-border px-4 py-3 transition-colors hover:border-primary/50 hover:bg-muted/40"
+              className="flex cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-border px-4 py-8 text-center transition-colors hover:border-primary/50 hover:bg-primary/5"
               onClick={() => inputRef.current?.click()}
             >
-              <FileText className="size-4 shrink-0 text-muted-foreground" />
-              <span className="truncate text-sm text-muted-foreground">
+              <FileText className="size-6 shrink-0 text-muted-foreground" />
+              <span className="truncate text-sm font-medium text-foreground">
                 {selectedFile ? selectedFile.name : '파일을 선택하세요'}
               </span>
+              {!selectedFile && (
+                <span className="text-xs text-muted-foreground">클릭하여 파일을 업로드하세요</span>
+              )}
             </div>
 
             <input

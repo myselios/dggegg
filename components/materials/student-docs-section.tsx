@@ -156,11 +156,11 @@ function DocsUrlManager({
   onDelete,
 }: DocsUrlManagerProps) {
   return (
-    <div className="space-y-4">
+    <div className="glass-card flex flex-col gap-5 rounded-2xl p-5">
       <div className="space-y-1.5">
-        <Label className="text-sm font-medium">학생 선택</Label>
+        <Label className="text-sm font-semibold text-foreground">학생 선택</Label>
         <Select value={selectedStudentId ?? ''} onValueChange={onStudentSelect}>
-          <SelectTrigger className="w-full">
+          <SelectTrigger className="h-11 w-full">
             <SelectValue placeholder="학생을 선택하세요" />
           </SelectTrigger>
           <SelectContent>
@@ -176,36 +176,36 @@ function DocsUrlManager({
 
       {selectedStudentId !== null && (
         <div className="space-y-1.5">
-          <Label className="text-sm font-medium">Google Docs URL</Label>
-          <div className="flex gap-2">
+          <Label className="text-sm font-semibold text-foreground">Google Docs URL</Label>
+          <div className="flex flex-col gap-2 sm:flex-row">
             <Input
               value={urlInput}
               onChange={(e) => onUrlChange(e.target.value)}
               placeholder="https://docs.google.com/document/d/..."
               disabled={isActionDisabled}
-              className="flex-1"
+              className="h-11 flex-1"
             />
-            <Button
-              onClick={onSave}
-              disabled={isActionDisabled || !urlInput.trim()}
-              size="sm"
-              className="shrink-0 gap-1.5"
-            >
-              <Link2 className="size-3.5" />
-              {docsLoading ? '조회 중...' : isSaving ? '저장 중...' : hasDoc ? '수정' : '연결'}
-            </Button>
-            {hasDoc && (
+            <div className="flex gap-2">
               <Button
-                onClick={onDelete}
-                disabled={isActionDisabled}
-                variant="outline"
-                size="sm"
-                className="shrink-0 gap-1.5 text-destructive hover:bg-destructive hover:text-destructive-foreground"
+                onClick={onSave}
+                disabled={isActionDisabled || !urlInput.trim()}
+                className="h-11 shrink-0 gap-1.5"
               >
-                <Trash2 className="size-3.5" />
-                {isDeleting ? '삭제 중...' : '삭제'}
+                <Link2 className="size-3.5" />
+                {docsLoading ? '조회 중...' : isSaving ? '저장 중...' : hasDoc ? '수정' : '연결'}
               </Button>
-            )}
+              {hasDoc && (
+                <Button
+                  onClick={onDelete}
+                  disabled={isActionDisabled}
+                  variant="outline"
+                  className="h-11 shrink-0 gap-1.5 text-destructive hover:bg-destructive hover:text-destructive-foreground"
+                >
+                  <Trash2 className="size-3.5" />
+                  {isDeleting ? '삭제 중...' : '삭제'}
+                </Button>
+              )}
+            </div>
           </div>
         </div>
       )}
@@ -215,7 +215,7 @@ function DocsUrlManager({
 
 function EmptyDocsHint() {
   return (
-    <div className="glass-card rounded-xl p-4 text-center text-sm text-muted-foreground">
+    <div className="glass-card rounded-2xl p-6 text-center text-sm text-muted-foreground">
       Google Docs를 연결하면 AI 진도현황을 확인할 수 있습니다.
     </div>
   )

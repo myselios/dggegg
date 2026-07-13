@@ -54,27 +54,29 @@ export function TemplateDialog({ open, onClose, onSave, template }: Props) {
           <DialogTitle>{template ? '템플릿 수정' : '새 템플릿'}</DialogTitle>
         </DialogHeader>
 
-        <div className="flex flex-col gap-4 py-2">
+        <div className="flex flex-col gap-5 py-2">
           <div className="flex flex-col gap-1.5">
-            <Label htmlFor="title">제목</Label>
+            <Label htmlFor="title" className="text-sm font-semibold text-foreground">제목</Label>
             <Input
               id="title"
               data-testid="template-title-input"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="템플릿 제목을 입력하세요"
+              className="h-11"
             />
           </div>
 
           <div className="flex flex-col gap-1.5">
-            <Label htmlFor="content">내용</Label>
+            <Label htmlFor="content" className="text-sm font-semibold text-foreground">내용</Label>
             <Textarea
               id="content"
               data-testid="template-content-input"
               value={content}
               onChange={(e) => setContent(e.target.value)}
               placeholder="학부모에게 보낼 메시지 내용을 입력하세요"
-              rows={8}
+              rows={9}
+              className="resize-none"
             />
           </div>
         </div>
