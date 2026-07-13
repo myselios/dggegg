@@ -1,25 +1,13 @@
 'use client'
 
-import { useState, useMemo, useCallback, useEffect, useRef } from 'react'
-import {
-  DndContext,
-  DragOverlay,
-  PointerSensor,
-  TouchSensor,
-  useSensor,
-  useSensors,
-  type DragStartEvent,
-  type DragEndEvent,
-  type DragOverEvent,
-} from '@dnd-kit/core'
+import { useState, useMemo, useEffect, useRef } from 'react'
+import { DndContext, DragOverlay } from '@dnd-kit/core'
 import { addWeeks, subWeeks, addDays, subDays, isSameDay, isToday, format } from 'date-fns'
 import { ko } from 'date-fns/locale'
-import { toast } from 'sonner'
 import { cn } from '@/lib/utils'
 import { useIsMobile } from '@/lib/hooks/use-mobile'
 import { useScheduleEvents } from '@/lib/hooks/use-schedule'
 import { getThreeWeekRange, getOneWeekRange, getWeeksInRange } from '@/lib/utils/date'
-import { updateScheduleEvent } from '@/app/actions/schedule'
 import { CalendarEventBlock, CalendarEventBlockOverlay } from './calendar-event-block'
 import { DroppableCell } from './droppable-cell'
 import { EventCreateDialog } from './event-create-dialog'
@@ -27,70 +15,19 @@ import { LessonNotePanel } from './lesson-note-panel'
 import { MemoEditDialog } from './memo-edit-dialog'
 import { WeeklyMemoPanel } from './weekly-memo-panel'
 import { Button } from '@/components/ui/button'
+import {
+  HOURS,
+  MINUTES_10,
+  CELL_HEIGHT_COMPACT,
+  CELL_HEIGHT_EXPANDED,
+  cellId,
+  findConflictingIds,
+  parseInitialDate,
+  getGridCols,
+  type ViewMode,
+} from '@/lib/utils/calendar-grid'
+import { useCalendarDnd } from './hooks/use-calendar-dnd'
 import type { ScheduleEventWithStudent } from '@/lib/types/database'
-
-const HOURS = Array.from({ length: 17 }, (_, i) => i + 7) // 07:00 ~ 23:00
-const MINUTES_10 = [0, 10, 20, 30, 40, 50] as const
-const CELL_HEIGHT_COMPACT = 48  // h-12
-const CELL_HEIGHT_EXPANDED = 120 // h-[120px]
-
-type ViewMode = '3week' | '1week' | 'day'
-
-/** Encode a cell position into a droppable id */
-function cellId(dayIdx: number, hour: number): string {
-  return `cell-${dayIdx}-${hour}`
-}
-
-/** Decode a droppable id back to day index, hour and minute */
-function parseCellId(id: string): { dayIdx: number; hour: number; minute: number } | null {
-  const match = id.match(/^cell-(\d+)-(\d+)-(\d+)$/)
-  if (!match) return null
-  return { dayIdx: Number(match[1]), hour: Number(match[2]), minute: Number(match[3]) }
-}
-
-/** Check if two time ranges overlap: A.start < B.end && B.start < A.end */
-function hasTimeOverlap(
-  aStart: string, aEnd: string,
-  bStart: string, bEnd: string
-): boolean {
-  return new Date(aStart) < new Date(bEnd) && new Date(bStart) < new Date(aEnd)
-}
-
-/** Build a set of event IDs that have conflicts with at least one other event */
-function findConflictingIds(
-  events: readonly ScheduleEventWithStudent[]
-): ReadonlySet<string> {
-  const ids = new Set<string>()
-  for (let i = 0; i < events.length; i++) {
-    for (let j = i + 1; j < events.length; j++) {
-      const a = events[i]
-      const b = events[j]
-      if (
-        a.status !== 'cancelled' && b.status !== 'cancelled' &&
-        hasTimeOverlap(a.start_at, a.end_at, b.start_at, b.end_at)
-      ) {
-        ids.add(a.id)
-        ids.add(b.id)
-      }
-    }
-  }
-  return ids
-}
-
-function parseInitialDate(dateStr?: string): Date {
-  if (!dateStr) return new Date()
-  const parsed = new Date(dateStr)
-  return isNaN(parsed.getTime()) ? new Date() : parsed
-}
-
-/** Grid columns CSS for each view mode */
-function getGridCols(mode: ViewMode): string {
-  switch (mode) {
-    case '3week': return 'grid-cols-[52px_repeat(21,1fr)]'
-    case '1week': return 'grid-cols-[48px_repeat(7,1fr)]'
-    case 'day': return 'grid-cols-[48px_1fr]'
-  }
-}
 
 export function ThreeWeekCalendar({
   initialDate,
@@ -102,8 +39,6 @@ export function ThreeWeekCalendar({
   const [selectedSlot, setSelectedSlot] = useState<{ date: Date; hour: number; minute: number } | null>(null)
   const [selectedEvent, setSelectedEvent] = useState<ScheduleEventWithStudent | null>(null)
   const [selectedMemo, setSelectedMemo] = useState<ScheduleEventWithStudent | null>(null)
-  const [activeEvent, setActiveEvent] = useState<ScheduleEventWithStudent | null>(null)
-  const [overCellId, setOverCellId] = useState<string | null>(null)
   const [isCompact, setIsCompact] = useState(true)
   const [mobileView, setMobileView] = useState<'1week' | 'day'>('1week')
   const gridRef = useRef<HTMLDivElement>(null)
@@ -152,43 +87,7 @@ export function ThreeWeekCalendar({
     [events]
   )
 
-  // Check if dragging event to a given cell would cause a conflict
-  const dragConflictCellId = useMemo(() => {
-    if (!activeEvent || !overCellId || !events) return null
-    const target = parseCellId(overCellId)
-    if (!target) return null
-
-    const targetDay = allDays[target.dayIdx]
-    if (!targetDay) return null
-
-    const oldStart = new Date(activeEvent.start_at)
-    const oldEnd = new Date(activeEvent.end_at)
-    const durationMs = oldEnd.getTime() - oldStart.getTime()
-
-    const newStart = new Date(targetDay)
-    newStart.setHours(target.hour, target.minute, 0, 0)
-    const newEnd = new Date(newStart.getTime() + durationMs)
-
-    const wouldConflict = events.some(
-      (e) =>
-        e.id !== activeEvent.id &&
-        e.status !== 'cancelled' &&
-        hasTimeOverlap(
-          newStart.toISOString(),
-          newEnd.toISOString(),
-          e.start_at,
-          e.end_at
-        )
-    )
-
-    return wouldConflict ? overCellId : null
-  }, [activeEvent, overCellId, events, allDays])
-
-  // Distance constraint: move 8px to start drag, allowing clicks to work
-  const sensors = useSensors(
-    useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
-    useSensor(TouchSensor, { activationConstraint: { delay: 250, tolerance: 8 } })
-  )
+  const dnd = useCalendarDnd({ events, allDays, mutate })
 
   function getEventsForDayHour(day: Date, hour: number) {
     if (!events) return []
@@ -197,77 +96,6 @@ export function ThreeWeekCalendar({
       return isSameDay(eventDate, day) && eventDate.getHours() === hour
     })
   }
-
-  const handleDragStart = useCallback((event: DragStartEvent) => {
-    const dragged = event.active.data.current?.event as ScheduleEventWithStudent | undefined
-    if (dragged) {
-      setActiveEvent(dragged)
-    }
-  }, [])
-
-  const handleDragOver = useCallback((event: DragOverEvent) => {
-    setOverCellId(event.over ? String(event.over.id) : null)
-  }, [])
-
-  const handleDragEnd = useCallback(async (event: DragEndEvent) => {
-    setActiveEvent(null)
-    setOverCellId(null)
-
-    const { active, over } = event
-    if (!over) return
-
-    const droppedEvent = active.data.current?.event as ScheduleEventWithStudent | undefined
-    if (!droppedEvent) return
-
-    const target = parseCellId(String(over.id))
-    if (!target) return
-
-    const targetDay = allDays[target.dayIdx]
-    if (!targetDay) return
-
-    const oldStart = new Date(droppedEvent.start_at)
-    const oldEnd = new Date(droppedEvent.end_at)
-    const durationMs = oldEnd.getTime() - oldStart.getTime()
-
-    const newStart = new Date(targetDay)
-    newStart.setHours(target.hour, target.minute, 0, 0)
-    const newEnd = new Date(newStart.getTime() + durationMs)
-
-    // No change — skip
-    if (newStart.getTime() === oldStart.getTime()) return
-
-    // Optimistic update
-    const optimisticEvents = events?.map((e) =>
-      e.id === droppedEvent.id
-        ? { ...e, start_at: newStart.toISOString(), end_at: newEnd.toISOString() }
-        : e
-    )
-
-    try {
-      await mutate(
-        async () => {
-          const result = await updateScheduleEvent(droppedEvent.id, {
-            start_at: newStart.toISOString(),
-            end_at: newEnd.toISOString(),
-          })
-          if (!result.success) {
-            throw new Error(result.error)
-          }
-          return optimisticEvents ?? []
-        },
-        { optimisticData: optimisticEvents, rollbackOnError: true }
-      )
-      toast.success('수업 일정이 변경되었습니다')
-    } catch (error) {
-      const message = error instanceof Error ? error.message : '일정 변경에 실패했습니다'
-      toast.error(message)
-    }
-  }, [allDays, events, mutate])
-
-  const handleDragCancel = useCallback(() => {
-    setActiveEvent(null)
-    setOverCellId(null)
-  }, [])
 
   // Navigation handlers based on view mode
   const handlePrev = () => {
@@ -317,11 +145,11 @@ export function ThreeWeekCalendar({
       <div className="flex gap-3 items-start">
       {/* Calendar grid with DnD */}
       <DndContext
-        sensors={sensors}
-        onDragStart={handleDragStart}
-        onDragOver={handleDragOver}
-        onDragEnd={handleDragEnd}
-        onDragCancel={handleDragCancel}
+        sensors={dnd.sensors}
+        onDragStart={dnd.onDragStart}
+        onDragOver={dnd.onDragOver}
+        onDragEnd={dnd.onDragEnd}
+        onDragCancel={dnd.onDragCancel}
       >
         <div ref={gridRef} className="glass-card relative overflow-auto max-h-[calc(100vh-220px)] flex-1 rounded-2xl border-none" data-testid="calendar-grid">
           <div>
@@ -396,7 +224,7 @@ export function ThreeWeekCalendar({
                       id={currentCellId}
                       isToday={isToday(day)}
                       isWeekBoundary={false}
-                      conflictHalfId={dragConflictCellId}
+                      conflictHalfId={dnd.dragConflictCellId}
                       compact={isCompact}
                       onClick={() => {
                         setSelectedSlot({ date: day, hour, minute: 0 })
@@ -430,7 +258,7 @@ export function ThreeWeekCalendar({
 
         {/* Drag overlay — follows the pointer */}
         <DragOverlay dropAnimation={null}>
-          {activeEvent ? <div data-testid="drag-overlay"><CalendarEventBlockOverlay event={activeEvent} /></div> : null}
+          {dnd.activeEvent ? <div data-testid="drag-overlay"><CalendarEventBlockOverlay event={dnd.activeEvent} /></div> : null}
         </DragOverlay>
       </DndContext>
 
