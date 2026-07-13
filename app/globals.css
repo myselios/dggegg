@@ -174,4 +174,24 @@
     background: oklch(1 0 0 / 3%);
     border: 1px solid oklch(1 0 0 / 6%);
   }
+
+  /* Bento grid tile hover lift */
+  .bento-tile {
+    transition: transform 0.25s ease, filter 0.25s ease;
+    will-change: transform;
+  }
+  .bento-tile:hover {
+    transform: translateY(-4px);
+    filter: drop-shadow(0 12px 20px oklch(0 0 0 / 10%));
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .bento-tile {
+      transition: none;
+      will-change: auto;
+    }
+    .bento-tile:hover {
+      transform: none;
+      filter: none;
+    }
+  }
 }

@@ -9,14 +9,14 @@ import {
 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { autoCompletePastEvents } from '@/app/actions/schedule'
-import { Card, CardContent } from '@/components/ui/card'
-import { cn } from '@/lib/utils'
 import { STAT_STYLES } from '@/lib/constants/status-styles'
 import { TodayLessons } from '@/components/dashboard/today-lessons'
 import { RecentConsultations } from '@/components/dashboard/recent-consultations'
 import { IncompleteLessons } from '@/components/dashboard/incomplete-lessons'
 import { WeeklySchedule } from '@/components/dashboard/weekly-schedule'
 import { LessonStats } from '@/components/dashboard/lesson-stats'
+import { PaymentAlerts } from '@/components/dashboard/payment-alerts'
+import { StatCard } from '@/components/dashboard/stat-card'
 
 type DashboardStats = {
   readonly total: number
@@ -73,51 +73,50 @@ export default function DashboardPage() {
   }, [])
 
   return (
-    <div className="flex flex-col gap-8">
-      {/* Lesson Stats */}
-      <LessonStats />
-
-      {/* Stats Cards */}
-      <div className="grid gap-4 sm:grid-cols-3">
-        {STAT_CARDS.map((card) => {
-          const Icon = card.icon
-          const value = stats[card.key as keyof DashboardStats]
-
-          return (
-            <Card
-              key={card.key}
-              className={cn('glass-card border-none rounded-2xl', card.style.card)}
-            >
-              <CardContent className="flex items-center gap-4 py-5">
-                <div className={cn(
-                  'flex size-10 shrink-0 items-center justify-center rounded-xl',
-                  card.style.iconBg
-                )}>
-                  <Icon className="size-5" />
-                </div>
-                <div className="min-w-0">
-                  <p className="text-[11px] font-medium uppercase tracking-wider opacity-70">
-                    {card.label}
-                  </p>
-                  <p className="text-2xl font-bold tabular-nums leading-tight">
-                    {value}
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
-          )
-        })}
+    <div className="grid grid-cols-1 gap-4 lg:grid-cols-6">
+      {/* 오늘 수업 - 큰 타일 (좌측, 2행) */}
+      <div className="bento-tile lg:col-span-3 lg:row-span-2">
+        <TodayLessons />
       </div>
 
-      {/* Incomplete Lessons Alert */}
-      <IncompleteLessons />
+      {/* 통계 3종 - 작은 타일 묶음 (우측 상단) */}
+      <div className="lg:col-span-3">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+          {STAT_CARDS.map((card) => (
+            <StatCard
+              key={card.key}
+              label={card.label}
+              value={stats[card.key as keyof DashboardStats]}
+              icon={card.icon}
+              cardClassName={card.style.card}
+              iconBgClassName={card.style.iconBg}
+            />
+          ))}
+        </div>
+      </div>
 
-      {/* Weekly Schedule */}
-      <WeeklySchedule />
+      {/* 수업 통계 차트 (우측 하단) */}
+      <div className="bento-tile lg:col-span-3">
+        <LessonStats />
+      </div>
 
-      {/* Main Content Grid */}
-      <div className="grid gap-6 lg:grid-cols-2">
-        <TodayLessons />
+      {/* 주간 스케줄 - 와이드 타일 */}
+      <div className="bento-tile lg:col-span-6">
+        <WeeklySchedule />
+      </div>
+
+      {/* 미완료 수업 알림 (0건이면 자체적으로 숨김) */}
+      <div className="bento-tile lg:col-span-3">
+        <IncompleteLessons />
+      </div>
+
+      {/* 정산 알림 (0건이면 자체적으로 숨김) */}
+      <div className="bento-tile lg:col-span-3">
+        <PaymentAlerts />
+      </div>
+
+      {/* 최근 상담 - 와이드 타일 */}
+      <div className="bento-tile lg:col-span-6">
         <RecentConsultations />
       </div>
     </div>
