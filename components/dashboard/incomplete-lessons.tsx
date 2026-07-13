@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { format, subDays } from 'date-fns'
 import { ko } from 'date-fns/locale'
 import { AlertTriangle, ChevronRight, Clock } from 'lucide-react'
@@ -9,21 +9,25 @@ import { createClient } from '@/lib/supabase/client'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { cn } from '@/lib/utils'
+import { QuickComplete } from '@/components/dashboard/quick-complete'
 
 type IncompleteEvent = {
   readonly id: string
   readonly start_at: string
-  readonly students: { readonly name_ko: string }
+  readonly status: string
+  readonly student_id: string | null
+  readonly event_type: 'lesson' | 'memo'
+  readonly students: { readonly name_ko: string } | null
 }
 
 export function IncompleteLessons() {
   const [events, setEvents] = useState<IncompleteEvent[]>([])
 
-  useEffect(() => {
+  const fetchEvents = useCallback(() => {
     const supabase = createClient()
     supabase
       .from('schedule_events')
-      .select('id, start_at, students(name_ko)')
+      .select('id, start_at, status, student_id, event_type, students(name_ko)')
       .eq('status', 'scheduled')
       .lt('start_at', new Date().toISOString())
       .gte('start_at', subDays(new Date(), 7).toISOString())
@@ -32,6 +36,10 @@ export function IncompleteLessons() {
         if (data) setEvents(data as unknown as IncompleteEvent[])
       })
   }, [])
+
+  useEffect(() => {
+    fetchEvents()
+  }, [fetchEvents])
 
   if (events.length === 0) return null
 
@@ -57,30 +65,50 @@ export function IncompleteLessons() {
       <CardContent>
         <div className="flex flex-col gap-2">
           {events.map((event) => (
-            <Link
+            <div
               key={event.id}
-              href="/schedule"
+              data-testid="incomplete-lesson-card"
+              data-event-id={event.id}
               className={cn(
-                'group flex items-center justify-between rounded-lg border border-amber-200 bg-white p-3',
+                'group flex flex-col gap-2 rounded-lg border border-amber-200 bg-white p-3',
                 'transition-all hover:border-amber-300 hover:shadow-sm',
                 'dark:border-amber-800 dark:bg-amber-950/30 dark:hover:border-amber-700'
               )}
             >
-              <div className="flex items-center gap-3">
-                <div className="flex size-8 items-center justify-center rounded-full bg-amber-100 dark:bg-amber-900">
-                  <Clock className="size-4 text-amber-600 dark:text-amber-400" />
-                </div>
-                <div>
-                  <span className="text-sm font-medium">
-                    {event.students.name_ko}
-                  </span>
-                  <p className="text-xs text-muted-foreground tabular-nums">
-                    {format(new Date(event.start_at), 'M/d (EEE) HH:mm', { locale: ko })}
-                  </p>
-                </div>
+              <div className="flex items-center justify-between gap-2">
+                <Link href="/schedule" className="flex min-w-0 flex-1 items-center gap-3">
+                  <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-amber-100 dark:bg-amber-900">
+                    <Clock className="size-4 text-amber-600 dark:text-amber-400" />
+                  </div>
+                  <div className="min-w-0">
+                    <span className="text-sm font-medium">
+                      {event.students?.name_ko}
+                    </span>
+                    <p className="text-xs text-muted-foreground tabular-nums">
+                      {format(new Date(event.start_at), 'M/d (EEE) HH:mm', { locale: ko })}
+                    </p>
+                  </div>
+                </Link>
+                <Link
+                  href="/schedule"
+                  aria-label="일정으로 이동"
+                  className="flex size-11 shrink-0 items-center justify-center"
+                >
+                  <ChevronRight className="size-4 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
+                </Link>
               </div>
-              <ChevronRight className="size-4 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
-            </Link>
+              {event.event_type === 'lesson' && (
+                <QuickComplete
+                  event={{
+                    id: event.id,
+                    student_id: event.student_id,
+                    start_at: event.start_at,
+                    status: event.status,
+                  }}
+                  onUpdated={fetchEvents}
+                />
+              )}
+            </div>
           ))}
         </div>
       </CardContent>

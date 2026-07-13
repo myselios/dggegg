@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { format, startOfDay, endOfDay } from 'date-fns'
 import {
   Clock,
@@ -14,6 +14,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { cn } from '@/lib/utils'
 import { getScheduleStatus } from '@/lib/constants/status-styles'
+import { QuickComplete } from '@/components/dashboard/quick-complete'
 import type { ScheduleEventWithStudent } from '@/lib/types/database'
 
 function StatusIcon({ status }: { readonly status: string }) {
@@ -33,7 +34,7 @@ function StatusIcon({ status }: { readonly status: string }) {
 export function TodayLessons() {
   const [events, setEvents] = useState<ScheduleEventWithStudent[]>([])
 
-  useEffect(() => {
+  const fetchEvents = useCallback(() => {
     const supabase = createClient()
     const today = new Date()
     supabase
@@ -46,6 +47,10 @@ export function TodayLessons() {
         if (data) setEvents(data as ScheduleEventWithStudent[])
       })
   }, [])
+
+  useEffect(() => {
+    fetchEvents()
+  }, [fetchEvents])
 
   return (
     <Card className="glass-card rounded-2xl border-none">
@@ -98,41 +103,51 @@ export function TodayLessons() {
                   </div>
 
                   {/* Content */}
-                  <div className={cn(
-                    'flex flex-1 items-center justify-between rounded-lg border p-3',
-                    'transition-colors hover:bg-accent/50',
-                    event.status === 'completed' && 'bg-emerald-50/50 dark:bg-emerald-950/20',
-                    event.status === 'cancelled' && 'opacity-60'
-                  )}>
-                    <div className="min-w-0 flex-1">
-                      <div className="flex items-center gap-2">
-                        <span className="font-medium truncate">
-                          {event.students?.name_ko}
-                        </span>
-                        {event.students?.ib_course && (
-                          <Badge variant="secondary" className="text-[10px] px-1.5 py-0">
-                            {event.students.ib_course}
-                          </Badge>
-                        )}
+                  <div
+                    data-testid="today-lesson-card"
+                    data-event-id={event.id}
+                    className={cn(
+                      'flex flex-1 flex-col gap-2 rounded-lg border p-3',
+                      'transition-colors hover:bg-accent/50',
+                      event.status === 'completed' && 'bg-emerald-50/50 dark:bg-emerald-950/20',
+                      event.status === 'cancelled' && 'opacity-60'
+                    )}
+                  >
+                    <div className="flex items-center justify-between gap-2">
+                      <div className="min-w-0 flex-1">
+                        <div className="flex items-center gap-2">
+                          <span className="font-medium truncate">
+                            {event.students?.name_ko}
+                          </span>
+                          {event.students?.ib_course && (
+                            <Badge variant="secondary" className="text-[10px] px-1.5 py-0">
+                              {event.students.ib_course}
+                            </Badge>
+                          )}
+                        </div>
+                        <div className="mt-1 flex items-center gap-1.5 text-xs text-muted-foreground">
+                          <Clock className="size-3" />
+                          <span className="tabular-nums">
+                            {format(new Date(event.start_at), 'HH:mm')}
+                          </span>
+                          <span className="text-muted-foreground/40">-</span>
+                          <span className="tabular-nums">
+                            {format(new Date(event.end_at), 'HH:mm')}
+                          </span>
+                        </div>
                       </div>
-                      <div className="mt-1 flex items-center gap-1.5 text-xs text-muted-foreground">
-                        <Clock className="size-3" />
-                        <span className="tabular-nums">
-                          {format(new Date(event.start_at), 'HH:mm')}
-                        </span>
-                        <span className="text-muted-foreground/40">-</span>
-                        <span className="tabular-nums">
-                          {format(new Date(event.end_at), 'HH:mm')}
-                        </span>
-                      </div>
+                      <Badge
+                        variant="outline"
+                        className={cn('ml-2 gap-1 shrink-0', config.badge)}
+                      >
+                        <StatusIcon status={event.status} />
+                        {config.label}
+                      </Badge>
                     </div>
-                    <Badge
-                      variant="outline"
-                      className={cn('ml-2 gap-1 shrink-0', config.badge)}
-                    >
-                      <StatusIcon status={event.status} />
-                      {config.label}
-                    </Badge>
+                    {event.event_type === 'lesson' &&
+                      (event.status === 'scheduled' || event.status === 'completed') && (
+                        <QuickComplete event={event} onUpdated={fetchEvents} />
+                      )}
                   </div>
                 </div>
               )
