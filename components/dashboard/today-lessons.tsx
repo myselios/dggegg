@@ -31,6 +31,37 @@ function StatusIcon({ status }: { readonly status: string }) {
   }
 }
 
+function LessonProgressSummary({
+  events,
+}: {
+  readonly events: ReadonlyArray<ScheduleEventWithStudent>
+}) {
+  const total = events.length
+  const completedCount = events.filter((e) => e.status === 'completed').length
+  const remaining = total - completedCount
+  const progressPct = total > 0 ? Math.round((completedCount / total) * 100) : 0
+
+  return (
+    <div className="mb-5 flex items-center gap-3">
+      <p className="shrink-0 text-sm">
+        <span className="text-base font-bold tabular-nums text-foreground">
+          {remaining}
+        </span>
+        <span className="ml-1 text-muted-foreground">개 남음</span>
+      </p>
+      <div className="h-2 flex-1 overflow-hidden rounded-full bg-muted">
+        <div
+          className="h-full rounded-full bg-primary transition-all duration-500"
+          style={{ width: `${progressPct}%` }}
+        />
+      </div>
+      <span className="shrink-0 text-xs font-semibold tabular-nums text-primary">
+        {progressPct}%
+      </span>
+    </div>
+  )
+}
+
 export function TodayLessons() {
   const [events, setEvents] = useState<ScheduleEventWithStudent[]>([])
 
@@ -81,7 +112,9 @@ export function TodayLessons() {
             </p>
           </div>
         ) : (
-          <div className="relative flex flex-col">
+          <>
+            <LessonProgressSummary events={events} />
+            <div className="relative flex flex-col">
             {events.map((event, index) => {
               const config = getScheduleStatus(event.status)
               const isLast = index === events.length - 1
@@ -116,7 +149,7 @@ export function TodayLessons() {
                     <div className="flex items-center justify-between gap-2">
                       <div className="min-w-0 flex-1">
                         <div className="flex items-center gap-2">
-                          <span className="font-medium truncate">
+                          <span className="font-semibold truncate">
                             {event.students?.name_ko}
                           </span>
                           {event.students?.ib_course && (
@@ -125,7 +158,7 @@ export function TodayLessons() {
                             </Badge>
                           )}
                         </div>
-                        <div className="mt-1 flex items-center gap-1.5 text-xs text-muted-foreground">
+                        <div className="mt-1 flex items-center gap-1.5 font-mono text-xs text-muted-foreground">
                           <Clock className="size-3" />
                           <span className="tabular-nums">
                             {format(new Date(event.start_at), 'HH:mm')}
@@ -152,7 +185,8 @@ export function TodayLessons() {
                 </div>
               )
             })}
-          </div>
+            </div>
+          </>
         )}
       </CardContent>
     </Card>

@@ -9,7 +9,6 @@ import {
 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { autoCompletePastEvents } from '@/app/actions/schedule'
-import { STAT_STYLES } from '@/lib/constants/status-styles'
 import { TodayLessons } from '@/components/dashboard/today-lessons'
 import { RecentConsultations } from '@/components/dashboard/recent-consultations'
 import { IncompleteLessons } from '@/components/dashboard/incomplete-lessons'
@@ -25,9 +24,27 @@ type DashboardStats = {
 }
 
 const STAT_CARDS = [
-  { key: 'total', label: '오늘 수업', icon: Calendar, style: STAT_STYLES.info },
-  { key: 'completed', label: '완료', icon: CheckCircle2, style: STAT_STYLES.success },
-  { key: 'incomplete', label: '미완료', icon: AlertTriangle, style: STAT_STYLES.warning },
+  {
+    key: 'total',
+    label: '오늘 수업',
+    icon: Calendar,
+    iconBg: 'bg-primary/10',
+    iconColor: 'text-primary',
+  },
+  {
+    key: 'completed',
+    label: '완료',
+    icon: CheckCircle2,
+    iconBg: 'bg-emerald-50',
+    iconColor: 'text-emerald-600',
+  },
+  {
+    key: 'incomplete',
+    label: '미완료',
+    icon: AlertTriangle,
+    iconBg: 'bg-amber-50',
+    iconColor: 'text-amber-600',
+  },
 ] as const
 
 export default function DashboardPage() {
@@ -88,8 +105,8 @@ export default function DashboardPage() {
               label={card.label}
               value={stats[card.key as keyof DashboardStats]}
               icon={card.icon}
-              cardClassName={card.style.card}
-              iconBgClassName={card.style.iconBg}
+              iconBgClassName={card.iconBg}
+              iconColorClassName={card.iconColor}
             />
           ))}
         </div>

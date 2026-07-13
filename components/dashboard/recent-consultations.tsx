@@ -23,6 +23,13 @@ const TYPE_ICONS = {
   notice: Bell,
 } as const
 
+const TYPE_DOT = {
+  consultation: 'bg-blue-500',
+  complaint: 'bg-red-500',
+  request: 'bg-violet-500',
+  notice: 'bg-amber-500',
+} as const
+
 type ConsultationWithStudent = {
   readonly id: string
   readonly type: string
@@ -83,7 +90,7 @@ export function RecentConsultations() {
               return (
                 <div
                   key={log.id}
-                  className="flex gap-3 rounded-lg border border-border/40 p-3 transition-colors hover:bg-accent/50"
+                  className="flex gap-3 rounded-lg border border-border p-3 transition-colors hover:bg-accent/50"
                 >
                   <div className={cn(
                     'flex size-9 shrink-0 items-center justify-center rounded-lg',
@@ -94,9 +101,15 @@ export function RecentConsultations() {
 
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2">
-                      <span className="text-sm font-medium truncate">
+                      <span className="text-sm font-semibold truncate">
                         {log.students.name_ko}
                       </span>
+                      <span
+                        className={cn(
+                          'size-1.5 shrink-0 rounded-full',
+                          TYPE_DOT[log.type as keyof typeof TYPE_DOT] ?? TYPE_DOT.consultation
+                        )}
+                      />
                       <Badge
                         variant="outline"
                         className={cn('text-[10px] px-1.5 py-0 gap-1', config.badge)}

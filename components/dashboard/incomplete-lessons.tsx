@@ -81,10 +81,10 @@ export function IncompleteLessons() {
                     <Clock className="size-4 text-amber-600 dark:text-amber-400" />
                   </div>
                   <div className="min-w-0">
-                    <span className="text-sm font-medium">
+                    <span className="text-sm font-semibold">
                       {event.students?.name_ko}
                     </span>
-                    <p className="text-xs text-muted-foreground tabular-nums">
+                    <p className="font-mono text-xs tabular-nums text-muted-foreground">
                       {format(new Date(event.start_at), 'M/d (EEE) HH:mm', { locale: ko })}
                     </p>
                   </div>

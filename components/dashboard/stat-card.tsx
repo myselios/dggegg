@@ -9,8 +9,8 @@ type Props = {
   readonly label: string
   readonly value: number
   readonly icon: LucideIcon
-  readonly cardClassName: string
   readonly iconBgClassName: string
+  readonly iconColorClassName: string
 }
 
 const COUNT_UP_DURATION_MS = 700
@@ -56,30 +56,29 @@ function useCountUp(target: number): number {
   return display
 }
 
-export function StatCard({ label, value, icon: Icon, cardClassName, iconBgClassName }: Props) {
+export function StatCard({
+  label,
+  value,
+  icon: Icon,
+  iconBgClassName,
+  iconColorClassName,
+}: Props) {
   const displayValue = useCountUp(value)
 
   return (
-    <Card
-      className={cn(
-        'glass-card border-none rounded-2xl h-full bento-tile',
-        cardClassName
-      )}
-    >
+    <Card className="glass-card border-none rounded-2xl h-full bento-tile">
       <CardContent className="flex h-full items-center gap-4 py-5">
         <div
           className={cn(
-            'flex size-10 shrink-0 items-center justify-center rounded-xl',
+            'flex size-11 shrink-0 items-center justify-center rounded-xl',
             iconBgClassName
           )}
         >
-          <Icon className="size-5" />
+          <Icon className={cn('size-5', iconColorClassName)} />
         </div>
         <div className="min-w-0">
-          <p className="text-[11px] font-medium uppercase tracking-wider opacity-70">
-            {label}
-          </p>
-          <p className="text-2xl font-bold tabular-nums leading-tight">
+          <p className="text-xs font-medium text-muted-foreground">{label}</p>
+          <p className="mt-0.5 text-3xl font-extrabold tabular-nums leading-none text-foreground">
             {displayValue}
           </p>
         </div>

@@ -78,7 +78,7 @@ function DayColumn({
       className={cn(
         'relative flex flex-col rounded-xl p-2.5 text-left transition-all min-h-[80px]',
         'hover:bg-accent/50 hover:shadow-sm cursor-pointer',
-        day.isToday && 'bg-primary/5 ring-1 ring-primary/20'
+        day.isToday && 'bg-primary/5 ring-2 ring-primary/30'
       )}
     >
       {day.isToday && (
@@ -203,7 +203,7 @@ export function WeeklySchedule() {
           <div className="mt-4 pt-3 border-t flex items-center gap-4 text-xs text-muted-foreground">
             <span>
               총{' '}
-              <span className="font-medium text-foreground">{stats.total}</span>
+              <span className="font-semibold tabular-nums text-foreground">{stats.total}</span>
               건
             </span>
             <span className="flex items-center gap-1.5">

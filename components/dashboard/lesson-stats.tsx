@@ -39,9 +39,9 @@ function TrendBadge({ current, prev }: { readonly current: number; readonly prev
 function WeekTooltip({ active, payload, label }: TooltipContentProps<number, string>) {
   if (!active || !payload?.length) return null
   return (
-    <div className="rounded-lg border bg-background px-3 py-2 shadow-md">
+    <div className="rounded-xl border bg-card px-3 py-2 shadow-md">
       <p className="text-xs text-muted-foreground">{label}주</p>
-      <p className="text-sm font-bold tabular-nums">{payload[0].value}h</p>
+      <p className="text-sm font-bold tabular-nums text-foreground">{payload[0].value}h</p>
     </div>
   )
 }
@@ -49,9 +49,9 @@ function WeekTooltip({ active, payload, label }: TooltipContentProps<number, str
 function DayTooltip({ active, payload, label }: TooltipContentProps<number, string>) {
   if (!active || !payload?.length) return null
   return (
-    <div className="rounded-lg border bg-background px-3 py-2 shadow-md">
+    <div className="rounded-xl border bg-card px-3 py-2 shadow-md">
       <p className="text-xs text-muted-foreground">{label}요일</p>
-      <p className="text-sm font-bold tabular-nums">{payload[0].value}h</p>
+      <p className="text-sm font-bold tabular-nums text-foreground">{payload[0].value}h</p>
     </div>
   )
 }
@@ -74,11 +74,11 @@ export function LessonStats() {
         {/* Summary row */}
         <div className="flex flex-wrap items-end gap-5">
           <div>
-            <p className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
+            <p className="text-xs font-medium text-muted-foreground">
               지난주 ({lastWeekLabel})
             </p>
             <div className="flex items-baseline gap-2 mt-0.5">
-              <span className="text-2xl font-bold tabular-nums leading-tight">
+              <span className="text-3xl font-extrabold tabular-nums leading-none text-foreground">
                 {summary.lastWeekHours}h
               </span>
               <span className="text-xs text-muted-foreground">{summary.lastWeekCount}건</span>
@@ -89,10 +89,10 @@ export function LessonStats() {
           <div className="h-8 w-px bg-border" />
 
           <div>
-            <p className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
+            <p className="text-xs font-medium text-muted-foreground">
               이번 달
             </p>
-            <span className="text-2xl font-bold tabular-nums leading-tight mt-0.5 block">
+            <span className="mt-0.5 block text-3xl font-extrabold tabular-nums leading-none text-foreground">
               {summary.thisMonthHours}h
             </span>
           </div>
@@ -111,7 +111,7 @@ export function LessonStats() {
                   data={weeklyData as WeekPoint[]}
                   margin={{ top: 4, right: 8, bottom: 0, left: -20 }}
                 >
-                  <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} className="stroke-border" strokeOpacity={0.5} />
                   <XAxis
                     dataKey="week"
                     tick={{ fill: 'var(--color-muted-foreground)', fontSize: 11 }}
@@ -129,7 +129,7 @@ export function LessonStats() {
                     type="monotone"
                     dataKey="hours"
                     stroke="var(--color-primary)"
-                    strokeWidth={2}
+                    strokeWidth={2.5}
                     dot={{
                       fill: 'var(--color-primary)',
                       stroke: 'var(--color-background)',
@@ -159,7 +159,7 @@ export function LessonStats() {
                   data={dailyData as DayPoint[]}
                   margin={{ top: 4, right: 8, bottom: 0, left: -20 }}
                 >
-                  <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} className="stroke-border" strokeOpacity={0.5} />
                   <XAxis
                     dataKey="day"
                     tick={{ fill: 'var(--color-muted-foreground)', fontSize: 11 }}
@@ -175,10 +175,11 @@ export function LessonStats() {
                   <Tooltip content={DayTooltip} />
                   <Bar
                     dataKey="hours"
-                    fill="oklch(0.5 0.19 265 / 80%)"
+                    fill="var(--color-primary)"
+                    fillOpacity={0.75}
                     radius={[4, 4, 0, 0]}
                     maxBarSize={48}
-                    activeBar={{ fill: 'var(--color-primary)' }}
+                    activeBar={{ fill: 'var(--color-primary)', fillOpacity: 1 }}
                   />
                 </BarChart>
               </ResponsiveContainer>

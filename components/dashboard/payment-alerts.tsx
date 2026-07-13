@@ -2,10 +2,55 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { Wallet } from 'lucide-react'
+import { toast } from 'sonner'
+import { Check, Copy, Wallet } from 'lucide-react'
 import { getPaymentAlerts, type PaymentAlert } from '@/app/actions/enrollments'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+
+function buildPaymentMessage({ student, enrollment, completedSessions }: PaymentAlert): string {
+  return `[정산 안내] ${student.name_ko} 학생, 현재까지 ${completedSessions}/${enrollment.total_sessions}회 수업이 진행되어 정산을 안내드립니다. 확인 부탁드립니다.`
+}
+
+function PaymentAlertRow({ alert }: { readonly alert: PaymentAlert }) {
+  const { enrollment, student, completedSessions } = alert
+  const [copied, setCopied] = useState(false)
+
+  async function handleCopy() {
+    try {
+      await navigator.clipboard.writeText(buildPaymentMessage(alert))
+      setCopied(true)
+      toast.success('안내 문구를 복사했습니다')
+      setTimeout(() => setCopied(false), 1500)
+    } catch {
+      toast.error('복사에 실패했습니다')
+    }
+  }
+
+  return (
+    <div
+      data-testid="payment-alert-item"
+      className="flex items-center justify-between gap-3 rounded-xl border border-amber-200 bg-white p-3"
+    >
+      <Link href={`/students/${student.id}`} className="min-w-0 flex-1">
+        <p className="truncate text-sm font-semibold text-foreground">{student.name_ko}</p>
+        <p className="mt-0.5 text-xs font-medium tabular-nums text-amber-700">
+          {completedSessions} / {enrollment.total_sessions}회 완료
+        </p>
+      </Link>
+      <Button
+        type="button"
+        size="sm"
+        onClick={handleCopy}
+        data-testid="payment-alert-copy"
+        className="h-9 shrink-0 gap-1.5 bg-amber-500 text-white hover:bg-amber-600"
+      >
+        {copied ? <Check className="size-3.5" /> : <Copy className="size-3.5" />}
+        안내 복사
+      </Button>
+    </div>
+  )
+}
 
 export function PaymentAlerts() {
   const [alerts, setAlerts] = useState<readonly PaymentAlert[]>([])
@@ -19,9 +64,9 @@ export function PaymentAlerts() {
   if (alerts.length === 0) return null
 
   return (
-    <Card className="glass-card rounded-2xl border-none" data-testid="payment-alerts">
+    <Card className="glass-card rounded-2xl border-none bg-amber-50/60" data-testid="payment-alerts">
       <CardHeader>
-        <CardTitle className="flex items-center gap-2 text-sm font-semibold">
+        <CardTitle className="flex items-center gap-2 text-sm font-semibold text-amber-800">
           <div className="flex size-7 items-center justify-center rounded-lg bg-amber-100">
             <Wallet className="size-3.5 text-amber-600" />
           </div>
@@ -30,21 +75,8 @@ export function PaymentAlerts() {
       </CardHeader>
       <CardContent>
         <div className="flex flex-col gap-2">
-          {alerts.map(({ enrollment, student, completedSessions }) => (
-            <Link
-              key={enrollment.id}
-              href={`/students/${student.id}`}
-              className="flex items-center justify-between rounded-lg border border-border/40 p-2.5 text-sm transition-colors hover:bg-accent/50"
-              data-testid="payment-alert-item"
-            >
-              <span className="font-medium">{student.name_ko}</span>
-              <Badge
-                variant="outline"
-                className="text-[10px] px-1.5 py-0 border-amber-200 text-amber-700 bg-amber-50"
-              >
-                {completedSessions} / {enrollment.total_sessions}회
-              </Badge>
-            </Link>
+          {alerts.map((alert) => (
+            <PaymentAlertRow key={alert.enrollment.id} alert={alert} />
           ))}
         </div>
       </CardContent>
