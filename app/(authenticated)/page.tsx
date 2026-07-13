@@ -30,8 +30,6 @@ const STAT_CARDS = [
   { key: 'incomplete', label: '미완료', icon: AlertTriangle, style: STAT_STYLES.warning },
 ] as const
 
-export const dynamic = 'force-dynamic'
-
 export default function DashboardPage() {
   const [stats, setStats] = useState<DashboardStats>({
     total: 0,
@@ -40,9 +38,7 @@ export default function DashboardPage() {
   })
 
   useEffect(() => {
-    async function init() {
-      await autoCompletePastEvents()
-
+    async function loadStats() {
       const supabase = createClient()
       const today = new Date()
 
@@ -71,7 +67,9 @@ export default function DashboardPage() {
         incomplete: incompleteResult.count ?? 0,
       })
     }
-    init()
+    // 통계를 먼저 그리고, 지난 수업 자동 완료는 병렬 실행 후 완료되면 통계만 갱신
+    loadStats()
+    autoCompletePastEvents().then(() => loadStats()).catch(() => {})
   }, [])
 
   return (

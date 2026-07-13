@@ -1,8 +1,6 @@
 import { getTemplates } from '@/app/actions/templates'
 import { TemplateList } from '@/components/templates/template-list'
 
-export const dynamic = 'force-dynamic'
-
 export default async function TemplatesPage() {
   const result = await getTemplates()
   const templates = result.success ? result.data : []

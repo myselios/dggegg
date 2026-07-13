@@ -7,8 +7,6 @@ import { TestLinksSection } from '@/components/materials/test-links-section'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import type { Student } from '@/lib/types/database'
 
-export const dynamic = 'force-dynamic'
-
 async function fetchStudents(): Promise<Student[]> {
   const supabase = await createClient()
   const { data, error } = await supabase

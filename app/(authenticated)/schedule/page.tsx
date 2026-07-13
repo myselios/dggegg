@@ -1,12 +1,19 @@
+'use client'
+
+import { Suspense } from 'react'
+import { useSearchParams } from 'next/navigation'
 import { ThreeWeekCalendar } from '@/components/schedule/three-week-calendar'
 
-export const dynamic = 'force-dynamic'
-
-export default async function SchedulePage({
-  searchParams,
-}: {
-  readonly searchParams: Promise<{ readonly date?: string }>
-}) {
-  const { date } = await searchParams
+function ScheduleWithParams() {
+  const searchParams = useSearchParams()
+  const date = searchParams.get('date') ?? undefined
   return <ThreeWeekCalendar initialDate={date} />
+}
+
+export default function SchedulePage() {
+  return (
+    <Suspense fallback={<div className="glass-card h-[70vh] animate-pulse rounded-2xl" />}>
+      <ScheduleWithParams />
+    </Suspense>
+  )
 }
