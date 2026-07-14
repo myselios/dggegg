@@ -18,6 +18,7 @@ import {
 import { updateScheduleEvent } from '@/app/actions/schedule'
 import { upsertLessonNote } from '@/app/actions/lesson-notes'
 import { createScoreRecord } from '@/app/actions/scores'
+import { notifyScheduleChanged } from '@/lib/hooks/use-schedule-sync'
 import { cn } from '@/lib/utils'
 
 const ASSESSMENT_TYPES = ['IO mock', 'Writing', 'Listening', 'Reading', 'Quiz', 'Exam'] as const
@@ -43,6 +44,7 @@ function useQuickComplete(event: QuickCompleteEvent, onUpdated: () => void) {
     }
     toast.success('수업이 완료 처리되었습니다')
     onUpdated()
+    notifyScheduleChanged()
   }
 
   async function handleSaveWithNote(formData: FormData) {
@@ -62,6 +64,7 @@ function useQuickComplete(event: QuickCompleteEvent, onUpdated: () => void) {
     setIsNoteOpen(false)
     toast.success('수업 노트와 함께 완료 처리되었습니다')
     onUpdated()
+    notifyScheduleChanged()
   }
 
   return { isNoteOpen, setIsNoteOpen, isPending, handleQuickComplete, handleSaveWithNote }

@@ -15,6 +15,7 @@ import { Badge } from '@/components/ui/badge'
 import { cn } from '@/lib/utils'
 import { getScheduleStatus } from '@/lib/constants/status-styles'
 import { QuickComplete } from '@/components/dashboard/quick-complete'
+import { useScheduleSyncVersion } from '@/lib/hooks/use-schedule-sync'
 import type { ScheduleEventWithStudent } from '@/lib/types/database'
 
 function StatusIcon({ status }: { readonly status: string }) {
@@ -64,6 +65,7 @@ function LessonProgressSummary({
 
 export function TodayLessons() {
   const [events, setEvents] = useState<ScheduleEventWithStudent[]>([])
+  const syncVersion = useScheduleSyncVersion()
 
   const fetchEvents = useCallback(() => {
     const supabase = createClient()
@@ -81,7 +83,8 @@ export function TodayLessons() {
 
   useEffect(() => {
     fetchEvents()
-  }, [fetchEvents])
+    // syncVersion: 다른 화면/자동완료로 상태가 바뀌면 재조회
+  }, [fetchEvents, syncVersion])
 
   return (
     <Card className="glass-card rounded-2xl border-none">

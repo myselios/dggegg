@@ -10,6 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { cn } from '@/lib/utils'
 import { QuickComplete } from '@/components/dashboard/quick-complete'
+import { useScheduleSyncVersion } from '@/lib/hooks/use-schedule-sync'
 
 type IncompleteEvent = {
   readonly id: string
@@ -22,6 +23,7 @@ type IncompleteEvent = {
 
 export function IncompleteLessons() {
   const [events, setEvents] = useState<IncompleteEvent[]>([])
+  const syncVersion = useScheduleSyncVersion()
 
   const fetchEvents = useCallback(() => {
     const supabase = createClient()
@@ -39,7 +41,8 @@ export function IncompleteLessons() {
 
   useEffect(() => {
     fetchEvents()
-  }, [fetchEvents])
+    // syncVersion: 다른 화면/자동완료로 상태가 바뀌면 재조회
+  }, [fetchEvents, syncVersion])
 
   if (events.length === 0) return null
 

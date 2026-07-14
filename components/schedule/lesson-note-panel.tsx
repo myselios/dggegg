@@ -16,6 +16,7 @@ import { getLessonNote, upsertLessonNote, getPreviousLessonNote } from '@/app/ac
 import { createScoreRecord } from '@/app/actions/scores'
 import { updateScheduleEvent, deleteScheduleEvent } from '@/app/actions/schedule'
 import { LessonReportButton } from '@/components/reports/lesson-report-button'
+import { notifyScheduleChanged } from '@/lib/hooks/use-schedule-sync'
 import type { ScheduleEventWithStudent, LessonNote } from '@/lib/types/database'
 
 const ASSESSMENT_TYPES = ['IO mock', 'Writing', 'Listening', 'Reading', 'Quiz', 'Exam'] as const
@@ -95,6 +96,7 @@ export function LessonNotePanel({
     }
 
     onUpdated()
+    notifyScheduleChanged()
   }
 
   async function handleDelete() {
@@ -107,6 +109,7 @@ export function LessonNotePanel({
       toast.warning(result.warning)
     }
     onUpdated()
+    notifyScheduleChanged()
   }
 
   return (

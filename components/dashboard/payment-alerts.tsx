@@ -7,6 +7,7 @@ import { Check, Copy, Wallet } from 'lucide-react'
 import { getPaymentAlerts, type PaymentAlert } from '@/app/actions/enrollments'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
+import { useScheduleSyncVersion } from '@/lib/hooks/use-schedule-sync'
 
 function buildPaymentMessage({ student, enrollment, completedSessions }: PaymentAlert): string {
   return `[정산 안내] ${student.name_ko} 학생, 현재까지 ${completedSessions}/${enrollment.total_sessions}회 수업이 진행되어 정산을 안내드립니다. 확인 부탁드립니다.`
@@ -54,12 +55,14 @@ function PaymentAlertRow({ alert }: { readonly alert: PaymentAlert }) {
 
 export function PaymentAlerts() {
   const [alerts, setAlerts] = useState<readonly PaymentAlert[]>([])
+  const syncVersion = useScheduleSyncVersion()
 
   useEffect(() => {
     getPaymentAlerts().then((result) => {
       if (result.success) setAlerts(result.data)
     })
-  }, [])
+    // syncVersion: 완료 회차가 바뀌면 정산 임박 여부도 바뀌므로 재조회
+  }, [syncVersion])
 
   if (alerts.length === 0) return null
 

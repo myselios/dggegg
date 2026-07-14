@@ -8,7 +8,7 @@ import {
   AlertTriangle,
 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
-import { autoCompletePastEvents } from '@/app/actions/schedule'
+import { useScheduleSyncVersion } from '@/lib/hooks/use-schedule-sync'
 import { TodayLessons } from '@/components/dashboard/today-lessons'
 import { RecentConsultations } from '@/components/dashboard/recent-consultations'
 import { IncompleteLessons } from '@/components/dashboard/incomplete-lessons'
@@ -53,6 +53,7 @@ export default function DashboardPage() {
     completed: 0,
     incomplete: 0,
   })
+  const syncVersion = useScheduleSyncVersion()
 
   useEffect(() => {
     async function loadStats() {
@@ -84,10 +85,10 @@ export default function DashboardPage() {
         incomplete: incompleteResult.count ?? 0,
       })
     }
-    // 통계를 먼저 그리고, 지난 수업 자동 완료는 병렬 실행 후 완료되면 통계만 갱신
+    // 지난 수업 자동 완료는 MobileLayout에서 세션당 한 번 실행된다.
+    // syncVersion이 바뀌면(자동/수동 완료 발생) 통계를 다시 불러온다.
     loadStats()
-    autoCompletePastEvents().then(() => loadStats()).catch(() => {})
-  }, [])
+  }, [syncVersion])
 
   return (
     <div className="grid grid-cols-1 gap-4 lg:grid-cols-6">
