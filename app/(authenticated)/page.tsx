@@ -85,7 +85,7 @@ export default function DashboardPage() {
         incomplete: incompleteResult.count ?? 0,
       })
     }
-    // 지난 수업 자동 완료는 MobileLayout에서 세션당 한 번 실행된다.
+    // 지난 수업 자동 완료는 MobileLayout에서 주기적으로 실행된다.
     // syncVersion이 바뀌면(자동/수동 완료 발생) 통계를 다시 불러온다.
     loadStats()
   }, [syncVersion])
