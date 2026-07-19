@@ -17,6 +17,7 @@ interface LessonStatsResult {
   readonly summary: Summary
   readonly weeklyData: readonly WeekPoint[]
   readonly dailyData: readonly DayPoint[]
+  readonly thisWeekLabel: string
   readonly lastWeekLabel: string
 }
 
@@ -26,6 +27,15 @@ interface LessonStatsResult {
  */
 export function useLessonStats(): LessonStatsResult {
   const today = useMemo(() => new Date(), [])
+
+  const thisWeekStart = useMemo(
+    () => startOfWeek(today, { weekStartsOn: 1 }),
+    [today],
+  )
+  const thisWeekEnd = useMemo(
+    () => endOfWeek(today, { weekStartsOn: 1 }),
+    [today],
+  )
 
   const lastWeekStart = useMemo(
     () => startOfWeek(subWeeks(today, 1), { weekStartsOn: 1 }),
@@ -46,15 +56,16 @@ export function useLessonStats(): LessonStatsResult {
 
   const lessons = useMemo(() => filterLessons(events ?? []), [events])
   const summary = useMemo(
-    () => computeSummary(lessons, today, lastWeekStart, lastWeekEnd),
-    [lessons, today, lastWeekStart, lastWeekEnd],
+    () => computeSummary(lessons, today, thisWeekStart, thisWeekEnd, lastWeekStart, lastWeekEnd),
+    [lessons, today, thisWeekStart, thisWeekEnd, lastWeekStart, lastWeekEnd],
   )
   const weeklyData = useMemo(() => buildWeeklyData(lessons, today), [lessons, today])
   const dailyData = useMemo(
     () => buildDailyData(lessons, lastWeekStart),
     [lessons, lastWeekStart],
   )
+  const thisWeekLabel = `${format(thisWeekStart, 'M/d')} ~ ${format(thisWeekEnd, 'M/d')}`
   const lastWeekLabel = `${format(lastWeekStart, 'M/d')} ~ ${format(lastWeekEnd, 'M/d')}`
 
-  return { summary, weeklyData, dailyData, lastWeekLabel }
+  return { summary, weeklyData, dailyData, thisWeekLabel, lastWeekLabel }
 }

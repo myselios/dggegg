@@ -14,6 +14,8 @@ export type WeekPoint = { readonly week: string; readonly hours: number }
 export type DayPoint = { readonly day: string; readonly hours: number }
 
 export type Summary = {
+  readonly thisWeekHours: number
+  readonly thisWeekCount: number
   readonly lastWeekHours: number
   readonly lastWeekCount: number
   readonly prevWeekHours: number
@@ -70,6 +72,8 @@ export function buildDailyData(
 export function computeSummary(
   lessons: readonly ScheduleEventWithStudent[],
   today: Date,
+  thisWeekStart: Date,
+  thisWeekEnd: Date,
   lastWeekStart: Date,
   lastWeekEnd: Date,
 ): Summary {
@@ -77,6 +81,8 @@ export function computeSummary(
   const prevWeekEnd = endOfWeek(subWeeks(today, 2), { weekStartsOn: 1 })
   const thisMonthStart = startOfMonth(today)
 
+  let thisWeekHours = 0
+  let thisWeekCount = 0
   let lastWeekHours = 0
   let lastWeekCount = 0
   let prevWeekHours = 0
@@ -85,6 +91,10 @@ export function computeSummary(
   for (const e of lessons) {
     const d = new Date(e.start_at)
     const h = calcHours(e.start_at, e.end_at)
+    if (d >= thisWeekStart && d <= thisWeekEnd) {
+      thisWeekHours += h
+      thisWeekCount += 1
+    }
     if (d >= lastWeekStart && d <= lastWeekEnd) {
       lastWeekHours += h
       lastWeekCount += 1
@@ -98,6 +108,8 @@ export function computeSummary(
   }
 
   return {
+    thisWeekHours: round1(thisWeekHours),
+    thisWeekCount,
     lastWeekHours: round1(lastWeekHours),
     lastWeekCount,
     prevWeekHours: round1(prevWeekHours),

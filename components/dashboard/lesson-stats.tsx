@@ -57,7 +57,7 @@ function DayTooltip({ active, payload, label }: TooltipContentProps<number, stri
 }
 
 export function LessonStats() {
-  const { summary, weeklyData, dailyData, lastWeekLabel } = useLessonStats()
+  const { summary, weeklyData, dailyData, thisWeekLabel, lastWeekLabel } = useLessonStats()
 
   return (
     <Card className="glass-card rounded-2xl border-none">
@@ -73,6 +73,21 @@ export function LessonStats() {
       <CardContent className="flex flex-col gap-6">
         {/* Summary row */}
         <div className="flex flex-wrap items-end gap-5">
+          <div>
+            <p className="text-xs font-medium text-muted-foreground">
+              이번 주 ({thisWeekLabel})
+            </p>
+            <div className="flex items-baseline gap-2 mt-0.5">
+              <span className="text-3xl font-extrabold tabular-nums leading-none text-foreground">
+                {summary.thisWeekHours}h
+              </span>
+              <span className="text-xs text-muted-foreground">{summary.thisWeekCount}건</span>
+              <TrendBadge current={summary.thisWeekHours} prev={summary.lastWeekHours} />
+            </div>
+          </div>
+
+          <div className="h-8 w-px bg-border" />
+
           <div>
             <p className="text-xs font-medium text-muted-foreground">
               지난주 ({lastWeekLabel})
